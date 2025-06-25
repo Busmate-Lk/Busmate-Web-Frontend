@@ -6,6 +6,7 @@ import { Header } from "@/components/operator/header"
 import { PageHeader } from "@/components/operator/page-header"
 import { BusCard } from "@/components/operator/bus-card"
 import { Tabs } from "@/components/operator/tabs"
+import Link from "next/link"
 
 interface BusData {
   id: string
@@ -29,6 +30,7 @@ export default function FleetManagement() {
       route: "Route A1",
       driver: "John Smith",
       status: "Active",
+     
     },
     {
       id: "2",
@@ -91,6 +93,7 @@ export default function FleetManagement() {
       value: "all",
       label: "All Buses",
       content: (
+        <Link href={"/operator/busSeatView"}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {getFilteredBuses("all").map((bus) => (
             <BusCard
@@ -104,6 +107,7 @@ export default function FleetManagement() {
             />
           ))}
         </div>
+        </Link>
       ),
     },
     {
