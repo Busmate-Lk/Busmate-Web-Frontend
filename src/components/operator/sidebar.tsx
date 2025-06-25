@@ -28,12 +28,12 @@ export function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
         <div className="w-64 bg-blue-900 text-white">
             <div className="p-4">
                 <div className="flex items-center gap-3 mb-8">
-                    <div className="bg-yellow-400 p-2 rounded-lg">
+                    <div className="bg-yellow-500 p-2 rounded-lg">
                         <Bus className="w-6 h-6 text-blue-900" />
                     </div>
                     <div>
                         <h1 className="text-xl font-bold">BUSMATE LK</h1>
-                        <p className="text-blue-200 text-sm">Admin Portal</p>
+                        {/* <p className="text-blue-200 text-sm">Admin Portal</p> */}
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@ export function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
                             <Link
                                 key={index}
                                 href={item.href}
-                                className={`w-full flex items-center justify-start gap-3 px-4 py-2 rounded-md text-sm font-medium transition-colors ${item.active ? "bg-yellow-400 text-blue-900 hover:bg-yellow-500" : "text-white hover:bg-blue-800"
+                                className={`w-full flex items-center justify-start gap-3 px-4 py-2 rounded-md text-sm font-medium transition-colors ${item.active ? "bg-yellow-500 text-blue-900 hover:bg-yellow-500" : "text-white hover:bg-blue-800"
                                     }`}
                             >
                                 <item.icon className="w-5 h-5" />
