@@ -1,13 +1,11 @@
-import Header from "@/components/mot/Header";
-import Image from "next/image";
+import { MOTLayout } from "@/components/mot/layout";
 
 export default function Home() {
   return (
-    <div>
-      <Header/>
-      mot
-
-    </div>
-    
+    <MOTLayout>
+      <div>
+        MOT Homepage Content
+      </div>
+    </MOTLayout>
   );
 }
