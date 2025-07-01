@@ -110,7 +110,7 @@ export default function ScheduleManagement() {
 
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
             <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold">Routes Overview</h2>
+              <h2 className="text-lg font-semibold text-gray-800">Routes Overview</h2>
             </div>
             <div className="p-0">
               <RouteTable routes={filteredRoutes} onEdit={handleEditRoute} onDelete={handleDeleteRoute} />
