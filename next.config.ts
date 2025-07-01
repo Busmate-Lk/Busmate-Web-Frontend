@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    turbo: {
+      rules: {
+        // Disable turbopack for font imports to avoid the resolution error
+        '*.woff2': ['file-loader'],
+        '*.woff': ['file-loader'],
+        '*.ttf': ['file-loader'],
+        '*.eot': ['file-loader'],
+      }
+    }
+  }
 };
 
 export default nextConfig;
