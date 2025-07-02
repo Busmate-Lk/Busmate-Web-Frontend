@@ -121,7 +121,7 @@ export default function BusPermitManagement() {
 
   return (
     <MOTLayout
-      activeItem="busPermits"
+      activeItem="bus-permits"
       pageTitle="Bus Permit Management"
       pageDescription="Manage and track bus route permits and approvals"
     >
