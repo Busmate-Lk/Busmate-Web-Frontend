@@ -194,7 +194,7 @@ export function Sidebar({
         </nav>
       </div>
 
-      {/* Profile Section */}
+      {/* Profile Section
       {!isCollapsed && (
         <div className="p-4 border-t border-blue-500">
           <div className="flex items-center gap-3">
@@ -215,7 +215,7 @@ export function Sidebar({
             <span className="text-sm font-medium">A</span>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

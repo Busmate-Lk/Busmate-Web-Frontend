@@ -12,8 +12,11 @@ interface ScheduleData {
 interface PermitBusScheduleProps {
   data: ScheduleData;
   selectedDays: string[];
+  errors?: Record<string, string>;
+  touched?: Record<string, boolean>;
   onChange: (field: keyof ScheduleData, value: string) => void;
   onDayChange: (dayId: string, checked: boolean) => void;
+  onBlur?: (field: string) => void;
 }
 
 const daysOfWeek = [
@@ -29,8 +32,11 @@ const daysOfWeek = [
 export function PermitBusSchedule({
   data,
   selectedDays,
+  errors = {},
+  touched = {},
   onChange,
   onDayChange,
+  onBlur,
 }: PermitBusScheduleProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -66,10 +72,16 @@ export function PermitBusSchedule({
                 placeholder="mm/dd/yyyy"
                 value={data.validFrom}
                 onChange={(e) => onChange("validFrom", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                onBlur={() => onBlur?.("validFrom")}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                  touched.validFrom && errors.validFrom ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
               <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
+            {touched.validFrom && errors.validFrom && (
+              <p className="text-sm text-red-600">{errors.validFrom}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -84,10 +96,16 @@ export function PermitBusSchedule({
                 placeholder="mm/dd/yyyy"
                 value={data.validUntil}
                 onChange={(e) => onChange("validUntil", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                onBlur={() => onBlur?.("validUntil")}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                  touched.validUntil && errors.validUntil ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
               <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
+            {touched.validUntil && errors.validUntil && (
+              <p className="text-sm text-red-600">{errors.validUntil}</p>
+            )}
           </div>
         </div>
 
@@ -114,6 +132,9 @@ export function PermitBusSchedule({
               </div>
             ))}
           </div>
+          {touched.selectedDays && errors.selectedDays && (
+            <p className="text-sm text-red-600">{errors.selectedDays}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,10 +151,16 @@ export function PermitBusSchedule({
                 placeholder="--:-- --"
                 value={data.departureTime}
                 onChange={(e) => onChange("departureTime", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                onBlur={() => onBlur?.("departureTime")}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                  touched.departureTime && errors.departureTime ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
               <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
+            {touched.departureTime && errors.departureTime && (
+              <p className="text-sm text-red-600">{errors.departureTime}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -148,10 +175,16 @@ export function PermitBusSchedule({
                 placeholder="--:-- --"
                 value={data.arrivalTime}
                 onChange={(e) => onChange("arrivalTime", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                onBlur={() => onBlur?.("arrivalTime")}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                  touched.arrivalTime && errors.arrivalTime ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
               <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
+            {touched.arrivalTime && errors.arrivalTime && (
+              <p className="text-sm text-red-600">{errors.arrivalTime}</p>
+            )}
           </div>
         </div>
       </div>

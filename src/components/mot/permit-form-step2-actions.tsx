@@ -3,6 +3,7 @@
 interface PermitFormStep2ActionsProps {
   isEdit: boolean;
   permitId?: string | null;
+  isValid?: boolean;
   onPrevious: () => void;
   onCancel: () => void;
   onSubmit: () => void;
@@ -11,6 +12,7 @@ interface PermitFormStep2ActionsProps {
 export function PermitFormStep2Actions({
   isEdit,
   permitId,
+  isValid = true,
   onPrevious,
   onCancel,
   onSubmit,

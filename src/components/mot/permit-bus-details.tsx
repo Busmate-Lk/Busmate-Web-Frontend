@@ -9,15 +9,21 @@ interface BusDetailsData {
 interface PermitBusDetailsProps {
   data: BusDetailsData;
   routeType: string;
+  errors?: Record<string, string>;
+  touched?: Record<string, boolean>;
   onChange: (field: keyof BusDetailsData, value: string) => void;
   onRouteTypeChange: (value: string) => void;
+  onBlur?: (field: string) => void;
 }
 
 export function PermitBusDetails({
   data,
   routeType,
+  errors = {},
+  touched = {},
   onChange,
   onRouteTypeChange,
+  onBlur,
 }: PermitBusDetailsProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -38,8 +44,14 @@ export function PermitBusDetails({
               placeholder="Enter bus ID"
               value={data.busId}
               onChange={(e) => onChange("busId", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              onBlur={() => onBlur?.("busId")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                touched.busId && errors.busId ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.busId && errors.busId && (
+              <p className="text-sm text-red-600">{errors.busId}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -53,8 +65,14 @@ export function PermitBusDetails({
               placeholder="Enter bus number"
               value={data.busNumber}
               onChange={(e) => onChange("busNumber", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              onBlur={() => onBlur?.("busNumber")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                touched.busNumber && errors.busNumber ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.busNumber && errors.busNumber && (
+              <p className="text-sm text-red-600">{errors.busNumber}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -69,8 +87,14 @@ export function PermitBusDetails({
               type="number"
               value={data.seats}
               onChange={(e) => onChange("seats", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              onBlur={() => onBlur?.("seats")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                touched.seats && errors.seats ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.seats && errors.seats && (
+              <p className="text-sm text-red-600">{errors.seats}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -83,7 +107,10 @@ export function PermitBusDetails({
               id="routeType"
               value={routeType}
               onChange={(e) => onRouteTypeChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              onBlur={() => onBlur?.("routeType")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                touched.routeType && errors.routeType ? 'border-red-500' : 'border-gray-300'
+              }`}
             >
               <option value="">Select Route Type</option>
               <option value="intercity">Intercity</option>
@@ -92,6 +119,9 @@ export function PermitBusDetails({
               <option value="semi-luxury">Semi-Luxury</option>
               <option value="luxury">Luxury</option>
             </select>
+            {touched.routeType && errors.routeType && (
+              <p className="text-sm text-red-600">{errors.routeType}</p>
+            )}
           </div>
         </div>
       </div>

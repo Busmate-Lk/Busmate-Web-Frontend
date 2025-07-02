@@ -12,6 +12,7 @@ export interface Stop {
 
 interface PermitStopSequenceProps {
   stops: Stop[];
+  errors?: Record<string, string>;
   onAddStop: () => void;
   onRemoveStop: (id: number) => void;
   onUpdateStop: (id: number, field: string, value: string) => void;
@@ -19,6 +20,7 @@ interface PermitStopSequenceProps {
 
 export function PermitStopSequence({
   stops,
+  errors = {},
   onAddStop,
   onRemoveStop,
   onUpdateStop,
@@ -29,6 +31,11 @@ export function PermitStopSequence({
         <h3 className="text-lg font-semibold text-gray-900">Stop Sequence</h3>
       </div>
       <div className="p-6 space-y-4">
+        {errors.stops && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm text-red-600">{errors.stops}</p>
+          </div>
+        )}
         {stops.map((stop, index) => (
           <div key={stop.id} className="border rounded-lg p-4 space-y-4">
             <div className="flex items-center justify-between">
@@ -49,7 +56,7 @@ export function PermitStopSequence({
                   htmlFor={`stopName${stop.id}`}
                   className="text-sm font-medium text-gray-700"
                 >
-                  Stop Name
+                  Stop Name *
                 </label>
                 <input
                   id={`stopName${stop.id}`}
@@ -65,7 +72,7 @@ export function PermitStopSequence({
                   htmlFor={`latitude${stop.id}`}
                   className="text-sm font-medium text-gray-700"
                 >
-                  Latitude
+                  Latitude *
                 </label>
                 <input
                   id={`latitude${stop.id}`}
@@ -73,7 +80,9 @@ export function PermitStopSequence({
                   onChange={(e) =>
                     onUpdateStop(stop.id, "latitude", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                    errors[`stop_${stop.id}_coords`] ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
               </div>
               <div className="space-y-2">
@@ -81,7 +90,7 @@ export function PermitStopSequence({
                   htmlFor={`longitude${stop.id}`}
                   className="text-sm font-medium text-gray-700"
                 >
-                  Longitude
+                  Longitude *
                 </label>
                 <input
                   id={`longitude${stop.id}`}
@@ -89,7 +98,9 @@ export function PermitStopSequence({
                   onChange={(e) =>
                     onUpdateStop(stop.id, "longitude", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                    errors[`stop_${stop.id}_coords`] ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
               </div>
               <div className="space-y-2">
@@ -97,7 +108,7 @@ export function PermitStopSequence({
                   htmlFor={`time${stop.id}`}
                   className="text-sm font-medium text-gray-700"
                 >
-                  Time
+                  Time *
                 </label>
                 <div className="relative">
                   <input
@@ -106,12 +117,24 @@ export function PermitStopSequence({
                     onChange={(e) =>
                       onUpdateStop(stop.id, "time", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                      errors[`stop_${stop.id}_time`] ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
                   <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 </div>
               </div>
             </div>
+            {(errors[`stop_${stop.id}_coords`] || errors[`stop_${stop.id}_time`]) && (
+              <div className="space-y-1">
+                {errors[`stop_${stop.id}_coords`] && (
+                  <p className="text-sm text-red-600">{errors[`stop_${stop.id}_coords`]}</p>
+                )}
+                {errors[`stop_${stop.id}_time`] && (
+                  <p className="text-sm text-red-600">{errors[`stop_${stop.id}_time`]}</p>
+                )}
+              </div>
+            )}
           </div>
         ))}
 

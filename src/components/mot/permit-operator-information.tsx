@@ -10,12 +10,18 @@ interface OperatorData {
 
 interface PermitOperatorInformationProps {
   data: OperatorData;
+  errors?: Record<string, string>;
+  touched?: Record<string, boolean>;
   onChange: (field: keyof OperatorData, value: string) => void;
+  onBlur?: (field: string) => void;
 }
 
 export function PermitOperatorInformation({
   data,
+  errors = {},
+  touched = {},
   onChange,
+  onBlur,
 }: PermitOperatorInformationProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -38,8 +44,14 @@ export function PermitOperatorInformation({
               placeholder="Enter operator name"
               value={data.operatorName}
               onChange={(e) => onChange("operatorName", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+              onBlur={() => onBlur?.("operatorName")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                touched.operatorName && errors.operatorName ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.operatorName && errors.operatorName && (
+              <p className="text-sm text-red-600">{errors.operatorName}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -52,13 +64,18 @@ export function PermitOperatorInformation({
               id="operatorType"
               value={data.operatorType}
               onChange={(e) => onChange("operatorType", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900"
+              onBlur={() => onBlur?.("operatorType")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 ${
+                touched.operatorType && errors.operatorType ? 'border-red-500' : 'border-gray-300'
+              }`}
             >
               <option value="">Select Type</option>
-              <option value="government">Government</option>
+              <option value="SLTB">SLTB</option>
               <option value="private">Private</option>
-              <option value="semi-government">Semi-Government</option>
-            </select>
+             </select>
+            {touched.operatorType && errors.operatorType && (
+              <p className="text-sm text-red-600">{errors.operatorType}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -72,8 +89,14 @@ export function PermitOperatorInformation({
               placeholder="Enter contact number"
               value={data.contactNo}
               onChange={(e) => onChange("contactNo", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+              onBlur={() => onBlur?.("contactNo")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                touched.contactNo && errors.contactNo ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.contactNo && errors.contactNo && (
+              <p className="text-sm text-red-600">{errors.contactNo}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label htmlFor="nic" className="text-sm font-medium text-gray-700">
@@ -84,8 +107,14 @@ export function PermitOperatorInformation({
               placeholder="Enter NIC number"
               value={data.nic}
               onChange={(e) => onChange("nic", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+              onBlur={() => onBlur?.("nic")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                touched.nic && errors.nic ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.nic && errors.nic && (
+              <p className="text-sm text-red-600">{errors.nic}</p>
+            )}
           </div>
           <div className="space-y-2 md:col-span-2">
             <label
@@ -100,8 +129,14 @@ export function PermitOperatorInformation({
               placeholder="Enter email address"
               value={data.email}
               onChange={(e) => onChange("email", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+              onBlur={() => onBlur?.("email")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                touched.email && errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.email && errors.email && (
+              <p className="text-sm text-red-600">{errors.email}</p>
+            )}
           </div>
         </div>
       </div>

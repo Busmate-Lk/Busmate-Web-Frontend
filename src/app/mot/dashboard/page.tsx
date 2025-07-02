@@ -23,53 +23,6 @@ import {
 } from "@/components/mot/maintenance-buses";
 
 export default function Dashboard() {
-  const metrics: DashboardMetric[] = [
-    {
-      title: "Total Active Buses",
-      value: "1,247",
-      subtitle: "+12% from last month",
-      icon: Bus,
-      color: "text-blue-800",
-      bgColor: "bg-blue-50",
-      borderColor: "border-l-blue-800",
-      trend: "+12%",
-      trendColor: "text-green-600",
-    },
-    {
-      title: "Approved Routes",
-      value: "342",
-      subtitle: "+5% from last month",
-      icon: Route,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      borderColor: "border-l-green-600",
-      trend: "+5%",
-      trendColor: "text-green-600",
-    },
-    {
-      title: "Today's Ridership",
-      value: "89,432",
-      subtitle: "+8% from yesterday",
-      icon: Users,
-      color: "text-slate-700",
-      bgColor: "bg-slate-50",
-      borderColor: "border-l-slate-500",
-      trend: "+8%",
-      trendColor: "text-green-600",
-    },
-    {
-      title: "Total Fare Collected",
-      value: "₹2.4M",
-      subtitle: "+15% from last week",
-      icon: DollarSign,
-      color: "text-blue-800",
-      bgColor: "bg-blue-50",
-      borderColor: "border-l-blue-800",
-      trend: "+15%",
-      trendColor: "text-green-600",
-    },
-  ];
-
   const broadcastMessages: BroadcastMessage[] = [
     {
       title: "Route Maintenance Alert",
@@ -126,6 +79,61 @@ export default function Dashboard() {
     regular: 520,
     express: 280,
   };
+
+  // Calculate metrics based on actual data
+  const totalBuses = busTypesData.total;
+  const activeBuses = totalBuses - maintenanceBuses.length; // Subtract buses in maintenance
+  const totalRoutes = routeAlerts.length + 3; // Current route alerts + additional approved routes
+  const todaysRidership = chartData.find(day => day.isToday)?.value || 89432;
+  const estimatedFarePerRider = 35; // Average fare in Rs.
+  const totalFareCollected = (todaysRidership * estimatedFarePerRider).toLocaleString();
+
+  const metrics: DashboardMetric[] = [
+    {
+      title: "Total Active Buses",
+      value: activeBuses.toString(),
+      subtitle: `${totalBuses} total, ${maintenanceBuses.length} in maintenance`,
+      icon: Bus,
+      color: "text-blue-800",
+      bgColor: "bg-blue-50",
+      borderColor: "border-l-blue-800",
+      trend: "+12%",
+      trendColor: "text-green-600",
+    },
+    {
+      title: "Approved Routes",
+      value: totalRoutes.toString(),
+      subtitle: `${routeAlerts.length} need attention`,
+      icon: Route,
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-l-green-600",
+      trend: "+5%",
+      trendColor: "text-green-600",
+    },
+    {
+      title: "Today's Ridership",
+      value: todaysRidership.toLocaleString(),
+      subtitle: "+8% from yesterday",
+      icon: Users,
+      color: "text-slate-700",
+      bgColor: "bg-slate-50",
+      borderColor: "border-l-slate-500",
+      trend: "+8%",
+      trendColor: "text-green-600",
+    },
+    {
+      title: "Total Fare Collected",
+      value: `Rs.${totalFareCollected}`,
+      subtitle: "Today's collection",
+      icon: DollarSign,
+      color: "text-blue-800",
+      bgColor: "bg-blue-50",
+      borderColor: "border-l-blue-800",
+      trend: "+15%",
+      trendColor: "text-green-600",
+    },
+  ];
 
   return (
     <MOTLayout activeItem="dashboard">

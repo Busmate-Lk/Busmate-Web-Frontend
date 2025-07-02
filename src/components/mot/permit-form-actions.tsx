@@ -3,6 +3,7 @@
 interface PermitFormActionsProps {
   isEdit: boolean;
   permitId?: string | null;
+  isValid?: boolean;
   onCancel: () => void;
   onNext: () => void;
 }
@@ -10,6 +11,7 @@ interface PermitFormActionsProps {
 export function PermitFormActions({
   isEdit,
   permitId,
+  isValid = true,
   onCancel,
   onNext,
 }: PermitFormActionsProps) {

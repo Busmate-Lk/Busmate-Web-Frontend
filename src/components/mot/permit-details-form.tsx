@@ -12,15 +12,21 @@ interface PermitDetailsData {
 interface PermitDetailsFormProps {
   data: PermitDetailsData;
   permitType: string;
+  errors?: Record<string, string>;
+  touched?: Record<string, boolean>;
   onChange: (field: keyof PermitDetailsData, value: string) => void;
   onPermitTypeChange: (value: string) => void;
+  onBlur?: (field: string) => void;
 }
 
 export function PermitDetailsForm({
   data,
   permitType,
+  errors = {},
+  touched = {},
   onChange,
   onPermitTypeChange,
+  onBlur,
 }: PermitDetailsFormProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -42,10 +48,16 @@ export function PermitDetailsForm({
                 placeholder="mm/dd/yyyy"
                 value={data.permitExpiry}
                 onChange={(e) => onChange("permitExpiry", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+                onBlur={() => onBlur?.("permitExpiry")}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                  touched.permitExpiry && errors.permitExpiry ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
               <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
+            {touched.permitExpiry && errors.permitExpiry && (
+              <p className="text-sm text-red-600">{errors.permitExpiry}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
@@ -58,7 +70,10 @@ export function PermitDetailsForm({
               id="permitType"
               value={permitType}
               onChange={(e) => onPermitTypeChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900"
+              onBlur={() => onBlur?.("permitType")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 ${
+                touched.permitType && errors.permitType ? 'border-red-500' : 'border-gray-300'
+              }`}
             >
               <option value="">Select Permit Type</option>
               <option value="regular">Regular Service</option>
@@ -67,6 +82,9 @@ export function PermitDetailsForm({
               <option value="school">School Service</option>
               <option value="office">Office Service</option>
             </select>
+            {touched.permitType && errors.permitType && (
+              <p className="text-sm text-red-600">{errors.permitType}</p>
+            )}
           </div>
         </div>
 
@@ -85,23 +103,35 @@ export function PermitDetailsForm({
               step="0.01"
               value={data.permitFee}
               onChange={(e) => onChange("permitFee", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+              onBlur={() => onBlur?.("permitFee")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                touched.permitFee && errors.permitFee ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.permitFee && errors.permitFee && (
+              <p className="text-sm text-red-600">{errors.permitFee}</p>
+            )}
           </div>
           <div className="space-y-2">
             <label
               htmlFor="insurancePolicy"
               className="text-sm font-medium text-gray-700"
             >
-              Insurance Policy Number
+              Insurance Policy Number *
             </label>
             <input
               id="insurancePolicy"
               placeholder="Enter policy number"
               value={data.insurancePolicy}
               onChange={(e) => onChange("insurancePolicy", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+              onBlur={() => onBlur?.("insurancePolicy")}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+                touched.insurancePolicy && errors.insurancePolicy ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {touched.insurancePolicy && errors.insurancePolicy && (
+              <p className="text-sm text-red-600">{errors.insurancePolicy}</p>
+            )}
           </div>
         </div>
 
@@ -110,15 +140,21 @@ export function PermitDetailsForm({
             htmlFor="specialConditions"
             className="text-sm font-medium text-gray-700"
           >
-            Special Conditions
+            Special Conditions *
           </label>
           <textarea
             id="specialConditions"
-            className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
+            className={`w-full min-h-[100px] px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
+              touched.specialConditions && errors.specialConditions ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="Enter any special conditions or requirements for this permit..."
             value={data.specialConditions}
             onChange={(e) => onChange("specialConditions", e.target.value)}
+            onBlur={() => onBlur?.("specialConditions")}
           />
+          {touched.specialConditions && errors.specialConditions && (
+            <p className="text-sm text-red-600">{errors.specialConditions}</p>
+          )}
         </div>
       </div>
     </div>
