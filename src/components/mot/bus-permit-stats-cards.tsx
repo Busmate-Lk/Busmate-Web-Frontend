@@ -13,10 +13,10 @@ interface BusPermitStatsCardsProps {
 
 export function BusPermitStatsCards({ stats }: BusPermitStatsCardsProps) {
   const defaultStats = {
-    active: { count: 156, change: "+12 this month" },
-    pending: { count: 23 },
-    expired: { count: 7 },
-    total: { count: 186, change: "+15% from last month" },
+    active: { count: 3, change: "+1 this month" },
+    pending: { count: 1 },
+    expired: { count: 1 },
+    total: { count: 5, change: "No change from last month" },
   };
 
   const currentStats = stats || defaultStats;

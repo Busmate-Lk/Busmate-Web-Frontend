@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Edit, Trash2, Power } from "lucide-react";
+import { Eye, Edit, Trash2, Power, Filter } from "lucide-react";
 
 export interface BusPermit {
   id: string;
@@ -18,6 +18,11 @@ interface BusPermitsTableProps {
   onEdit: (permitId: string) => void;
   onDelete: (permitId: string, routeName: string) => void;
   onDeactivate: (permitId: string, routeName: string) => void;
+  activeFilters?: {
+    status?: string;
+    operator?: string;
+    search?: string;
+  };
 }
 
 export function BusPermitsTable({
@@ -26,6 +31,7 @@ export function BusPermitsTable({
   onEdit,
   onDelete,
   onDeactivate,
+  activeFilters = {},
 }: BusPermitsTableProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -61,13 +67,34 @@ export function BusPermitsTable({
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Route No.
+                  <div className="flex items-center gap-2">
+                    Route No.
+                    {activeFilters.search && (
+                      <div title="Filtered by search">
+                        <Filter className="h-3 w-3 text-blue-500" />
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Route Name
+                  <div className="flex items-center gap-2">
+                    Route Name
+                    {activeFilters.search && (
+                      <div title="Filtered by search">
+                        <Filter className="h-3 w-3 text-blue-500" />
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Operator
+                  <div className="flex items-center gap-2">
+                    Operator
+                    {activeFilters.operator && (
+                      <div title={`Filtered by: ${activeFilters.operator}`}>
+                        <Filter className="h-3 w-3 text-blue-500" />
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
                   Valid From
@@ -76,7 +103,14 @@ export function BusPermitsTable({
                   Valid Until
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Status
+                  <div className="flex items-center gap-2">
+                    Status
+                    {activeFilters.status && (
+                      <div title={`Filtered by: ${activeFilters.status}`}>
+                        <Filter className="h-3 w-3 text-blue-500" />
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
                   Actions

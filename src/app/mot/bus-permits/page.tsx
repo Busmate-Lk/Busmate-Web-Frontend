@@ -14,6 +14,8 @@ import { BusPermitsTable, BusPermit } from '@/components/mot/bus-permits-table';
 export default function BusPermitManagement() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [operatorFilter, setOperatorFilter] = useState('');
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     permitId: '',
@@ -48,7 +50,7 @@ export default function BusPermitManagement() {
     {
       id: '003',
       routeNo: '003',
-      routeName: 'Negombo - Airport',
+      routeName: 'Colombo-Kataragama',
       operator: 'Private',
       validFrom: 'Feb 1, 2024',
       validUntil: 'Jan 31, 2025',
@@ -57,7 +59,7 @@ export default function BusPermitManagement() {
     {
       id: '004',
       routeNo: '004',
-      routeName: 'Kurunegala - Dambulla',
+      routeName: 'Colombo-Mannar',
       operator: 'SLTB',
       validFrom: 'Jun 1, 2024',
       validUntil: 'May 31, 2025',
@@ -66,13 +68,44 @@ export default function BusPermitManagement() {
     {
       id: '005',
       routeNo: '005',
-      routeName: 'Anuradhapura - Jaffna',
+      routeName: 'Colombo-Kurunegala',
       operator: 'Private',
       validFrom: 'Apr 10, 2024',
       validUntil: 'Apr 9, 2025',
       status: 'Expired',
     },
   ];
+
+  // Filter permits based on search term, status, and operator
+  const filteredPermits = permits.filter(permit => {
+    const matchesSearch = searchTerm === '' || 
+      permit.routeNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      permit.routeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      permit.operator.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      permit.id.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === '' || permit.status === statusFilter;
+    const matchesOperator = operatorFilter === '' || permit.operator === operatorFilter;
+    
+    return matchesSearch && matchesStatus && matchesOperator;
+  });
+
+  // Calculate stats from filtered permit data
+  const calculateStats = () => {
+    const activeCount = filteredPermits.filter(permit => permit.status === 'Active').length;
+    const pendingCount = filteredPermits.filter(permit => permit.status === 'Pending').length;
+    const expiredCount = filteredPermits.filter(permit => permit.status === 'Expired').length;
+    const totalCount = filteredPermits.length;
+
+    return {
+      active: { count: activeCount, change: "+1 this month" },
+      pending: { count: pendingCount },
+      expired: { count: expiredCount },
+      total: { count: totalCount, change: "No change from last month" },
+    };
+  };
+
+  const stats = calculateStats();
 
   const handleDeleteClick = (permitId: string, routeName: string) => {
     setDeleteModal({ isOpen: true, permitId, permitName: routeName });
@@ -127,23 +160,32 @@ export default function BusPermitManagement() {
     >
       <div className="space-y-6">
         {/* Quick Stats Cards */}
-        <BusPermitStatsCards />
+        <BusPermitStatsCards stats={stats} />
 
         {/* Search and Filters */}
         <BusPermitSearchFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          operatorFilter={operatorFilter}
+          setOperatorFilter={setOperatorFilter}
           onAddNewPermit={handleAddNewPermit}
           onExportAll={handleExportAll}
         />
 
         {/* Permits Table */}
         <BusPermitsTable
-          permits={permits}
+          permits={filteredPermits}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDeleteClick}
           onDeactivate={handleDeactivateClick}
+          activeFilters={{
+            status: statusFilter,
+            operator: operatorFilter,
+            search: searchTerm,
+          }}
         />
       </div>
 
