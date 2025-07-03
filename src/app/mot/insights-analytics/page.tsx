@@ -5,6 +5,9 @@ import { MOTLayout } from "@/components/mot/layout";
 import { AnalyticsKeyMetrics } from "@/components/mot/analytics-key-metrics";
 import { AnalyticsTabs } from "@/components/mot/analytics-tabs";
 import { AnalyticsFilters } from "@/components/mot/analytics-filters";
+import { RidershipAnalytics } from "@/components/mot/ridership-analytics";
+import { RevenueAnalytics } from "@/components/mot/revenue-analytics";
+import { PerformanceAnalytics } from "@/components/mot/performance-analytics";
 import { useState } from "react";
 
 export default function InsightsAnalytics() {
@@ -92,22 +95,10 @@ export default function InsightsAnalytics() {
             />
           </div>
 
-          {/* Tab Content Placeholder */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <div className="text-center py-12">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {activeTab === "ridership"
-                  ? "Ridership Analytics"
-                  : activeTab === "revenue"
-                  ? "Revenue & Fare Analytics"
-                  : "Performance Metrics"}
-              </h3>
-              <p className="text-gray-600">
-                Analytics content for {activeTab} would be displayed here with
-                charts and detailed data.
-              </p>
-            </div>
-          </div>
+          {/* Tab Content */}
+          {activeTab === "ridership" && <RidershipAnalytics />}
+          {activeTab === "revenue" && <RevenueAnalytics />}
+          {activeTab === "performance" && <PerformanceAnalytics />}
         </div>
       </div>
     </MOTLayout>
