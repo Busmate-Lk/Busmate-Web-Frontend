@@ -37,51 +37,64 @@ export function BusListSidebar({ buses, onBusClick }: BusListSidebarProps) {
 
   return (
     <div className="w-80">
-      <div className="h-full bg-white rounded-lg shadow border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center justify-between">
             Active Buses
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
               {buses.length}
             </span>
           </h3>
         </div>
-        <div className="p-0">
-          <div className="max-h-96 overflow-y-auto">
-            {buses.map((bus) => (
-              <div
-                key={bus.id}
-                className="p-4 border-b hover:bg-gray-50 cursor-pointer"
-                onClick={() => onBusClick(bus)}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-3 h-3 ${getStatusColor(
+        <div className="bg-white">
+          <div className="max-h-80 overflow-y-auto">{/* Reduced height */}
+            {buses.length > 0 ? (
+              buses.map((bus) => (
+                <div
+                  key={bus.id}
+                  className="px-4 py-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors duration-150"
+                  onClick={() => onBusClick(bus)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-3 h-3 ${getStatusColor(
+                          bus.status
+                        )} rounded-full shadow-sm`}
+                      ></div>
+                      <span className="font-semibold text-gray-900">{bus.busNumber}</span>
+                    </div>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
                         bus.status
-                      )} rounded-full`}
-                    ></div>
-                    <span className="font-medium">{bus.busNumber}</span>
+                      )}`}
+                    >
+                      {bus.status.replace("-", " ")}
+                    </span>
                   </div>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                      bus.status
-                    )}`}
-                  >
-                    {bus.status.replace("-", " ")}
-                  </span>
+                  <p className="text-sm text-gray-700 mb-2 font-medium">{bus.route}</p>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-600 flex items-center">
+                      <MapPin className="inline w-3 h-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{bus.location.address}</span>
+                    </p>
+                    <p className="text-xs text-gray-600 flex items-center">
+                      <Clock className="inline w-3 h-3 mr-1 flex-shrink-0" />
+                      <span>Updated {bus.lastUpdate}</span>
+                    </p>
+                    <div className="flex justify-between items-center text-xs text-gray-500 pt-1">
+                      <span>{bus.passengers} passengers</span>
+                      <span className="font-medium">{bus.eta}</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-1">{bus.route}</p>
-                <p className="text-xs text-gray-500">
-                  <MapPin className="inline w-3 h-3 mr-1" />
-                  {bus.location.address}
-                </p>
-                <p className="text-xs text-gray-500">
-                  <Clock className="inline w-3 h-3 mr-1" />
-                  Updated {bus.lastUpdate}
-                </p>
+              ))
+            ) : (
+              <div className="px-6 py-8 text-center bg-gray-50">
+                <p className="text-gray-600 font-medium mb-1">No buses found</p>
+                <p className="text-gray-500 text-sm">Try adjusting your filters</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

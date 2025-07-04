@@ -95,6 +95,67 @@ export default function TrackBuses() {
       nextStop: "Vavuniya",
       eta: "45 mins",
     },
+    // New entries
+    {
+      id: "6",
+      busNumber: "NB-1122",
+      route: "Batticaloa - Polonnaruwa",
+      driver: "H. De Alwis",
+      status: "on-time",
+      location: { lat: 7.7331, lng: 81.6938, address: "Batticaloa Town" },
+      lastUpdate: "1 min ago",
+      passengers: 40,
+      nextStop: "Valachchenai",
+      eta: "18 mins",
+    },
+    {
+      id: "7",
+      busNumber: "NB-3344",
+      route: "Trincomalee - Colombo",
+      driver: "W. Senanayake",
+      status: "on-time",
+      location: { lat: 8.5874, lng: 81.2152, address: "Trincomalee Depot" },
+      lastUpdate: "4 mins ago",
+      passengers: 50,
+      nextStop: "Kantale",
+      eta: "35 mins",
+    },
+    {
+      id: "8",
+      busNumber: "NB-5566",
+      route: "Kurunegala - Dambulla",
+      driver: "N. Bandara",
+      status: "delayed",
+      location: { lat: 7.4808, lng: 80.3629, address: "Kurunegala Town" },
+      lastUpdate: "6 mins ago",
+      passengers: 37,
+      nextStop: "Ibbagamuwa",
+      eta: "20 mins",
+    },
+    {
+      id: "9",
+      busNumber: "NB-7788",
+      route: "Monaragala - Badulla",
+      driver: "T. Rathnayake",
+      status: "on-time",
+      location: { lat: 6.8722, lng: 81.3505, address: "Wellawaya" },
+      lastUpdate: "2 mins ago",
+      passengers: 29,
+      nextStop: "Ella",
+      eta: "30 mins",
+    },
+    {
+      id: "10",
+      busNumber: "NB-9900",
+      route: "Colombo - Hambantota",
+      driver: "L. Gamage",
+      status: "inactive",
+      location: { lat: 6.1248, lng: 80.1003, address: "Colombo Depot" },
+      lastUpdate: "25 mins ago",
+      passengers: 0,
+      nextStop: "Depot",
+      eta: "N/A",
+    },    
   ]);
 
   useEffect(() => {
@@ -124,6 +185,68 @@ export default function TrackBuses() {
     return matchesSearch && matchesStatus;
   });
 
+  // Calculate real-time stats based on filtered buses
+  const calculateStats = () => {
+    if (filteredBuses.length === 0) {
+      return {
+        activeBuses: { count: 0, operational: "No buses" },
+        passengers: { count: 0, change: "No data" },
+        delayedBuses: { count: 0, avgDelay: "No delays" },
+        routesCovered: { count: 0 },
+      };
+    }
+
+    const activeBuses = filteredBuses.filter(bus => bus.status !== "inactive");
+    const delayedBuses = filteredBuses.filter(bus => bus.status === "delayed");
+    const onTimeBuses = filteredBuses.filter(bus => bus.status === "on-time");
+    const totalPassengers = filteredBuses.reduce((sum, bus) => sum + bus.passengers, 0);
+    
+    // Calculate operational percentage
+    const operationalPercentage = Math.round((activeBuses.length / filteredBuses.length) * 100);
+    
+    // Calculate average delay for delayed buses (mock realistic calculation)
+    const avgDelayMinutes = delayedBuses.length > 0 
+      ? Math.round(delayedBuses.reduce((sum, bus) => {
+          // Extract delay from lastUpdate or calculate based on status
+          const updateTime = bus.lastUpdate;
+          if (updateTime.includes("min")) {
+            const minutes = parseInt(updateTime.split(" ")[0]);
+            return sum + Math.max(5, minutes + Math.random() * 10);
+          }
+          return sum + (Math.random() * 15 + 5); // 5-20 min delay
+        }, 0) / delayedBuses.length)
+      : 0;
+    
+    // Calculate unique routes from filtered buses
+    const uniqueRoutes = new Set(filteredBuses.map(bus => bus.route)).size;
+    
+    // Calculate passenger change percentage (mock - could be based on time of day)
+    const hour = new Date().getHours();
+    const isRushHour = (hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19);
+    const baseChange = isRushHour ? 5 + Math.random() * 10 : -2 + Math.random() * 8;
+    const passengerChange = Math.round(baseChange);
+    
+    return {
+      activeBuses: { 
+        count: activeBuses.length, 
+        operational: `${operationalPercentage}% operational` 
+      },
+      passengers: { 
+        count: totalPassengers, 
+        change: `${passengerChange >= 0 ? '+' : ''}${passengerChange}% from yesterday` 
+      },
+      delayedBuses: { 
+        count: delayedBuses.length, 
+        avgDelay: delayedBuses.length > 0 ? `Avg delay: ${avgDelayMinutes}min` : "No delays" 
+      },
+      routesCovered: { 
+        count: uniqueRoutes 
+      },
+    };
+  };
+
+  const stats = calculateStats();
+
   return (
     <MOTLayout
       activeItem="tracking"
@@ -131,6 +254,8 @@ export default function TrackBuses() {
       pageDescription="Real-time bus tracking and location monitoring"
     >
       <div className="space-y-6">
+        <TrackingStatsCards stats={stats} />
+
         <TrackingFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -141,9 +266,7 @@ export default function TrackBuses() {
 
         <TrackingLegend />
 
-        <TrackingStatsCards />
-
-        <div className="flex gap-6 h-96">
+        <div className="flex gap-6 min-h-[500px] max-h-[600px]">
           <LiveMapView
             buses={filteredBuses}
             onBusClick={handleBusClick}

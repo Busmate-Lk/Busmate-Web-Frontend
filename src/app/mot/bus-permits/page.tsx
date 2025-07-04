@@ -44,13 +44,13 @@ export default function BusPermitManagement() {
       routeName: 'Galle - Matara',
       operator: 'SLTB',
       validFrom: 'Mar 15, 2024',
-      validUntil: 'Mar 14, 2025',
+     validUntil: 'Mar 14, 2025',
       status: 'Active',
     },
     {
       id: '003',
       routeNo: '003',
-      routeName: 'Colombo-Kataragama',
+      routeName: 'Colombo - Kataragama',
       operator: 'Private',
       validFrom: 'Feb 1, 2024',
       validUntil: 'Jan 31, 2025',
@@ -59,7 +59,7 @@ export default function BusPermitManagement() {
     {
       id: '004',
       routeNo: '004',
-      routeName: 'Colombo-Mannar',
+      routeName: 'Colombo - Mannar',
       operator: 'SLTB',
       validFrom: 'Jun 1, 2024',
       validUntil: 'May 31, 2025',
@@ -68,12 +68,59 @@ export default function BusPermitManagement() {
     {
       id: '005',
       routeNo: '005',
-      routeName: 'Colombo-Kurunegala',
+      routeName: 'Colombo - Kurunegala',
       operator: 'Private',
       validFrom: 'Apr 10, 2024',
       validUntil: 'Apr 9, 2025',
       status: 'Expired',
     },
+    // New data below
+    {
+      id: '006',
+      routeNo: '006',
+      routeName: 'Jaffna - Vavuniya',
+      operator: 'SLTB',
+      validFrom: 'Jul 1, 2024',
+      validUntil: 'Jun 30, 2025',
+      status: 'Active',
+    },
+    {
+      id: '007',
+      routeNo: '007',
+      routeName: 'Negombo - Anuradhapura',
+      operator: 'Private',
+      validFrom: 'May 20, 2024',
+      validUntil: 'May 19, 2025',
+      status: 'Pending',
+    },
+    {
+      id: '008',
+      routeNo: '008',
+      routeName: 'Colombo - Trincomalee',
+      operator: 'SLTB',
+      validFrom: 'Aug 1, 2024',
+      validUntil: 'Jul 31, 2025',
+      status: 'Active',
+    },
+    {
+      id: '009',
+      routeNo: '009',
+      routeName: 'Matara - Nuwara Eliya',
+      operator: 'Private',
+      validFrom: 'Feb 15, 2023',
+      validUntil: 'Feb 14, 2024',
+      status: 'Expired',
+    },
+    {
+      id: '010',
+      routeNo: '010',
+      routeName: 'Batticaloa - Polonnaruwa',
+      operator: 'SLTB',
+      validFrom: 'Sep 1, 2024',
+      validUntil: 'Aug 31, 2025',
+      status: 'Active',
+    }
+    
   ];
 
   // Filter permits based on search term, status, and operator

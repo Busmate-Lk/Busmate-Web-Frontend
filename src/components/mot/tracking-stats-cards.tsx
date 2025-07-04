@@ -12,14 +12,28 @@ interface TrackingStatsCardsProps {
 }
 
 export function TrackingStatsCards({ stats }: TrackingStatsCardsProps) {
+  // Fallback stats for when no data is available
   const defaultStats = {
-    activeBuses: { count: 1247, operational: "98% operational" },
-    passengers: { count: 89432, change: "+8% from yesterday" },
-    delayedBuses: { count: 23, avgDelay: "Avg delay: 12min" },
-    routesCovered: { count: 342 },
+    activeBuses: { count: 0, operational: "No data" },
+    passengers: { count: 0, change: "No data" },
+    delayedBuses: { count: 0, avgDelay: "No delays" },
+    routesCovered: { count: 0 },
   };
 
   const currentStats = stats || defaultStats;
+
+  // Helper function to get trend color
+  const getTrendColor = (value: string) => {
+    if (value.includes('+')) return 'text-green-600';
+    if (value.includes('-')) return 'text-red-600';
+    return 'text-gray-600';
+  };
+
+  const getTrendIcon = (value: string) => {
+    if (value.includes('+')) return <TrendingUp className="h-3 w-3 text-green-600" />;
+    if (value.includes('-')) return <TrendingUp className="h-3 w-3 text-red-600 rotate-180" />;
+    return <TrendingUp className="h-3 w-3 text-gray-600" />;
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -56,8 +70,8 @@ export function TrackingStatsCards({ stats }: TrackingStatsCardsProps) {
                 Passengers Onboard
               </p>
               <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-blue-600" />
-                <span className="text-xs font-medium text-blue-600">
+                {getTrendIcon(currentStats.passengers.change)}
+                <span className={`text-xs font-medium ${getTrendColor(currentStats.passengers.change)}`}>
                   {currentStats.passengers.change}
                 </span>
               </div>
@@ -69,7 +83,7 @@ export function TrackingStatsCards({ stats }: TrackingStatsCardsProps) {
         </div>
       </div>
 
-      <div className="border-l-4 border-l-yellow-500 bg-white rounded-lg shadow border border-gray-200">
+      <div className={`border-l-4 ${currentStats.delayedBuses.count > 0 ? 'border-l-red-500' : 'border-l-green-500'} bg-white rounded-lg shadow border border-gray-200`}>
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -78,14 +92,14 @@ export function TrackingStatsCards({ stats }: TrackingStatsCardsProps) {
               </h3>
               <p className="text-sm font-medium text-gray-600">Delayed Buses</p>
               <div className="flex items-center gap-1 mt-1">
-                <AlertTriangle className="h-3 w-3 text-yellow-600" />
-                <span className="text-xs font-medium text-yellow-600">
+                <AlertTriangle className={`h-3 w-3 ${currentStats.delayedBuses.count > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                <span className={`text-xs font-medium ${currentStats.delayedBuses.count > 0 ? 'text-red-600' : 'text-green-600'}`}>
                   {currentStats.delayedBuses.avgDelay}
                 </span>
               </div>
             </div>
-            <div className="p-2 bg-yellow-50 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className={`p-2 ${currentStats.delayedBuses.count > 0 ? 'bg-red-50' : 'bg-green-50'} rounded-lg`}>
+              <AlertTriangle className={`h-5 w-5 ${currentStats.delayedBuses.count > 0 ? 'text-red-600' : 'text-green-600'}`} />
             </div>
           </div>
         </div>
