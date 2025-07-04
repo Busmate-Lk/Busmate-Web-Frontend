@@ -9,6 +9,7 @@ import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
 } from "@/components/mot/confirmation-modals";
+import { usePagination } from "@/components/mot/pagination";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -202,6 +203,156 @@ export default function ScheduleManagement() {
       days: "Daily",
       status: "Inactive",
     },
+    {
+      id: "SCH006",
+      routeId: "006",
+      routeName: "Jaffna - Vavuniya",
+      operator: "SLTB",
+      busNo: "NB-6789",
+      startPoint: "Jaffna",
+      endPoint: "Vavuniya",
+      departure: "05:30 AM",
+      arrival: "08:00 AM",
+      validFrom: "2024-07-01",
+      validUntil: "2025-06-30",
+      days: "Daily",
+      status: "Active",
+    },
+    {
+      id: "SCH007",
+      routeId: "007",
+      routeName: "Negombo - Anuradhapura",
+      operator: "Private",
+      busNo: "NB-3456",
+      startPoint: "Negombo",
+      endPoint: "Anuradhapura",
+      departure: "06:30 AM",
+      arrival: "10:15 AM",
+      validFrom: "2024-05-20",
+      validUntil: "2025-05-19",
+      days: "Mon-Sat",
+      status: "Pending",
+    },
+    {
+      id: "SCH008",
+      routeId: "008",
+      routeName: "Colombo - Trincomalee",
+      operator: "SLTB",
+      busNo: "NB-7890",
+      startPoint: "Colombo",
+      endPoint: "Trincomalee",
+      departure: "08:00 AM",
+      arrival: "01:30 PM",
+      validFrom: "2024-08-01",
+      validUntil: "2025-07-31",
+      days: "Daily",
+      status: "Active",
+    },
+    {
+      id: "SCH009",
+      routeId: "009",
+      routeName: "Matara - Nuwara Eliya",
+      operator: "Private",
+      busNo: "NB-4567",
+      startPoint: "Matara",
+      endPoint: "Nuwara Eliya",
+      departure: "07:30 AM",
+      arrival: "12:00 PM",
+      validFrom: "2024-02-15",
+      validUntil: "2024-12-31",
+      days: "Daily",
+      status: "Inactive",
+    },
+    {
+      id: "SCH010",
+      routeId: "010",
+      routeName: "Batticaloa - Polonnaruwa",
+      operator: "SLTB",
+      busNo: "NB-8901",
+      startPoint: "Batticaloa",
+      endPoint: "Polonnaruwa",
+      departure: "09:15 AM",
+      arrival: "11:45 AM",
+      validFrom: "2024-09-01",
+      validUntil: "2025-08-31",
+      days: "Mon-Fri",
+      status: "Active",
+    },
+    {
+      id: "SCH011",
+      routeId: "001",
+      routeName: "Colombo - Kandy",
+      operator: "SLTB",
+      busNo: "NB-1235",
+      startPoint: "Colombo Fort",
+      endPoint: "Kandy",
+      departure: "10:00 AM",
+      arrival: "01:30 PM",
+      validFrom: "2024-01-01",
+      validUntil: "2024-12-31",
+      days: "Daily",
+      status: "Active",
+    },
+    {
+      id: "SCH012",
+      routeId: "002",
+      routeName: "Galle - Matara",
+      operator: "Private",
+      busNo: "NB-5679",
+      startPoint: "Galle",
+      endPoint: "Matara",
+      departure: "12:15 PM",
+      arrival: "01:45 PM",
+      validFrom: "2024-03-15",
+      validUntil: "2024-12-31",
+      days: "Daily",
+      status: "Active",
+    },
+    {
+      id: "SCH013",
+      routeId: "001",
+      routeName: "Colombo - Kandy",
+      operator: "Private",
+      busNo: "NB-1236",
+      startPoint: "Colombo Fort",
+      endPoint: "Kandy",
+      departure: "02:00 PM",
+      arrival: "05:30 PM",
+      validFrom: "2024-01-01",
+      validUntil: "2024-12-31",
+      days: "Mon-Fri",
+      status: "Pending",
+    },
+    {
+      id: "SCH014",
+      routeId: "003",
+      routeName: "Colombo-Kataragama",
+      operator: "SLTB",
+      busNo: "NB-9013",
+      startPoint: "Colombo",
+      endPoint: "Kataragama",
+      departure: "10:30 AM",
+      arrival: "08:00 PM",
+      validFrom: "2024-02-01",
+      validUntil: "2024-11-30",
+      days: "Daily",
+      status: "Active",
+    },
+    {
+      id: "SCH015",
+      routeId: "004",
+      routeName: "Colombo-Mannar",
+      operator: "Private",
+      busNo: "NB-9020",
+      startPoint: "Colombo",
+      endPoint: "Mannar",
+      departure: "11:00 AM",
+      arrival: "06:30 PM",
+      validFrom: "2024-06-01",
+      validUntil: "2025-05-31",
+      days: "Daily",
+      status: "Active",
+    },
   ];
 
   // Filter schedules based on search term, status, operator, and route
@@ -220,7 +371,18 @@ export default function ScheduleManagement() {
     return matchesSearch && matchesStatus && matchesOperator && matchesRoute;
   });
 
-  // Calculate statistics from filtered schedule data
+  // Use pagination hook with initial page size of 5
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedSchedules,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredSchedules, 5); // Show 5 items per page initially
+
+  // Calculate statistics from filtered schedule data (use filteredSchedules for accurate stats)
   const calculateScheduleStats = () => {
     const activeSchedules = filteredSchedules.filter(schedule => schedule.status === 'Active').length;
     const uniqueRoutes = new Set(filteredSchedules.map(schedule => schedule.routeId)).size;
@@ -316,7 +478,13 @@ export default function ScheduleManagement() {
         />
 
         <SchedulesTable
-          schedules={filteredSchedules}
+          schedules={paginatedSchedules}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
           onView={(scheduleId) =>
             router.push(`/mot/schedule-details/${scheduleId}`)
           }

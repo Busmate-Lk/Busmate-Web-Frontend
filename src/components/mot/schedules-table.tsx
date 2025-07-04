@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, Edit, MapPin, Power, Trash2 } from "lucide-react";
+import { Pagination } from "./pagination";
 
 interface Schedule {
   id: string;
@@ -18,6 +19,12 @@ interface Schedule {
 
 interface SchedulesTableProps {
   schedules: Schedule[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   onView: (scheduleId: string) => void;
   onEdit: (scheduleId: string) => void;
   onIntermediateStops: (scheduleId: string) => void;
@@ -27,6 +34,12 @@ interface SchedulesTableProps {
 
 export function SchedulesTable({
   schedules,
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onPageSizeChange,
   onView,
   onEdit,
   onIntermediateStops,
@@ -199,28 +212,15 @@ export function SchedulesTable({
           </table>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-gray-600">
-              Showing 1 to 3 of 25 results
-            </p>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                Previous
-              </button>
-              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-blue-600 text-white">
-                1
-              </button>
-              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                2
-              </button>
-              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                3
-              </button>
-              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                Next
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            pageSizeOptions={[5, 10, 15, 20]}
+          />
         </div>
       </div>
     </div>

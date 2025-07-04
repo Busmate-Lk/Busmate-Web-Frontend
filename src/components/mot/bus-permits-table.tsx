@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, Edit, Trash2, Power, Filter } from "lucide-react";
+import { Pagination } from "./pagination";
 
 export interface BusPermit {
   id: string;
@@ -14,6 +15,12 @@ export interface BusPermit {
 
 interface BusPermitsTableProps {
   permits: BusPermit[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   onView: (permitId: string) => void;
   onEdit: (permitId: string) => void;
   onDelete: (permitId: string, routeName: string) => void;
@@ -27,6 +34,12 @@ interface BusPermitsTableProps {
 
 export function BusPermitsTable({
   permits,
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onPageSizeChange,
   onView,
   onEdit,
   onDelete,
@@ -190,7 +203,18 @@ export function BusPermitsTable({
                 </tr>
               ))}
             </tbody>
-          </table>         
+          </table>
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            pageSizeOptions={[5, 10, 15, 20]}
+          />
         </div>
       </div>
     </div>

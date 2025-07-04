@@ -10,6 +10,7 @@ import {
 import { BusPermitStatsCards } from '@/components/mot/bus-permit-stats-cards';
 import { BusPermitSearchFilters } from '@/components/mot/bus-permit-search-filters';
 import { BusPermitsTable, BusPermit } from '@/components/mot/bus-permits-table';
+import { usePagination } from '@/components/mot/pagination';
 
 export default function BusPermitManagement() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function BusPermitManagement() {
       routeName: 'Galle - Matara',
       operator: 'SLTB',
       validFrom: 'Mar 15, 2024',
-     validUntil: 'Mar 14, 2025',
+      validUntil: 'Mar 14, 2025',
       status: 'Active',
     },
     {
@@ -74,7 +75,6 @@ export default function BusPermitManagement() {
       validUntil: 'Apr 9, 2025',
       status: 'Expired',
     },
-    // New data below
     {
       id: '006',
       routeNo: '006',
@@ -119,8 +119,79 @@ export default function BusPermitManagement() {
       validFrom: 'Sep 1, 2024',
       validUntil: 'Aug 31, 2025',
       status: 'Active',
-    }
-    
+    },
+    {
+      id: '011',
+      routeNo: '011',
+      routeName: 'Colombo - Badulla',
+      operator: 'SLTB',
+      validFrom: 'Jan 15, 2024',
+      validUntil: 'Jan 14, 2025',
+      status: 'Active',
+    },
+    {
+      id: '012',
+      routeNo: '012',
+      routeName: 'Kandy - Nuwara Eliya',
+      operator: 'Private',
+      validFrom: 'Mar 1, 2024',
+      validUntil: 'Feb 28, 2025',
+      status: 'Active',
+    },
+    {
+      id: '013',
+      routeNo: '013',
+      routeName: 'Colombo - Hambantota',
+      operator: 'SLTB',
+      validFrom: 'Apr 1, 2024',
+      validUntil: 'Mar 31, 2025',
+      status: 'Pending',
+    },
+    {
+      id: '014',
+      routeNo: '014',
+      routeName: 'Galle - Tissamaharama',
+      operator: 'Private',
+      validFrom: 'May 1, 2024',
+      validUntil: 'Apr 30, 2025',
+      status: 'Active',
+    },
+    {
+      id: '015',
+      routeNo: '015',
+      routeName: 'Colombo - Chilaw',
+      operator: 'SLTB',
+      validFrom: 'Jun 15, 2024',
+      validUntil: 'Jun 14, 2025',
+      status: 'Active',
+    },
+    {
+      id: '016',
+      routeNo: '016',
+      routeName: 'Ratnapura - Embilipitiya',
+      operator: 'Private',
+      validFrom: 'Jul 10, 2024',
+      validUntil: 'Jul 9, 2025',
+      status: 'Expired',
+    },
+    {
+      id: '017',
+      routeNo: '017',
+      routeName: 'Ampara - Batticaloa',
+      operator: 'SLTB',
+      validFrom: 'Aug 15, 2024',
+      validUntil: 'Aug 14, 2025',
+      status: 'Active',
+    },
+    {
+      id: '018',
+      routeNo: '018',
+      routeName: 'Monaragala - Wellawaya',
+      operator: 'Private',
+      validFrom: 'Sep 10, 2024',
+      validUntil: 'Sep 9, 2025',
+      status: 'Pending',
+    },
   ];
 
   // Filter permits based on search term, status, and operator
@@ -137,7 +208,18 @@ export default function BusPermitManagement() {
     return matchesSearch && matchesStatus && matchesOperator;
   });
 
-  // Calculate stats from filtered permit data
+  // Use pagination hook with initial page size of 5
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedPermits,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredPermits, 5); // Start with 5 items per page
+
+  // Calculate stats from filtered permit data (use filteredPermits for accurate stats)
   const calculateStats = () => {
     const activeCount = filteredPermits.filter(permit => permit.status === 'Active').length;
     const pendingCount = filteredPermits.filter(permit => permit.status === 'Pending').length;
@@ -223,7 +305,13 @@ export default function BusPermitManagement() {
 
         {/* Permits Table */}
         <BusPermitsTable
-          permits={filteredPermits}
+          permits={paginatedPermits}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDeleteClick}
