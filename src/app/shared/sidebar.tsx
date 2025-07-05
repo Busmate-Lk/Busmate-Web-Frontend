@@ -248,29 +248,6 @@ export function Sidebar({
           ))}
         </nav>
       </div>
-
-      {/* Profile Section
-      {!isCollapsed && (
-        <div className="p-4 border-t border-blue-500">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">A</span>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">Admin</p>
-              <p className="text-xs text-blue-200">admin@busmate.lk</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isCollapsed && (
-        <div className="p-4 border-t border-blue-500 flex justify-center">
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium">A</span>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 }
