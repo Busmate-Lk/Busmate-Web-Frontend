@@ -1,6 +1,6 @@
 "use client";
 
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { ScheduleDetailsHeader } from "@/components/mot/schedule-details-header";
 import { ScheduleBasicInfo } from "@/components/mot/schedule-basic-info";
 import { RouteInformationCard } from "@/components/mot/route-information-card";
@@ -10,6 +10,7 @@ import { DaysOfOperationCard } from "@/components/mot/days-of-operation-card";
 import { IntermediateStopsCard } from "@/components/mot/intermediate-stops-card";
 import { ScheduleDetailsActions } from "@/components/mot/schedule-details-actions";
 import { useRouter, useParams } from "next/navigation";
+import { Layout } from "@/app/shared/layout";
 
 export default function ScheduleDetails() {
   const router = useRouter();
@@ -126,7 +127,8 @@ export default function ScheduleDetails() {
   };
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="schedule"
       pageTitle="Schedule Details"
       pageDescription="View detailed information about the bus schedule"
@@ -161,6 +163,6 @@ export default function ScheduleDetails() {
           onEdit={handleEdit}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { EditPolicyHeader } from "@/components/mot/edit-policy-header";
 import { EditPolicyTabs } from "@/components/mot/edit-policy-tabs";
 import { DocumentDetailsForm } from "@/components/mot/document-details-form";
@@ -10,6 +10,7 @@ import { VersionHistorySection } from "@/components/mot/version-history-section"
 import { EditPolicyActions } from "@/components/mot/edit-policy-actions";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function EditPolicy() {
   const router = useRouter();
@@ -135,10 +136,11 @@ Non-compliance with these guidelines may result in penalties including fines, li
   };
 
   return (
-    <MOTLayout
+    <Layout
       activeItem="policy"
       pageTitle="Edit Policy"
       pageDescription="Update and modify policy document"
+      role = "mot"
     >
       <div className="space-y-6">
         <EditPolicyHeader
@@ -185,6 +187,6 @@ Non-compliance with these guidelines may result in penalties including fines, li
           onSaveAndPublish={handleSave}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

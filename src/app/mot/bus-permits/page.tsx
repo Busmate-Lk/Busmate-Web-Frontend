@@ -1,6 +1,6 @@
 'use client';
 
-import { MOTLayout } from '@/components/mot/layout';
+// import { Layout } from '@/components/mot/layout';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -11,8 +11,10 @@ import { BusPermitStatsCards } from '@/components/mot/bus-permit-stats-cards';
 import { BusPermitSearchFilters } from '@/components/mot/bus-permit-search-filters';
 import { BusPermitsTable, BusPermit } from '@/components/mot/bus-permits-table';
 import { usePagination } from '@/components/mot/pagination';
+import { Layout } from '@/app/shared/layout';
 
 export default function BusPermitManagement() {
+ 
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -282,10 +284,11 @@ export default function BusPermitManagement() {
   };
 
   return (
-    <MOTLayout
+    <Layout
       activeItem="bus-permits"
       pageTitle="Bus Permit Management"
       pageDescription="Manage and track bus route permits and approvals"
+      role = "mot"
     >
       <div className="space-y-6">
         {/* Quick Stats Cards */}
@@ -347,6 +350,6 @@ export default function BusPermitManagement() {
         itemName={deactivateModal.permitName}
         isLoading={isLoading}
       />
-    </MOTLayout>
+    </Layout>
   );
 }

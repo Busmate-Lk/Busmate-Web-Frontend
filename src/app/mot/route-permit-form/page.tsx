@@ -10,6 +10,7 @@ import {
 import { PermitFormActions } from "@/components/mot/permit-form-actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function RoutePermitForm() {
   const router = useRouter();
@@ -332,7 +333,8 @@ export default function RoutePermitForm() {
   };
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="bus-permits"
       pageTitle={isEdit ? "Edit Route Permit" : "Add New Route Permit"}
       pageDescription={`Step 1 of 2 - ${
@@ -412,6 +414,6 @@ export default function RoutePermitForm() {
           onNext={handleNext}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

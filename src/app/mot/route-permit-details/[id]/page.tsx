@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { RoutePermitHeader } from "@/components/mot/route-permit-header";
 import { RouteMapView } from "@/components/mot/route-map-view";
 import { PermitInformationPanel } from "@/components/mot/permit-information-panel";
@@ -11,6 +11,7 @@ import { InternalNotes } from "@/components/mot/internal-notes";
 import { RoutePermitActions } from "@/components/mot/route-permit-actions";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function RoutePermitDetails() {
   const router = useRouter();
@@ -93,7 +94,8 @@ export default function RoutePermitDetails() {
   };
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="busPermits"
       pageTitle="Route Permit Details"
       pageDescription="View detailed information about the route permit"
@@ -135,6 +137,6 @@ export default function RoutePermitDetails() {
           onApprove={handleApprove}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

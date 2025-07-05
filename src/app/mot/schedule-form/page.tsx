@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { RouteInformationForm } from "@/components/mot/route-information-form";
 import { JourneyDetailsForm } from "@/components/mot/journey-details-form";
 import { TimeScheduleSection } from "@/components/mot/time-schedule-section";
@@ -10,6 +10,7 @@ import { DaysOfOperationSelector } from "@/components/mot/days-of-operation-sele
 import { ScheduleActionButtons } from "@/components/mot/schedule-action-buttons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function ScheduleForm() {
   const router = useRouter();
@@ -123,7 +124,8 @@ export default function ScheduleForm() {
   const submitLabel = isEditMode ? "Update Schedule" : "Add Schedule";
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="schedule"
       pageTitle={pageTitle}
       pageDescription={pageDescription}
@@ -191,6 +193,6 @@ export default function ScheduleForm() {
           submitLabel={submitLabel}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

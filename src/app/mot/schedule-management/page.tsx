@@ -1,6 +1,6 @@
 "use client";
 
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { ScheduleStatsCards } from "@/components/mot/schedule-stats-cards";
 import { ScheduleSearchFilters } from "@/components/mot/schedule-search-filters";
 import { SchedulesTable } from "@/components/mot/schedules-table";
@@ -12,6 +12,7 @@ import {
 import { usePagination } from "@/components/mot/pagination";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function ScheduleManagement() {
   const router = useRouter();
@@ -456,7 +457,8 @@ export default function ScheduleManagement() {
   };
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="schedule"
       pageTitle="Schedule Management"
       pageDescription="Create and manage bus schedules and timetables"
@@ -528,6 +530,6 @@ export default function ScheduleManagement() {
           isLoading={isLoading}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

@@ -2,13 +2,14 @@
 
 import type React from "react";
 import { ArrowLeft } from "lucide-react";
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { DocumentInformationForm } from "@/components/mot/document-information-form";
 import { FileUploadSection } from "@/components/mot/file-upload-section";
 import { DocumentMetadataForm } from "@/components/mot/document-metadata-form";
 import { DocumentActionButtons } from "@/components/mot/document-action-buttons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function UploadPolicy() {
   const router = useRouter();
@@ -43,7 +44,8 @@ export default function UploadPolicy() {
   };
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="policy"
       pageTitle="Upload Policy Document"
       pageDescription="Upload and publish new policy documents"
@@ -81,6 +83,6 @@ export default function UploadPolicy() {
           onSubmit={handleSubmit}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

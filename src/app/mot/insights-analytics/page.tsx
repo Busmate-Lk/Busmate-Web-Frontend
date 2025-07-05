@@ -1,7 +1,7 @@
 "use client";
 
 import { Download, DollarSign, Users, Bus, TrendingUp } from "lucide-react";
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { AnalyticsKeyMetrics } from "@/components/mot/analytics-key-metrics";
 import { AnalyticsTabs } from "@/components/mot/analytics-tabs";
 import { AnalyticsFilters } from "@/components/mot/analytics-filters";
@@ -9,6 +9,7 @@ import { RidershipAnalytics } from "@/components/mot/ridership-analytics";
 import { RevenueAnalytics } from "@/components/mot/revenue-analytics";
 import { PerformanceAnalytics } from "@/components/mot/performance-analytics";
 import { useState } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function InsightsAnalytics() {
   const [selectedRegion, setSelectedRegion] = useState("all");
@@ -61,10 +62,11 @@ export default function InsightsAnalytics() {
   };
 
   return (
-    <MOTLayout
+    <Layout
       activeItem="dataInsights"
       pageTitle="Insights & Analytics"
       pageDescription="Data insights and performance analytics for your fleet"
+      role = "mot"
     >
       <div className="space-y-6">
         {/* Action Button */}
@@ -101,6 +103,6 @@ export default function InsightsAnalytics() {
           {activeTab === "performance" && <PerformanceAnalytics />}
         </div>
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { MOTLayout } from "@/components/mot/layout";
+// import { MOTLayout } from "@/components/mot/layout";
 import { TrackingStatsCards } from "@/components/mot/tracking-stats-cards";
 import { TrackingFilters } from "@/components/mot/tracking-filters";
 import { TrackingLegend } from "@/components/mot/tracking-legend";
@@ -8,6 +8,7 @@ import { LiveMapView } from "@/components/mot/live-map-view";
 import { BusListSidebar } from "@/components/mot/bus-list-sidebar";
 import { BusDetailsModal } from "@/components/mot/bus-details-modal";
 import { useState, useEffect } from "react";
+import { Layout } from "@/app/shared/layout";
 
 interface Bus {
   id: string;
@@ -248,7 +249,8 @@ export default function TrackBuses() {
   const stats = calculateStats();
 
   return (
-    <MOTLayout
+    <Layout
+    role = "mot"
       activeItem="tracking"
       pageTitle="Track Buses"
       pageDescription="Real-time bus tracking and location monitoring"
@@ -282,6 +284,6 @@ export default function TrackBuses() {
           onClose={() => setIsDetailsModalOpen(false)}
         />
       </div>
-    </MOTLayout>
+    </Layout>
   );
 }
