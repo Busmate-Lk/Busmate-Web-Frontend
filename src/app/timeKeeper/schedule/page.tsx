@@ -1,13 +1,16 @@
 "use client";
 
-import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
+// import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
 import { ScheduleStatsCards } from "@/components/timeKeeper/schedule-stats-cards";
 import { ScheduleSearchFilters } from "@/components/timeKeeper/schedule-search-filters";
 import { ScheduleTable } from "@/components/timeKeeper/schedule-table";
+import { usePagination } from "@/components/mot/pagination";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function ScheduleManagement() {
+ 
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -92,6 +95,38 @@ export default function ScheduleManagement() {
     return matchesSearch && matchesStatus && matchesOperator && matchesRoute;
   });
 
+  // Calculate statistics from actual schedule data
+  const calculateScheduleStats = () => {
+    const activeSchedules = schedules.filter(schedule => schedule.status === 'Active').length;
+    const uniqueRoutes = new Set(schedules.map(schedule => schedule.routeId)).size;
+    const uniqueBuses = new Set(schedules.map(schedule => schedule.busNo)).size;
+    const totalSchedules = schedules.length;
+    
+    // Calculate on-time performance (simulated based on active schedules)
+    const onTimePerformance = totalSchedules > 0 ? 
+      Math.round((activeSchedules / totalSchedules) * 100 * 0.985) : 0; // 98.5% base rate
+    
+    return {
+      activeSchedules,
+      onTimePerformance,
+      routesCovered: uniqueRoutes,
+      busesAssigned: uniqueBuses,
+    };
+  };
+
+  const scheduleStats = calculateScheduleStats();
+
+  // Use pagination hook with initial page size of 5
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedSchedules,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredSchedules, 5); // Show 5 items per page initially
+
   const handleAddNew = () => {
     router.push("/timeKeeper/schedule-form");
   };
@@ -123,14 +158,16 @@ export default function ScheduleManagement() {
   };
 
   return (
-    <TimeKeeperLayout
+    <Layout
       activeItem="schedule"
       pageTitle="Schedule Management"
       pageDescription="Manage and monitor bus schedules and timetables"
+      role="timeKeeper"
+
     >
       <div className="space-y-6">
         {/* Stats Cards */}
-        <ScheduleStatsCards />
+        <ScheduleStatsCards stats={scheduleStats} />
 
         {/* Search and Filters */}
         <ScheduleSearchFilters
@@ -148,7 +185,13 @@ export default function ScheduleManagement() {
 
         {/* Schedule Table */}
         <ScheduleTable
-          schedules={filteredSchedules}
+          schedules={paginatedSchedules}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
@@ -183,6 +226,6 @@ export default function ScheduleManagement() {
           </div>
         )}
       </div>
-    </TimeKeeperLayout>
+    </Layout>
   );
 }

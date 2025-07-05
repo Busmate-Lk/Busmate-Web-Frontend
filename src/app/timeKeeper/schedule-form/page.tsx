@@ -1,6 +1,6 @@
 "use client";
 
-import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
+// import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
 import { RouteInformationForm } from "@/components/timeKeeper/route-information-form";
 import { JourneyDetailsForm } from "@/components/timeKeeper/journey-details-form";
 import { TimeScheduleSection } from "@/components/timeKeeper/time-schedule-section";
@@ -10,6 +10,7 @@ import { ScheduleActionButtons } from "@/components/timeKeeper/schedule-action-b
 import { ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Layout } from "@/app/shared/layout";
 
 export default function ScheduleForm() {
   const router = useRouter();
@@ -123,10 +124,11 @@ export default function ScheduleForm() {
   const submitLabel = isEditMode ? "Update Schedule" : "Add Schedule";
 
   return (
-    <TimeKeeperLayout
+    <Layout
       activeItem="schedule"
       pageTitle={pageTitle}
       pageDescription={pageDescription}
+      role="timeKeeper"
     >
       <div className="space-y-6">
         {/* Back Button */}
@@ -191,6 +193,6 @@ export default function ScheduleForm() {
           submitLabel={submitLabel}
         />
       </div>
-    </TimeKeeperLayout>
+    </Layout>
   );
 }

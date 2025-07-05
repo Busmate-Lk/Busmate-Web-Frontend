@@ -1,6 +1,7 @@
 "use client";
 
-import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
+import { Layout } from "@/app/shared/layout";
+// import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
 import { ScheduleStatsCards } from "@/components/timeKeeper/schedule-stats-cards";
 import { Calendar, Clock, TrendingUp, AlertCircle } from "lucide-react";
 
@@ -64,10 +65,11 @@ export default function TimeKeeperDashboard() {
   ];
 
   return (
-    <TimeKeeperLayout
+    <Layout
       activeItem="dashboard"
       pageTitle="Dashboard"
       pageDescription="Overview of schedule management activities"
+      role="timeKeeper"
     >
       <div className="space-y-6">
         {/* Stats Cards */}
@@ -180,6 +182,6 @@ export default function TimeKeeperDashboard() {
           </div>
         </div>
       </div>
-    </TimeKeeperLayout>
+    </Layout>
   );
 }

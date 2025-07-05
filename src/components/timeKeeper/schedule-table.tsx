@@ -2,6 +2,7 @@
 
 import { Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
+import { Pagination } from "@/components/mot/pagination";
 
 interface Schedule {
   id: string;
@@ -17,12 +18,29 @@ interface Schedule {
 
 interface ScheduleTableProps {
   schedules: Schedule[];
+  currentPage?: number;
+  totalPages?: number;
+  totalItems?: number;
+  itemsPerPage?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string, name: string) => void;
 }
 
-export function ScheduleTable({ schedules, onView, onEdit, onDelete }: ScheduleTableProps) {
+export function ScheduleTable({ 
+  schedules, 
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onPageSizeChange,
+  onView, 
+  onEdit, 
+  onDelete 
+}: ScheduleTableProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {
@@ -65,7 +83,17 @@ export function ScheduleTable({ schedules, onView, onEdit, onDelete }: ScheduleT
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {schedules.map((schedule) => (
+            {schedules.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="text-gray-500">
+                    <p className="text-lg font-medium">No schedules found</p>
+                    <p className="text-sm">Try adjusting your search filters</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              schedules.map((schedule) => (
               <tr key={schedule.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
@@ -148,10 +176,23 @@ export function ScheduleTable({ schedules, onView, onEdit, onDelete }: ScheduleT
                   </div>
                 </td>
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
       </div>
+      
+      {/* Pagination Controls */}
+      {(currentPage && totalPages && totalItems && itemsPerPage && onPageChange) && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+        />
+      )}
     </div>
   );
 }
