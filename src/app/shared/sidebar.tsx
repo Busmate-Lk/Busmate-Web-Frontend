@@ -83,7 +83,7 @@ export function Sidebar({
     },
     {
       icon: Bus,
-      label: 'Bus Info',
+      label: 'Bus Information',
       active: activeItem === 'information',
       href: '/mot/bus-info',
     },
