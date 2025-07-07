@@ -1,5 +1,5 @@
-import { BusDetails } from "@/components/admin/bus-details"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { BusDetails } from "@/components/admin/shared"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function BusDetailsPage({
   params,
