@@ -116,7 +116,7 @@ export function NotificationDropdown() {
         </div>
 
         <div className="p-3 border-t border-slate-100">
-          <Link href="/admin/dashboard/notifications">
+          <Link href="/admin/notifications">
             <Button variant="ghost" className="w-full justify-between text-slate-600 hover:text-slate-900">
               View all notifications
               <ArrowRight className="h-4 w-4" />

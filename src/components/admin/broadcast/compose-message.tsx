@@ -23,7 +23,7 @@ export function ComposeMessage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" onClick={() => router.push("/admin/dashboard/broadcast/history")}>
+          <Button variant="ghost" size="sm" onClick={() => router.push("/admin/broadcast/history")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Messages
           </Button>

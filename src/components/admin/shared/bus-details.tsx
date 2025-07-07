@@ -148,7 +148,7 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href={`/admin/dashboard/users/fleet/${fleetId}`}>
+            <Link href={`/admin/users/fleet/${fleetId}`}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Fleet
             </Link>

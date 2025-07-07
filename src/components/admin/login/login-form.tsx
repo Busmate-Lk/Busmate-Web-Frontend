@@ -71,7 +71,7 @@ export function LoginForm() {
           </div>
 
           <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-            <Link href="/admin/dashboard">Sign In</Link>
+            <Link href="/admin">Sign In</Link>
           </Button>
         </form>
 

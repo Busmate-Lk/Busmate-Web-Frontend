@@ -67,11 +67,11 @@ export function MessageHistory() {
   const [showFilters, setShowFilters] = useState(false)
 
   const handleSendMessage = () => {
-    router.push("/admin/dashboard/broadcast/compose")
+    router.push("/admin/broadcast/compose")
   }
 
   const handleMessageClick = (messageId: number) => {
-    router.push(`/admin/dashboard/broadcast/message/${messageId}`)
+    router.push(`/admin/broadcast/message/${messageId}`)
   }
 
   return (

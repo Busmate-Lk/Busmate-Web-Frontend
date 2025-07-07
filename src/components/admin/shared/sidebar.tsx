@@ -8,27 +8,27 @@ import { Bus, LayoutDashboard, Users, MessageSquare, BarChart3, Settings, Chevro
 const navigation = [
   {
     name: "Dashboard",
-    href: "/admin/dashboard",
+    href: "/admin",
     icon: LayoutDashboard,
   },
   {
     name: "User Management",
-    href: "/admin/dashboard/users",
+    href: "/admin/users",
     icon: Users,
   },
   {
     name: "Broadcast Messaging",
-    href: "/admin/dashboard/broadcast/history",
+    href: "/admin/broadcast/history",
     icon: MessageSquare,
   },
   {
     name: "System Analytics",
-    href: "/admin/dashboard/analytics",
+    href: "/admin/analytics",
     icon: BarChart3,
   },
   {
     name: "System Settings",
-    href: "/admin/dashboard/settings",
+    href: "/admin/settings",
     icon: Settings,
   },
 ]
@@ -57,10 +57,11 @@ export function Sidebar() {
           {navigation.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href === "/admin/dashboard/broadcast/history" && pathname.startsWith("/admin/dashboard/broadcast")) ||
-              (item.href === "/admin/dashboard/users" && pathname.startsWith("/admin/dashboard/users")) ||
-              (item.href === "/admin/dashboard/analytics" && pathname.startsWith("/admin/dashboard/analytics")) ||
-              (item.href === "/admin/dashboard/settings" && pathname.startsWith("/admin/dashboard/settings"))
+              (item.href === "/admin" && pathname === "/admin") ||
+              (item.href === "/admin/broadcast/history" && pathname.startsWith("/admin/broadcast")) ||
+              (item.href === "/admin/users" && pathname.startsWith("/admin/users")) ||
+              (item.href === "/admin/analytics" && pathname.startsWith("/admin/analytics")) ||
+              (item.href === "/admin/settings" && pathname.startsWith("/admin/settings"))
 
             return (
               <Link

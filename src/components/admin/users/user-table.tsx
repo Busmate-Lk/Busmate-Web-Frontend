@@ -9,73 +9,73 @@ import { Eye, Edit, Ban } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const users = [
-	{
-		id: 1,
-		name: "Nimal Perera",
-		email: "nimal.perera@gmail.com",
-		type: "Passenger",
-		status: "Active",
-		lastLogin: "30 minutes ago",
-		avatar: "/avatars/nimal.png",
-	},
-	{
-		id: 2,
-		name: "Pradeep Kumara Silva",
-		email: "kumara.silva@slbus.lk",
-		type: "Conductor",
-		status: "Active",
-		lastLogin: "3 hours ago",
-		avatar: "/avatars/sunil.png",
-	},
-	{
-		id: 3,
-		name: "Lanka Express Transport (Pvt) Ltd",
-		email: "lankaxpress.transport@yahoo.com",
-		type: "Fleet",
-		status: "Suspended",
-		lastLogin: "2 days ago",
-		avatar: "/avatars/kumari.png",
-	},
-	{
-		id: 4,
-		name: "Chaminda Perera",
-		email: "chaminda.p@busmate.lk",
-		type: "Time Keeper",
-		status: "Active",
-		lastLogin: "1 hour ago",
-		avatar: "/avatars/ruwan.png",
-	},
-	{
-		id: 5,
-		name: "Dr. Samantha Perera",
-		email: "samantha.perera@mot.lk",
-		type: "MOT",
-		status: "Active",
-		lastLogin: "5 hours ago",
-		avatar: "/avatars/samanthi.png",
-	},
+  {
+    id: 1,
+    name: "Nimal Perera",
+    email: "nimal.perera@gmail.com",
+    type: "Passenger",
+    status: "Active",
+    lastLogin: "30 minutes ago",
+    avatar: "/avatars/nimal.png",
+  },
+  {
+    id: 2,
+    name: "Pradeep Kumara Silva",
+    email: "kumara.silva@slbus.lk",
+    type: "Conductor",
+    status: "Active",
+    lastLogin: "3 hours ago",
+    avatar: "/avatars/sunil.png",
+  },
+  {
+    id: 3,
+    name: "Lanka Express Transport (Pvt) Ltd",
+    email: "lankaxpress.transport@yahoo.com",
+    type: "Fleet",
+    status: "Suspended",
+    lastLogin: "2 days ago",
+    avatar: "/avatars/kumari.png",
+  },
+  {
+    id: 4,
+    name: "Chaminda Perera",
+    email: "chaminda.p@busmate.lk",
+    type: "Time Keeper",
+    status: "Active",
+    lastLogin: "1 hour ago",
+    avatar: "/avatars/ruwan.png",
+  },
+  {
+    id: 5,
+    name: "Dr. Samantha Perera",
+    email: "samantha.perera@mot.lk",
+    type: "MOT",
+    status: "Active",
+    lastLogin: "5 hours ago",
+    avatar: "/avatars/samanthi.png",
+  },
 ]
 
 export function UserTable() {
-	const router = useRouter()
+  const router = useRouter()
 
   const handleRowClick = (user: any) => {
     const userType = user.type.toLowerCase()
     switch (userType) {
       case "passenger":
-        router.push(`/admin/dashboard/users/passenger/${user.id}`)
+        router.push(`/admin/users/passenger/${user.id}`)
         break
       case "conductor":
-        router.push(`/admin/dashboard/users/conductor/${user.id}`)
+        router.push(`/admin/users/conductor/${user.id}`)
         break
       case "mot":
-        router.push(`/admin/dashboard/users/mot/${user.id}`)
+        router.push(`/admin/users/mot/${user.id}`)
         break
       case "time keeper":
-        router.push(`/admin/dashboard/users/timekeeper/${user.id}`)
+        router.push(`/admin/users/timekeeper/${user.id}`)
         break
       case "fleet":
-        router.push(`/admin/dashboard/users/fleet/${user.id}`)
+        router.push(`/admin/users/fleet/${user.id}`)
         break
       default:
         break

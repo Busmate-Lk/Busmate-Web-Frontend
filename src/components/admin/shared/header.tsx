@@ -69,7 +69,7 @@ export function Header({ title }: HeaderProps) {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuItem asChild className="cursor-pointer">
-                                <Link href="/admin/dashboard/profile" className="flex items-center space-x-2 p-2 rounded-md">
+                                <Link href="/admin/profile" className="flex items-center space-x-2 p-2 rounded-md">
                                     <User className="h-4 w-4" />
                                     <span>Profile Settings</span>
                                 </Link>

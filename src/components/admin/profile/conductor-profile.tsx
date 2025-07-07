@@ -16,7 +16,7 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/admin/dashboard/users">
+            <Link href="/admin/users">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Link>
