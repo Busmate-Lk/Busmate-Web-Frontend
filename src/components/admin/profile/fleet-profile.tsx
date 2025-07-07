@@ -68,7 +68,7 @@ export function FleetProfile({ userId }: FleetProfileProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard/users">
+            <Link href="/admin/dashboard/users">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Link>
@@ -288,7 +288,7 @@ export function FleetProfile({ userId }: FleetProfileProps) {
                   <TableRow
                     key={bus.id}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => (window.location.href = `/dashboard/users/fleet/${userId}/bus/${bus.id}`)}
+                    onClick={() => (window.location.href = `/admin/dashboard/users/fleet/${userId}/bus/${bus.id}`)}
                   >
                     <TableCell className="font-medium text-blue-600">{bus.busNumber}</TableCell>
                     <TableCell>
@@ -335,7 +335,7 @@ export function FleetProfile({ userId }: FleetProfileProps) {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation()
-                          window.location.href = `/dashboard/users/fleet/${userId}/bus/${bus.id}`
+                          window.location.href = `/admin/dashboard/users/fleet/${userId}/bus/${bus.id}`
                         }}
                       >
                         <Eye className="h-4 w-4" />

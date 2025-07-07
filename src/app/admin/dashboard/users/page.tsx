@@ -1,7 +1,5 @@
-import { PageHeader } from "@/components/admin/page-header"
-import { UserStats } from "@/components/admin/user-stats"
-import { UserFilters } from "@/components/admin/user-filters"
-import { UserTable } from "@/components/admin/user-table"
+import { Header } from "@/components/admin/shared"
+import { UserStats, UserFilters, UserTable } from "@/components/admin/users"
 import { Button } from "@/components/admin/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
@@ -9,12 +7,7 @@ import Link from "next/link"
 export default function UsersPage() {
   return (
     <div className="p-6">
-      <PageHeader
-        title="User Management"
-        subtitle="Manage system users and their permissions"
-        showSearch={true}
-        showPerformanceIndicator={false}
-      />
+      <Header title="User Management" />
       <UserStats />
 
       {/* Add User Button */}

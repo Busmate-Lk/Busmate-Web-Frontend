@@ -1,5 +1,5 @@
-import { FleetProfile } from "@/components/admin/fleet-profile"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { FleetProfile } from "@/components/admin/profile"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function FleetProfilePage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [

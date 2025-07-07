@@ -1,7 +1,7 @@
 "use client"
 
-import { PageHeader } from "@/components/admin/page-header"
-import { MessageHistory } from "@/components/admin/message-history"
+import { Header } from "@/components/admin/shared"
+import { MessageHistory } from "@/components/admin/broadcast"
 import { Button } from "@/components/admin/ui/button"
 import { Send } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -15,12 +15,7 @@ export default function MessageHistoryPage() {
 
   return (
     <div className="p-6">
-      <PageHeader
-        title="Message History"
-        subtitle="View and manage all broadcast messages"
-        showSearch={true}
-        showPerformanceIndicator={false}
-      />
+      <Header title="Message History" />
 
       {/* Send Message Button */}
       <div className="flex justify-end mb-6">

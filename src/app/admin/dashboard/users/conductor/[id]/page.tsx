@@ -1,5 +1,5 @@
-import { ConductorProfile } from "@/components/admin/conductor-profile"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { ConductorProfile } from "@/components/admin/profile"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function ConductorProfilePage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [

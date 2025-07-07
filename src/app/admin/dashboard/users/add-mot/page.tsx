@@ -1,6 +1,5 @@
-import { PageHeader } from "@/components/admin/page-header"
-import { AddMotForm } from "@/components/admin/add-mot-form"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { Header, NavigationBreadcrumb } from "@/components/admin/shared"
+import { AddMotForm } from "@/components/admin/users"
 import { Button } from "@/components/admin/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -18,20 +17,7 @@ export default function AddMotUserPage() {
         <NavigationBreadcrumb items={breadcrumbItems} />
       </div>
       <div className="p-6">
-        <PageHeader
-          title="Add MoT User"
-          subtitle="Create a new Ministry of Transport user account"
-          showSearch={false}
-          showPerformanceIndicator={false}
-          actions={
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/admin/dashboard/users">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Users
-              </Link>
-            </Button>
-          }
-        />
+        <Header title="Add MoT User" />
         <AddMotForm />
       </div>
     </div>

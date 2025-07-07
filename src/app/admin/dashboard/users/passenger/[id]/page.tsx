@@ -1,5 +1,5 @@
-import { PassengerProfile } from "@/components/admin/passenger-profile"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { PassengerProfile } from "@/components/admin/profile"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function PassengerProfilePage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [

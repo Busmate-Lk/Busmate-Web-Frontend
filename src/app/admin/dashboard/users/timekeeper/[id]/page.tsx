@@ -1,5 +1,5 @@
-import { TimekeeperProfile } from "@/components/admin/timekeeper-profile"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { TimekeeperProfile } from "@/components/admin/profile"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function TimekeeperProfilePage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [

@@ -54,7 +54,7 @@ export function AddMotForm() {
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">
             <Button variant="ghost" size="sm" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-              <Link href="/dashboard/users">
+              <Link href="/admin/dashboard/users">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to User Management
               </Link>
@@ -520,7 +520,7 @@ export function AddMotForm() {
             className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
             asChild
           >
-            <Link href="/dashboard/users">
+            <Link href="/admin/dashboard/users">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Cancel
             </Link>

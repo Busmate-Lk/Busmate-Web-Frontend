@@ -1,17 +1,10 @@
-import { PageHeader } from "@/components/admin/page-header"
-import { StatsCards } from "@/components/admin/stats-cards"
-import { QuickActions } from "@/components/admin/quick-actions"
-import { ActivityFeed } from "@/components/admin/activity-feed"
+import { Header } from "@/components/admin/shared"
+import { StatsCards, QuickActions, ActivityFeed } from "@/components/admin/dashboard"
 
 export default function DashboardPage() {
   return (
     <div className="p-0">
-      <PageHeader
-        title="System Dashboard"
-        subtitle="Welcome back, manage your bus transportation system"
-        showSearch={true}
-        showPerformanceIndicator={true}
-      />
+      <Header title="System Dashboard" />
 
       <div className="p-6">
         <StatsCards />

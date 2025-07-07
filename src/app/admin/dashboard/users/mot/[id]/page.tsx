@@ -1,5 +1,5 @@
-import { MotAdminProfile } from "@/components/admin/mot-admin-profile"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { MotAdminProfile } from "@/components/admin/profile"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function MotAdminProfilePage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [

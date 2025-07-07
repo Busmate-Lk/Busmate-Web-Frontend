@@ -1,5 +1,5 @@
-import { MessageDetail } from "@/components/admin/message-detail"
-import { NavigationBreadcrumb } from "@/components/admin/navigation-breadcrumb"
+import { MessageDetail } from "@/components/admin/broadcast"
+import { NavigationBreadcrumb } from "@/components/admin/shared"
 
 export default function MessageDetailPage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [
