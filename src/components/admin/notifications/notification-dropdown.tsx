@@ -5,6 +5,7 @@ import { Button } from "@/components/admin/ui/button"
 import { Badge } from "@/components/admin/ui/badge"
 import { Bell, AlertTriangle, Info, CheckCircle, Clock, ArrowRight } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/admin/ui/dropdown-menu"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 const notifications = [
@@ -35,8 +36,14 @@ const notifications = [
 ]
 
 export function NotificationDropdown() {
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const unreadCount = notifications.filter((n) => !n.read).length
+
+  const handleNotificationClick = (notificationId: number) => {
+    setIsOpen(false)
+    router.push(`/admin/notifications/detail/${notificationId}`)
+  }
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -90,6 +97,7 @@ export function NotificationDropdown() {
               key={notification.id}
               className={`p-4 border-b border-slate-50 hover:bg-slate-25 transition-colors cursor-pointer ${!notification.read ? "bg-blue-25" : ""
                 }`}
+              onClick={() => handleNotificationClick(notification.id)}
             >
               <div className="flex items-start space-x-3">
                 <div className={`p-2 rounded-lg ${getNotificationBg(notification.type)}`}>
@@ -116,7 +124,7 @@ export function NotificationDropdown() {
         </div>
 
         <div className="p-3 border-t border-slate-100">
-          <Link href="/admin/notifications">
+          <Link href="/admin/notifications/received">
             <Button variant="ghost" className="w-full justify-between text-slate-600 hover:text-slate-900">
               View all notifications
               <ArrowRight className="h-4 w-4" />

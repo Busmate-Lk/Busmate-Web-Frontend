@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/admin/ui/card"
 import { Badge } from "@/components/admin/ui/badge"
 import { ArrowLeft, Search, Filter, Bell, AlertTriangle, Info, CheckCircle, Clock } from "lucide-react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 const notifications = [
@@ -58,9 +59,14 @@ const notifications = [
 ]
 
 export function NotificationPanel() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("all")
   const [filterPriority, setFilterPriority] = useState("all")
+
+  const handleNotificationClick = (notificationId: number) => {
+    router.push(`/admin/notifications/detail/${notificationId}`)
+  }
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -155,7 +161,11 @@ export function NotificationPanel() {
       {/* Notifications List */}
       <div className="space-y-4">
         {notifications.map((notification) => (
-          <Card key={notification.id} className={`${!notification.read ? "border-l-4 border-l-blue-500" : ""}`}>
+          <Card
+            key={notification.id}
+            className={`${!notification.read ? "border-l-4 border-l-blue-500" : ""} cursor-pointer hover:shadow-md transition-shadow`}
+            onClick={() => handleNotificationClick(notification.id)}
+          >
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
@@ -184,11 +194,25 @@ export function NotificationPanel() {
                     </div>
                     <div className="flex items-center space-x-2">
                       {!notification.read && (
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            // Handle mark as read
+                          }}
+                        >
                           Mark as Read
                         </Button>
                       )}
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleNotificationClick(notification.id)
+                        }}
+                      >
                         View Details
                       </Button>
                     </div>

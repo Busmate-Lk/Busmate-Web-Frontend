@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Bus, LayoutDashboard, Users, MessageSquare, BarChart3, Settings, ChevronRight } from "lucide-react"
+import { Bus, LayoutDashboard, Users, MessageSquare, BarChart3, Settings, ChevronRight, FileText } from "lucide-react"
 
 const navigation = [
   {
@@ -17,14 +17,19 @@ const navigation = [
     icon: Users,
   },
   {
-    name: "Broadcast Messaging",
-    href: "/admin/broadcast/history",
+    name: "Notification Center",
+    href: "/admin/notifications",
     icon: MessageSquare,
   },
   {
-    name: "System Analytics",
-    href: "/admin/analytics",
+    name: "System Monitoring",
+    href: "/admin/monitoring",
     icon: BarChart3,
+  },
+  {
+    name: "System Logs",
+    href: "/admin/logs",
+    icon: FileText,
   },
   {
     name: "System Settings",
@@ -58,9 +63,10 @@ export function Sidebar() {
             const isActive =
               pathname === item.href ||
               (item.href === "/admin" && pathname === "/admin") ||
-              (item.href === "/admin/broadcast/history" && pathname.startsWith("/admin/broadcast")) ||
+              (item.href === "/admin/notifications" && pathname.startsWith("/admin/notifications")) ||
               (item.href === "/admin/users" && pathname.startsWith("/admin/users")) ||
-              (item.href === "/admin/analytics" && pathname.startsWith("/admin/analytics")) ||
+              (item.href === "/admin/monitoring" && pathname.startsWith("/admin/monitoring")) ||
+              (item.href === "/admin/logs" && pathname.startsWith("/admin/logs")) ||
               (item.href === "/admin/settings" && pathname.startsWith("/admin/settings"))
 
             return (

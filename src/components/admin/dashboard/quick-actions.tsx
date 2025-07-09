@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card"
 import { Button } from "@/components/admin/ui/button"
-import { Radio, BarChart3, Users, MessageSquare, Settings, Plus } from "lucide-react"
+import { Radio, BarChart3, Users, MessageSquare, Settings, Plus, FileText } from "lucide-react"
 import Link from "next/link"
 
 const actions = [
@@ -19,11 +19,11 @@ const actions = [
     href: "/admin/users/add-mot",
   },
   {
-    title: "View Analytics",
-    description: "System performance data",
+    title: "System Monitoring",
+    description: "Monitor system health",
     icon: BarChart3,
     color: "bg-purple-500 hover:bg-purple-600",
-    href: "/admin/analytics",
+    href: "/admin/monitoring",
   },
   {
     title: "Manage Users",
@@ -37,7 +37,14 @@ const actions = [
     description: "View sent messages",
     icon: MessageSquare,
     color: "bg-indigo-500 hover:bg-indigo-600",
-    href: "/admin/broadcast/history",
+    href: "/admin/notifications/sent",
+  },
+  {
+    title: "System Logs",
+    description: "View system logs",
+    icon: FileText,
+    color: "bg-slate-500 hover:bg-slate-600",
+    href: "/admin/logs",
   },
   {
     title: "System Settings",

@@ -7,7 +7,7 @@ import Link from "next/link"
 export default function ComposeMessagePage() {
   const breadcrumbItems = [
     { label: "Dashboard", href: "/admin" },
-    { label: "Broadcast Messaging", href: "/admin/broadcast/history" },
+    { label: "Sent Notifications", href: "/admin/notifications/sent" },
     { label: "Compose Message" },
   ]
 

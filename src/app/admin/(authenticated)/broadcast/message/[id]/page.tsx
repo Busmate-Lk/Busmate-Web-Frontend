@@ -4,7 +4,7 @@ import { NavigationBreadcrumb } from "@/components/admin/shared"
 export default function MessageDetailPage({ params }: { params: { id: string } }) {
   const breadcrumbItems = [
     { label: "Dashboard", href: "/admin" },
-    { label: "Broadcast Messaging", href: "/admin/broadcast/history" },
+    { label: "Sent Notifications", href: "/admin/notifications/sent" },
     { label: "Message Details" },
   ]
 

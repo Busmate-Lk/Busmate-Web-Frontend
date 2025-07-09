@@ -21,6 +21,10 @@ import {
   AlertTriangle,
   CheckCircle,
   Upload,
+  Wrench,
+  Server,
+  Zap,
+  Users,
 } from "lucide-react"
 
 const backupHistory = [
@@ -76,6 +80,14 @@ export function SystemSettings() {
           <span>General Settings</span>
         </button>
         <button
+          onClick={() => setActiveTab("maintenance")}
+          className={`flex items-center space-x-2 pb-2 ${activeTab === "maintenance" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
+            }`}
+        >
+          <Wrench className="h-4 w-4" />
+          <span>Maintenance</span>
+        </button>
+        <button
           onClick={() => setActiveTab("backup")}
           className={`flex items-center space-x-2 pb-2 ${activeTab === "backup" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
             }`}
@@ -110,23 +122,142 @@ export function SystemSettings() {
             </div>
           </div>
 
-          {/* Maintenance Windows */}
+          {/* Security Settings */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Maintenance Windows</h3>
+            <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="startTime">Start Time</Label>
-                <div className="relative">
-                  <Input id="startTime" defaultValue="02:00" />
-                  <Clock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                </div>
+                <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
+                <Input id="sessionTimeout" type="number" defaultValue="60" />
               </div>
               <div>
-                <Label htmlFor="endTime">End Time</Label>
-                <div className="relative">
-                  <Input id="endTime" defaultValue="04:00" />
-                  <Clock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                <Label htmlFor="passwordExpiry">Password Expiry (days)</Label>
+                <Input id="passwordExpiry" type="number" defaultValue="90" />
+              </div>
+            </div>
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="twoFactor" className="text-base font-medium">
+                    Two-Factor Authentication
+                  </Label>
+                  <p className="text-sm text-gray-600">Require 2FA for admin accounts</p>
                 </div>
+                <Switch id="twoFactor" />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="loginAttempts" className="text-base font-medium">
+                    Lock Account After Failed Attempts
+                  </Label>
+                  <p className="text-sm text-gray-600">Lock accounts after 5 failed login attempts</p>
+                </div>
+                <Switch id="loginAttempts" defaultChecked />
+              </div>
+            </div>
+          </div>
+
+          {/* API Configuration */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">API Configuration</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="rateLimitPerHour">Rate Limit (requests/hour)</Label>
+                <Input id="rateLimitPerHour" type="number" defaultValue="1000" />
+              </div>
+              <div>
+                <Label htmlFor="apiTimeout">API Timeout (seconds)</Label>
+                <Input id="apiTimeout" type="number" defaultValue="30" />
+              </div>
+            </div>
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="apiLogging" className="text-base font-medium">
+                    API Request Logging
+                  </Label>
+                  <p className="text-sm text-gray-600">Log all API requests for monitoring</p>
+                </div>
+                <Switch id="apiLogging" defaultChecked />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="corsEnabled" className="text-base font-medium">
+                    CORS Protection
+                  </Label>
+                  <p className="text-sm text-gray-600">Enable Cross-Origin Resource Sharing protection</p>
+                </div>
+                <Switch id="corsEnabled" defaultChecked />
+              </div>
+            </div>
+          </div>
+
+          {/* Data Retention */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">Data Retention</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="logRetention">System Log Retention (days)</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="30 days" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7">7 days</SelectItem>
+                    <SelectItem value="30">30 days</SelectItem>
+                    <SelectItem value="90">90 days</SelectItem>
+                    <SelectItem value="365">1 year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="userActivityRetention">User Activity Retention (days)</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="90 days" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="30">30 days</SelectItem>
+                    <SelectItem value="90">90 days</SelectItem>
+                    <SelectItem value="365">1 year</SelectItem>
+                    <SelectItem value="unlimited">Unlimited</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Settings */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">Performance Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="cacheExpiry">Cache Expiry (minutes)</Label>
+                <Input id="cacheExpiry" type="number" defaultValue="15" />
+              </div>
+              <div>
+                <Label htmlFor="maxConnections">Max Database Connections</Label>
+                <Input id="maxConnections" type="number" defaultValue="100" />
+              </div>
+            </div>
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="compressionEnabled" className="text-base font-medium">
+                    Response Compression
+                  </Label>
+                  <p className="text-sm text-gray-600">Enable GZIP compression for API responses</p>
+                </div>
+                <Switch id="compressionEnabled" defaultChecked />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="cachingEnabled" className="text-base font-medium">
+                    Aggressive Caching
+                  </Label>
+                  <p className="text-sm text-gray-600">Enable aggressive caching for better performance</p>
+                </div>
+                <Switch id="cachingEnabled" defaultChecked />
               </div>
             </div>
           </div>
@@ -161,6 +292,209 @@ export function SystemSettings() {
             <Button variant="outline">Cancel</Button>
             <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
           </div>
+        </div>
+      )}
+
+      {activeTab === "maintenance" && (
+        <div className="space-y-6">
+          {/* System Status */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Server className="h-5 w-5 text-green-600 mr-2" />
+                System Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-green-700">System Health</p>
+                      <p className="text-lg font-semibold text-green-900">Operational</p>
+                    </div>
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-blue-700">Active Sessions</p>
+                      <p className="text-lg font-semibold text-blue-900">342</p>
+                    </div>
+                    <Users className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-purple-700">Uptime</p>
+                      <p className="text-lg font-semibold text-purple-900">99.9%</p>
+                    </div>
+                    <Zap className="h-8 w-8 text-purple-600" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Maintenance Windows */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Maintenance Windows</CardTitle>
+                <p className="text-sm text-gray-600">Configure scheduled maintenance periods</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="startTime">Start Time</Label>
+                    <div className="relative">
+                      <Input id="startTime" defaultValue="02:00" />
+                      <Clock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="endTime">End Time</Label>
+                    <div className="relative">
+                      <Input id="endTime" defaultValue="04:00" />
+                      <Clock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="maintenanceFreq">Maintenance Frequency</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Weekly" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="autoMaintenance" className="text-base font-medium">
+                      Automatic Maintenance
+                    </Label>
+                    <p className="text-sm text-gray-600">Enable scheduled maintenance tasks</p>
+                  </div>
+                  <Switch id="autoMaintenance" defaultChecked />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="notifyMaintenance" className="text-base font-medium">
+                      Notify Users
+                    </Label>
+                    <p className="text-sm text-gray-600">Send notifications before maintenance</p>
+                  </div>
+                  <Switch id="notifyMaintenance" defaultChecked />
+                </div>
+
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Save Maintenance Settings
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* System Maintenance Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle>System Maintenance Actions</CardTitle>
+                <p className="text-sm text-gray-600">Perform system maintenance tasks</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Database className="h-4 w-4 mr-2" />
+                    Database Optimization
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <HardDrive className="h-4 w-4 mr-2" />
+                    Clear System Cache
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Restart Services
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Security Scan
+                  </Button>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Emergency Actions</h4>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start text-orange-600 border-orange-200">
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Enable Maintenance Mode
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start text-red-600 border-red-200">
+                      <Zap className="h-4 w-4 mr-2" />
+                      Emergency Shutdown
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Maintenance History */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Maintenance Activities</CardTitle>
+              <p className="text-sm text-gray-600">History of maintenance tasks and their status</p>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Task</TableHead>
+                    <TableHead>Date & Time</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Details</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">Database Optimization</TableCell>
+                    <TableCell>2024-01-15 02:15</TableCell>
+                    <TableCell>12 min</TableCell>
+                    <TableCell>
+                      <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                    </TableCell>
+                    <TableCell>Optimized 15 tables, reclaimed 2.3GB</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">System Cache Clear</TableCell>
+                    <TableCell>2024-01-14 02:00</TableCell>
+                    <TableCell>3 min</TableCell>
+                    <TableCell>
+                      <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                    </TableCell>
+                    <TableCell>Cleared 890MB cache data</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Security Scan</TableCell>
+                    <TableCell>2024-01-13 03:30</TableCell>
+                    <TableCell>25 min</TableCell>
+                    <TableCell>
+                      <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>
+                    </TableCell>
+                    <TableCell>2 minor vulnerabilities found</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
       )}
 
