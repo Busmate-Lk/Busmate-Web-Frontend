@@ -101,17 +101,12 @@ export default function RoutePermitDetails() {
       pageDescription="View detailed information about the route permit"
     >
       <div className="space-y-6">
-        {/* Back Button */}
-        <button
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-          onClick={() => router.push("/mot/busPermits")}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Permit Management
-        </button>
-
         {/* Header and Basic Info */}
-        <RoutePermitHeader permitInfo={permitInfo} onEdit={handleEdit} />
+        <RoutePermitHeader 
+          permitInfo={permitInfo} 
+          onEdit={handleEdit} 
+          onBack={() => router.push("/mot/bus-permits")}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Route Map */}
