@@ -9,6 +9,17 @@ interface HeaderProps{
 export function Header({pageTitle,pageDescription}:HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) {
+      return "Good morning"
+    } else if (hour < 17) {
+      return "Good afternoon"
+    } else {
+      return "Good evening"
+    }
+  }
+
   return (
     <div className="bg-white border-b border-gray-200 px-6 py-4 h-20 flex items-center">
       <div className="flex items-center justify-between w-full">
@@ -20,7 +31,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                 </>
               ) : (
                 <>
-                  <h1 className="text-2xl font-bold text-gray-900">Good morning, Admin!</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">{getGreeting()}, Admin!</h1>
                   <p className="text-slate-600">Welcome back to BUSMATE LK Transportation Dashboard</p>
                 </>
               )}
