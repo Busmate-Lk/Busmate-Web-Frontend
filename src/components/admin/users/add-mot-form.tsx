@@ -73,8 +73,8 @@ export function AddMotForm() {
           {/* Main Form */}
           <div className="xl:col-span-3 space-y-8">
             {/* Personal Information */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <User className="h-5 w-5 text-blue-600" />
@@ -172,8 +172,8 @@ export function AddMotForm() {
             </Card>
 
             {/* Ministry Details */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-green-100 rounded-lg">
                     <Building className="h-5 w-5 text-green-600" />
@@ -271,8 +271,8 @@ export function AddMotForm() {
             </Card>
 
             {/* System Access & Permissions */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-purple-100 rounded-lg">
                     <Shield className="h-5 w-5 text-purple-600" />
@@ -288,7 +288,7 @@ export function AddMotForm() {
                   <div>
                     <Label className="text-base font-medium text-gray-900 mb-4 block">Access Level</Label>
                     <RadioGroup value={accessLevel} onValueChange={setAccessLevel} className="space-y-4">
-                      <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start space-x-3 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
                         <RadioGroupItem value="administrator" id="administrator" className="mt-1" />
                         <div className="flex-1">
                           <Label htmlFor="administrator" className="font-medium text-gray-900 cursor-pointer">
@@ -313,7 +313,7 @@ export function AddMotForm() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start space-x-3 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
                         <RadioGroupItem value="timekeeper" id="timekeeper" className="mt-1" />
                         <div className="flex-1">
                           <Label htmlFor="timekeeper" className="font-medium text-gray-900 cursor-pointer">
@@ -334,7 +334,7 @@ export function AddMotForm() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start space-x-3 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
                         <RadioGroupItem value="inspector" id="inspector" className="mt-1" />
                         <div className="flex-1">
                           <Label htmlFor="inspector" className="font-medium text-gray-900 cursor-pointer">
@@ -362,8 +362,8 @@ export function AddMotForm() {
             </Card>
 
             {/* Account Setup */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-orange-100 rounded-lg">
                     <Key className="h-5 w-5 text-orange-600" />
@@ -401,7 +401,7 @@ export function AddMotForm() {
                       className="h-11"
                     />
                   </div>
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
                     <div>
                       <Label htmlFor="twoFactor" className="text-sm font-medium text-gray-900">
                         Two-Factor Authentication
@@ -414,7 +414,7 @@ export function AddMotForm() {
                       onCheckedChange={(checked) => handleInputChange("twoFactor", checked)}
                     />
                   </div>
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
                     <div>
                       <Label htmlFor="accountStatus" className="text-sm font-medium text-gray-900">
                         Account Status
@@ -444,8 +444,8 @@ export function AddMotForm() {
           {/* User Preview Sidebar */}
           <div className="xl:col-span-1">
             <div className="sticky top-6">
-              <Card className="shadow-sm border-gray-200">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
                   <CardTitle className="text-lg text-center">User Preview</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 text-center space-y-6">
@@ -514,7 +514,7 @@ export function AddMotForm() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+        <div className="flex justify-between items-center mt-8 pt-6 bg-gradient-to-r from-gray-50 to-white rounded-lg p-6 shadow-sm">
           <Button
             variant="outline"
             className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"

@@ -114,7 +114,7 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="sm" asChild>
+                    <Button variant="ghost" size="sm" asChild className="shadow-sm">
                         <Link href="/admin/notifications/received">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Notifications
@@ -123,19 +123,19 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                 </div>
                 <div className="flex items-center space-x-2">
                     {!notification.read && (
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="shadow-sm">
                             Mark as Read
                         </Button>
                     )}
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="shadow-sm">
                         Archive
                     </Button>
                 </div>
             </div>
 
             {/* Notification Detail Card */}
-            <Card>
-                <CardContent className="p-8">
+            <Card className="shadow-lg">
+                <CardContent className="p-8 bg-gradient-to-br from-white to-gray-50/30">
                     {/* Title and Icon */}
                     <div className="flex items-start space-x-4 mb-6">
                         <div className="flex-shrink-0 mt-1">
@@ -154,13 +154,13 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                                         <Badge className={getPriorityBadge(notification.priority)}>
                                             {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)} Priority
                                         </Badge>
-                                        <Badge variant="outline">
+                                        <Badge variant="outline" className="shadow-sm">
                                             {notification.category}
                                         </Badge>
                                     </div>
                                 </div>
                                 {!notification.read && (
-                                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse shadow-sm"></div>
                                 )}
                             </div>
                         </div>
@@ -169,54 +169,56 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                     {/* Message Content */}
                     <div className="mb-8">
                         <h3 className="text-lg font-semibold text-gray-900 mb-3">Message</h3>
-                        <p className="text-gray-700 leading-relaxed mb-4">
-                            {notification.message}
-                        </p>
+                        <div className="bg-white rounded-lg p-4 shadow-sm">
+                            <p className="text-gray-700 leading-relaxed mb-4">
+                                {notification.message}
+                            </p>
 
-                        {notification.details && (
-                            <>
-                                <h4 className="text-md font-semibold text-gray-900 mb-2">Additional Details</h4>
-                                <p className="text-gray-600 leading-relaxed">
-                                    {notification.details}
-                                </p>
-                            </>
-                        )}
+                            {notification.details && (
+                                <>
+                                    <h4 className="text-md font-semibold text-gray-900 mb-2">Additional Details</h4>
+                                    <p className="text-gray-600 leading-relaxed">
+                                        {notification.details}
+                                    </p>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     {/* Metadata */}
-                    <div className="border-t pt-6">
+                    <div className="border-t border-gray-100 pt-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Notification Information</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
-                                <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm">
                                     <Calendar className="h-5 w-5 text-gray-500" />
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Date & Time</p>
+                                        <p className="text-sm font-semibold text-gray-900">Date & Time</p>
                                         <p className="text-sm text-gray-600">{notification.date}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm">
                                     <Clock className="h-5 w-5 text-gray-500" />
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Received</p>
+                                        <p className="text-sm font-semibold text-gray-900">Received</p>
                                         <p className="text-sm text-gray-600">{notification.time}</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm">
                                     <User className="h-5 w-5 text-gray-500" />
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Sender</p>
+                                        <p className="text-sm font-semibold text-gray-900">Sender</p>
                                         <p className="text-sm text-gray-600">{notification.sender}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm">
                                     <div className="h-5 w-5 flex items-center justify-center">
                                         <div className={`h-3 w-3 rounded-full ${notification.read ? 'bg-gray-400' : 'bg-blue-500'}`}></div>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Status</p>
+                                        <p className="text-sm font-semibold text-gray-900">Status</p>
                                         <p className="text-sm text-gray-600">{notification.read ? 'Read' : 'Unread'}</p>
                                     </div>
                                 </div>

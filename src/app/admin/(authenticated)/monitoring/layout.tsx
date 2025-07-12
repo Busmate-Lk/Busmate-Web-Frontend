@@ -27,30 +27,40 @@ export default function MonitoringLayout({
             <NavigationBreadcrumb items={breadcrumbItems} />
             <Header title="System Monitoring" />
 
-            <div className="bg-white rounded-lg shadow-sm border">
-                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                    <div className="border-b px-6 py-4">
-                        <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="api-health" className="flex items-center gap-2">
-                                <Activity className="h-4 w-4" />
-                                API Health
-                            </TabsTrigger>
-                            <TabsTrigger value="microservice-uptime" className="flex items-center gap-2">
-                                <Server className="h-4 w-4" />
-                                Microservice Uptime
-                            </TabsTrigger>
-                            <TabsTrigger value="resource-usage" className="flex items-center gap-2">
-                                <BarChart3 className="h-4 w-4" />
-                                Resource Usage
-                            </TabsTrigger>
-                        </TabsList>
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                <div className="bg-white rounded-lg shadow-lg px-6 py-4 bg-gradient-to-r from-gray-50 to-white mb-6">
+                    <div className="flex items-center space-x-8">
+                        <button
+                            onClick={() => handleTabChange("api-health")}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "api-health" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            <Activity className="h-4 w-4" />
+                            <span>API Health</span>
+                        </button>
+                        <button
+                            onClick={() => handleTabChange("microservice-uptime")}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "microservice-uptime" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            <Server className="h-4 w-4" />
+                            <span>Microservice Uptime</span>
+                        </button>
+                        <button
+                            onClick={() => handleTabChange("resource-usage")}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "resource-usage" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            <BarChart3 className="h-4 w-4" />
+                            <span>Resource Usage</span>
+                        </button>
                     </div>
+                </div>
 
-                    <div className="p-6">
-                        {children}
-                    </div>
-                </Tabs>
-            </div>
+                <div>
+                    {children}
+                </div>
+            </Tabs>
         </div>
     )
 }

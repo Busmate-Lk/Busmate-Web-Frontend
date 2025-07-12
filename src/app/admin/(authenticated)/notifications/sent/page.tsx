@@ -16,7 +16,7 @@ export default function SentNotificationsPage() {
         <div className="space-y-6">
             {/* Send Message Button */}
             <div className="flex justify-end">
-                <Button onClick={handleSendMessage} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={handleSendMessage} className="bg-blue-600 hover:bg-blue-700 shadow-sm">
                     <Send className="h-4 w-4 mr-2" />
                     Send New Message
                 </Button>

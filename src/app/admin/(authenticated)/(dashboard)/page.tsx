@@ -10,9 +10,9 @@ export default function DashboardPage() {
         <StatsCards />
         {/* User Growth Chart */}
         <div className="mt-8 mb-8">
-          <div className="bg-white rounded-lg shadow-sm borderborder-[hsl(214.3,31.8%,91.4%)] border-l-4 border-l-purple-500 p-6">
+          <div className="bg-white rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-white p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">User Growth Trends</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center shadow-inner">
               <p className="text-gray-500">Chart placeholder - User growth over time</p>
             </div>
           </div>

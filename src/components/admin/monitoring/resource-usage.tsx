@@ -109,7 +109,7 @@ export function ResourceUsage() {
                     <h2 className="text-lg font-semibold text-gray-900">Resource Usage Dashboard</h2>
                     <p className="text-sm text-gray-600">Monitor CPU, memory, disk, and network usage across all servers</p>
                 </div>
-                <Button onClick={handleRefresh} variant="outline" size="sm">
+                <Button onClick={handleRefresh} variant="outline" size="sm" className="shadow-sm">
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Refresh
                 </Button>
@@ -117,12 +117,12 @@ export function ResourceUsage() {
 
             {/* System Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-blue-50 to-white">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                                 <Cpu className="h-5 w-5 text-blue-600" />
-                                <span className="text-sm font-medium">CPU Usage</span>
+                                <span className="text-sm font-semibold">CPU Usage</span>
                             </div>
                             <Badge className={getUsageBadge(systemOverview.totalCpu)}>
                                 {systemOverview.totalCpu}%
@@ -132,12 +132,12 @@ export function ResourceUsage() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-green-50 to-white">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                                 <HardDrive className="h-5 w-5 text-green-600" />
-                                <span className="text-sm font-medium">Memory Usage</span>
+                                <span className="text-sm font-semibold">Memory Usage</span>
                             </div>
                             <Badge className={getUsageBadge(systemOverview.totalMemory)}>
                                 {systemOverview.totalMemory}%
@@ -147,12 +147,12 @@ export function ResourceUsage() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-purple-50 to-white">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                                 <Database className="h-5 w-5 text-purple-600" />
-                                <span className="text-sm font-medium">Disk Usage</span>
+                                <span className="text-sm font-semibold">Disk Usage</span>
                             </div>
                             <Badge className={getUsageBadge(systemOverview.totalDisk)}>
                                 {systemOverview.totalDisk}%
@@ -162,20 +162,20 @@ export function ResourceUsage() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-orange-50 to-white">
                         <div className="flex items-center space-x-2 mb-2">
                             <Wifi className="h-5 w-5 text-orange-600" />
-                            <span className="text-sm font-medium">Network</span>
+                            <span className="text-sm font-semibold">Network</span>
                         </div>
                         <div className="space-y-1">
                             <div className="flex justify-between text-xs">
                                 <span>In:</span>
-                                <span className="font-medium">{systemOverview.totalNetwork.in}</span>
+                                <span className="font-semibold">{systemOverview.totalNetwork.in}</span>
                             </div>
                             <div className="flex justify-between text-xs">
                                 <span>Out:</span>
-                                <span className="font-medium">{systemOverview.totalNetwork.out}</span>
+                                <span className="font-semibold">{systemOverview.totalNetwork.out}</span>
                             </div>
                         </div>
                     </CardContent>
@@ -184,28 +184,28 @@ export function ResourceUsage() {
 
             {/* Additional Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-indigo-50 to-white">
                         <div className="text-center">
                             <p className="text-2xl font-bold text-gray-900">{systemOverview.activeSessions.toLocaleString()}</p>
-                            <p className="text-sm text-gray-600">Active User Sessions</p>
+                            <p className="text-sm text-gray-600 font-medium">Active User Sessions</p>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-teal-50 to-white">
                         <div className="text-center">
                             <p className="text-2xl font-bold text-gray-900">{systemOverview.databaseConnections}</p>
-                            <p className="text-sm text-gray-600">Database Connections</p>
+                            <p className="text-sm text-gray-600 font-medium">Database Connections</p>
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Server Resource Details */}
-            <Card>
-                <CardHeader>
+            <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                     <CardTitle className="flex items-center space-x-2">
                         <BarChart3 className="h-5 w-5" />
                         <span>Server Resource Details</span>
@@ -214,15 +214,15 @@ export function ResourceUsage() {
                 <CardContent>
                     <div className="space-y-6">
                         {resourceData.map((server) => (
-                            <div key={server.id} className="p-4 border rounded-lg">
+                            <div key={server.id} className="p-4 rounded-lg shadow-sm bg-white">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
-                                        <h4 className="font-medium text-gray-900">{server.name}</h4>
+                                        <h4 className="font-semibold text-gray-900">{server.name}</h4>
                                         <Badge className={getStatusBadge(server.status)}>
                                             {server.status.charAt(0).toUpperCase() + server.status.slice(1)}
                                         </Badge>
                                     </div>
-                                    <div className="text-sm text-gray-600">
+                                    <div className="text-sm text-gray-600 font-medium">
                                         Network: {server.network.in} ↓ / {server.network.out} ↑
                                     </div>
                                 </div>
@@ -233,13 +233,13 @@ export function ResourceUsage() {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-2">
                                                 <Cpu className="h-4 w-4 text-blue-600" />
-                                                <span className="text-sm font-medium">CPU</span>
+                                                <span className="text-sm font-semibold">CPU</span>
                                                 {getTrendIcon(server.cpu.trend)}
                                             </div>
-                                            <span className="text-sm font-medium">{server.cpu.current}%</span>
+                                            <span className="text-sm font-semibold">{server.cpu.current}%</span>
                                         </div>
                                         <ProgressBar value={server.cpu.current} className="h-2" />
-                                        <p className="text-xs text-gray-500">Peak 24h: {server.cpu.peak24h}%</p>
+                                        <p className="text-xs text-gray-500 font-medium">Peak 24h: {server.cpu.peak24h}%</p>
                                     </div>
 
                                     {/* Memory */}
@@ -247,13 +247,13 @@ export function ResourceUsage() {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-2">
                                                 <HardDrive className="h-4 w-4 text-green-600" />
-                                                <span className="text-sm font-medium">Memory</span>
+                                                <span className="text-sm font-semibold">Memory</span>
                                                 {getTrendIcon(server.memory.trend)}
                                             </div>
-                                            <span className="text-sm font-medium">{server.memory.current}%</span>
+                                            <span className="text-sm font-semibold">{server.memory.current}%</span>
                                         </div>
                                         <ProgressBar value={server.memory.current} className="h-2" />
-                                        <p className="text-xs text-gray-500">Peak 24h: {server.memory.peak24h}%</p>
+                                        <p className="text-xs text-gray-500 font-medium">Peak 24h: {server.memory.peak24h}%</p>
                                     </div>
 
                                     {/* Disk */}
@@ -261,13 +261,13 @@ export function ResourceUsage() {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-2">
                                                 <Database className="h-4 w-4 text-purple-600" />
-                                                <span className="text-sm font-medium">Disk</span>
+                                                <span className="text-sm font-semibold">Disk</span>
                                                 {getTrendIcon(server.disk.trend)}
                                             </div>
-                                            <span className="text-sm font-medium">{server.disk.current}%</span>
+                                            <span className="text-sm font-semibold">{server.disk.current}%</span>
                                         </div>
                                         <ProgressBar value={server.disk.current} className="h-2" />
-                                        <p className="text-xs text-gray-500">Peak 24h: {server.disk.peak24h}%</p>
+                                        <p className="text-xs text-gray-500 font-medium">Peak 24h: {server.disk.peak24h}%</p>
                                     </div>
                                 </div>
                             </div>

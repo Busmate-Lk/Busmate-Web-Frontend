@@ -40,7 +40,7 @@ export function UserStats() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {stats.map((stat) => (
-        <Card key={stat.title} className={`border-l-4 ${stat.color === "blue"
+        <Card key={stat.title} className={`shadow-lg bg-gradient-to-br from-white to-gray-50 border-l-4 ${stat.color === "blue"
           ? "border-l-blue-500"
           : stat.color === "green"
             ? "border-l-green-500"

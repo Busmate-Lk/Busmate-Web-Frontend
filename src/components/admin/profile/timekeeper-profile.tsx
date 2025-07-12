@@ -38,7 +38,7 @@ export function TimekeeperProfile({ userId }: TimeKeeperProfileProps) {
       </div>
 
       {/* Profile Header */}
-      <Card className="mb-6">
+      <Card className="mb-6 shadow-lg bg-gradient-to-br from-white to-gray-50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -98,8 +98,8 @@ export function TimekeeperProfile({ userId }: TimeKeeperProfileProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Employment Information */}
-        <Card>
-          <CardHeader>
+        <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
             <CardTitle>Employment Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -174,8 +174,8 @@ export function TimekeeperProfile({ userId }: TimeKeeperProfileProps) {
 
         {/* Station Assignment & Performance */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Station Assignment</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -206,8 +206,8 @@ export function TimekeeperProfile({ userId }: TimeKeeperProfileProps) {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Performance Metrics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -231,8 +231,8 @@ export function TimekeeperProfile({ userId }: TimeKeeperProfileProps) {
 
         {/* Time Management & Recent Activity */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Time Management Duties</CardTitle>
             </CardHeader>
             <CardContent>

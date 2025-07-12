@@ -1,10 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/admin/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card"
 import { Badge } from "@/components/admin/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/admin/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/admin/ui/tabs"
+import { Tabs, TabsContent } from "@/components/admin/ui/tabs"
 import {
   ArrowLeft,
   Bus,
@@ -34,6 +35,8 @@ interface BusDetailsProps {
 }
 
 export function BusDetails({ fleetId, busId }: BusDetailsProps) {
+  const [activeTab, setActiveTab] = useState("overview")
+
   // Mock data - in real app, this would come from API
   const busData = {
     id: busId,
@@ -173,7 +176,7 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
       </div>
 
       {/* Bus Overview Card */}
-      <Card>
+      <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
         <CardContent className="p-6">
           <div className="flex items-center space-x-6">
             <div className="w-24 h-24 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -219,21 +222,58 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
       </Card>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="crew">Driver & Conductor</TabsTrigger>
-          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-          <TabsTrigger value="trips">Recent Trips</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <div className="bg-white rounded-lg shadow-lg px-6 py-4 bg-gradient-to-r from-gray-50 to-white mb-6">
+          <div className="flex items-center space-x-4 overflow-x-auto">
+            <button
+              onClick={() => setActiveTab("overview")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${activeTab === "overview" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <Wrench className="h-4 w-4" />
+              <span>Overview</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("crew")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${activeTab === "crew" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <User className="h-4 w-4" />
+              <span>Driver & Conductor</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("maintenance")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${activeTab === "maintenance" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <Wrench className="h-4 w-4" />
+              <span>Maintenance</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("trips")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${activeTab === "trips" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <Route className="h-4 w-4" />
+              <span>Recent Trips</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("performance")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${activeTab === "performance" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span>Performance</span>
+            </button>
+          </div>
+        </div>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Technical Specifications */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <CardTitle className="flex items-center">
                   <Wrench className="h-5 w-5 mr-2 text-blue-600" />
                   Technical Specs
@@ -264,8 +304,8 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
             </Card>
 
             {/* Route Information */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <CardTitle className="flex items-center">
                   <Route className="h-5 w-5 mr-2 text-green-600" />
                   Route Details
@@ -294,8 +334,8 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
             </Card>
 
             {/* Insurance & Compliance */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <CardTitle className="flex items-center">
                   <Shield className="h-5 w-5 mr-2 text-orange-600" />
                   Insurance & Service
@@ -327,8 +367,8 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
         <TabsContent value="crew" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Driver Information */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <CardTitle className="flex items-center">
                   <User className="h-5 w-5 mr-2 text-blue-600" />
                   Driver Information
@@ -397,8 +437,8 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
             </Card>
 
             {/* Conductor Information */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <CardTitle className="flex items-center">
                   <UserCheck className="h-5 w-5 mr-2 text-green-600" />
                   Conductor Information
@@ -470,8 +510,8 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
 
         {/* Maintenance Tab */}
         <TabsContent value="maintenance" className="space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center">
                   <Wrench className="h-5 w-5 mr-2 text-orange-600" />
@@ -518,8 +558,8 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
 
         {/* Recent Trips Tab */}
         <TabsContent value="trips" className="space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle className="flex items-center">
                 <Clock className="h-5 w-5 mr-2 text-blue-600" />
                 Recent Trips
@@ -564,28 +604,28 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
         {/* Performance Tab */}
         <TabsContent value="performance" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
               <CardContent className="p-6 text-center">
                 <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-green-600">{busData.monthlyRevenue}</div>
                 <div className="text-sm text-gray-600">Monthly Revenue</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
               <CardContent className="p-6 text-center">
                 <Fuel className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-blue-600">{busData.fuelEfficiency}</div>
                 <div className="text-sm text-gray-600">Fuel Efficiency</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
               <CardContent className="p-6 text-center">
                 <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-orange-600">{busData.averageSpeed}</div>
                 <div className="text-sm text-gray-600">Average Speed</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
               <CardContent className="p-6 text-center">
                 <Clock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-purple-600">{busData.dailyTrips}</div>

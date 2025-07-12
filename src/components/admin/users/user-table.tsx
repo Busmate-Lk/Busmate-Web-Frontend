@@ -83,22 +83,22 @@ export function UserTable() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b">
+    <div className="bg-white rounded-lg shadow-lg">
+      <div className="p-6 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Checkbox />
-            <span className="text-sm text-gray-600">Select All</span>
+            <span className="text-sm text-gray-600 font-medium">Select All</span>
           </div>
 
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+            <Button variant="outline" size="sm" className="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 shadow-sm">
               Suspend
             </Button>
-            <Button variant="outline" size="sm" className="bg-green-50 text-green-700 border-green-200">
+            <Button variant="outline" size="sm" className="bg-green-50 text-green-700 hover:bg-green-100 shadow-sm">
               Activate
             </Button>
-            <Button variant="outline" size="sm" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Button variant="outline" size="sm" className="bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-sm">
               Send Message
             </Button>
           </div>
@@ -192,22 +192,22 @@ export function UserTable() {
         </TableBody>
       </Table>
 
-      <div className="p-6 border-t flex items-center justify-between">
-        <p className="text-sm text-gray-600">Showing 1 to 10 of 13,302 results</p>
+      <div className="p-6 bg-gradient-to-r from-gray-50 to-white rounded-b-lg flex items-center justify-between">
+        <p className="text-sm text-gray-600 font-medium">Showing 1 to 10 of 13,302 results</p>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="shadow-sm">
             Previous
           </Button>
-          <Button variant="outline" size="sm" className="bg-blue-600 text-white">
+          <Button variant="outline" size="sm" className="bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
             1
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="shadow-sm">
             2
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="shadow-sm">
             3
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="shadow-sm">
             Next
           </Button>
         </div>

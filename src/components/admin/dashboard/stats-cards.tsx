@@ -48,15 +48,15 @@ export function StatsCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {stats.map((stat) => (
-        <Card key={stat.title} className={`border-l-4 ${stat.color === "blue"
-          ? "border-l-blue-500"
+        <Card key={stat.title} className={`shadow-sm bg-gradient-to-br ${stat.color === "blue"
+          ? "from-blue-50 to-white"
           : stat.color === "green"
-            ? "border-l-green-500"
+            ? "from-green-50 to-white"
             : stat.color === "red"
-              ? "border-l-red-500"
+              ? "from-red-50 to-white"
               : stat.color === "purple"
-                ? "border-l-purple-500"
-                : "border-l-yellow-500"
+                ? "from-purple-50 to-white"
+                : "from-yellow-50 to-white"
           }`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -75,7 +75,7 @@ export function StatsCards() {
                 </p>
               </div>
               <div
-                className={`p-3 rounded-full ${stat.color === "blue"
+                className={`p-3 rounded-full shadow-sm ${stat.color === "blue"
                   ? "bg-blue-100 text-blue-600"
                   : stat.color === "green"
                     ? "bg-green-100 text-green-600"

@@ -111,357 +111,368 @@ export function SystemAnalytics() {
   return (
     <div>
       {/* Tabs */}
-      <div className="flex items-center space-x-8 border-b mb-6">
-        <button
-          onClick={() => setActiveTab("monitoring")}
-          className={`flex items-center space-x-2 pb-2 ${activeTab === "monitoring" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-            }`}
-        >
-          <Activity className="h-4 w-4" />
-          <span>System Monitoring</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("reports")}
-          className={`flex items-center space-x-2 pb-2 ${activeTab === "reports" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-            }`}
-        >
-          <FileText className="h-4 w-4" />
-          <span>Analytics & Reports</span>
-        </button>
-      </div>
-
-      {activeTab === "monitoring" && (
-        <>
-          {/* System Status Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-            <Card className="border-l-4 border-l-green-500">
-              <CardContent className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <Database className="h-6 w-6 text-green-600" />
-                </div>
-                <p className="text-sm text-gray-600">Database Status</p>
-                <p className="text-xl font-bold text-green-600">Online</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-blue-500">
-              <CardContent className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <Zap className="h-6 w-6 text-blue-600" />
-                </div>
-                <p className="text-sm text-gray-600">API Response</p>
-                <p className="text-xl font-bold">142ms</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-yellow-500">
-              <CardContent className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <Activity className="h-6 w-6 text-yellow-600" />
-                </div>
-                <p className="text-sm text-gray-600">Server Load</p>
-                <p className="text-xl font-bold text-yellow-600">67%</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-purple-500">
-              <CardContent className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <Users className="h-6 w-6 text-purple-600" />
-                </div>
-                <p className="text-sm text-gray-600">Active Sessions</p>
-                <p className="text-xl font-bold">1,247</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-green-500">
-              <CardContent className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <TrendingUp className="h-6 w-6 text-green-600" />
-                </div>
-                <p className="text-sm text-gray-600">System Uptime</p>
-                <p className="text-xl font-bold text-green-600">99.9%</p>
-              </CardContent>
-            </Card>
+      <div className="bg-white rounded-lg shadow-lg mb-6">
+        <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <div className="flex items-center space-x-8">
+            <button
+              onClick={() => setActiveTab("monitoring")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "monitoring" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <Activity className="h-4 w-4" />
+              <span>System Monitoring</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("reports")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "reports" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <FileText className="h-4 w-4" />
+              <span>Analytics & Reports</span>
+            </button>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Advanced Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">Advanced Filters</h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-                  <div className="relative">
-                    <Input placeholder="Select date range" />
-                    <Calendar className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Log Level</label>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="error" />
-                      <label htmlFor="error" className="text-sm">
-                        Error
-                      </label>
+        <div className="p-6">
+          {activeTab === "monitoring" && (
+            <>
+              {/* System Status Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <Card className="shadow-sm bg-gradient-to-br from-green-50 to-white">
+                  <CardContent className="p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Database className="h-6 w-6 text-green-600" />
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="warning" />
-                      <label htmlFor="warning" className="text-sm">
-                        Warning
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="info" />
-                      <label htmlFor="info" className="text-sm">
-                        Info
-                      </label>
-                    </div>
-                  </div>
-                </div>
+                    <p className="text-sm text-gray-600">Database Status</p>
+                    <p className="text-xl font-bold text-green-600">Online</p>
+                  </CardContent>
+                </Card>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Keywords</label>
-                  <Input placeholder="Search logs..." />
-                </div>
+                <Card className="shadow-sm bg-gradient-to-br from-blue-50 to-white">
+                  <CardContent className="p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Zap className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <p className="text-sm text-gray-600">API Response</p>
+                    <p className="text-xl font-bold">142ms</p>
+                  </CardContent>
+                </Card>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">Apply Filters</Button>
+                <Card className="shadow-sm bg-gradient-to-br from-yellow-50 to-white">
+                  <CardContent className="p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Activity className="h-6 w-6 text-yellow-600" />
+                    </div>
+                    <p className="text-sm text-gray-600">Server Load</p>
+                    <p className="text-xl font-bold text-yellow-600">67%</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="shadow-sm bg-gradient-to-br from-purple-50 to-white">
+                  <CardContent className="p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Users className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <p className="text-sm text-gray-600">Active Sessions</p>
+                    <p className="text-xl font-bold">1,247</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="shadow-sm bg-gradient-to-br from-green-50 to-white">
+                  <CardContent className="p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <TrendingUp className="h-6 w-6 text-green-600" />
+                    </div>
+                    <p className="text-sm text-gray-600">System Uptime</p>
+                    <p className="text-xl font-bold text-green-600">99.9%</p>
+                  </CardContent>
+                </Card>
               </div>
-            </div>
 
-            {/* Real-time Logs */}
-            <div className="lg:col-span-3">
-              <div className="bg-white rounded-lg shadow">
-                <div className="p-6 border-b">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Real-time Logs</h3>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => setLogFilter("errors")}
-                        className={`px-3 py-1 rounded text-sm ${logFilter === "errors" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-600"
-                          }`}
-                      >
-                        Errors Only
-                      </button>
-                      <button
-                        onClick={() => setLogFilter("security")}
-                        className={`px-3 py-1 rounded text-sm ${logFilter === "security" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-600"
-                          }`}
-                      >
-                        Security Events
-                      </button>
-                      <button
-                        onClick={() => setLogFilter("today")}
-                        className={`px-3 py-1 rounded text-sm ${logFilter === "today" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
-                          }`}
-                      >
-                        Today's Logs
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="bg-black rounded-lg p-4 font-mono text-sm max-h-96 overflow-y-auto">
-                    {logs.map((log, index) => (
-                      <div key={index} className="mb-1">
-                        <span className="text-gray-400">[{log.timestamp}]</span>{" "}
-                        <span className={log.color}>{log.level}:</span>{" "}
-                        <span className="text-gray-300">{log.message}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Advanced Filters */}
+                <Card className="shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold">Advanced Filters</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                        <div className="relative">
+                          <Input placeholder="Select date range" />
+                          <Calendar className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                        </div>
                       </div>
-                    ))}
-                  </div>
 
-                  <div className="flex items-center space-x-2 mt-4">
-                    <Button className="bg-green-600 hover:bg-green-700">
-                      <Download className="h-4 w-4 mr-2" />
-                      Export CSV
-                    </Button>
-                    <Button variant="outline">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Export TXT
-                    </Button>
-                  </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Log Level</label>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="error" />
+                            <label htmlFor="error" className="text-sm">
+                              Error
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="warning" />
+                            <label htmlFor="warning" className="text-sm">
+                              Warning
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="info" />
+                            <label htmlFor="info" className="text-sm">
+                              Info
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Keywords</label>
+                        <Input placeholder="Search logs..." />
+                      </div>
+
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700">Apply Filters</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Real-time Logs */}
+                <div className="lg:col-span-3">
+                  <Card className="shadow-sm">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg font-semibold">Real-time Logs</CardTitle>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setLogFilter("errors")}
+                            className={`px-3 py-1 rounded-lg text-sm transition-colors ${logFilter === "errors" ? "bg-red-100 text-red-700 font-medium" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
+                          >
+                            Errors Only
+                          </button>
+                          <button
+                            onClick={() => setLogFilter("security")}
+                            className={`px-3 py-1 rounded-lg text-sm transition-colors ${logFilter === "security" ? "bg-yellow-100 text-yellow-700 font-medium" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
+                          >
+                            Security Events
+                          </button>
+                          <button
+                            onClick={() => setLogFilter("today")}
+                            className={`px-3 py-1 rounded-lg text-sm transition-colors ${logFilter === "today" ? "bg-blue-100 text-blue-700 font-medium" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
+                          >
+                            Today's Logs
+                          </button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="bg-gray-900 rounded-lg p-4 font-mono text-sm max-h-96 overflow-y-auto shadow-inner">
+                        {logs.map((log, index) => (
+                          <div key={index} className="mb-1">
+                            <span className="text-gray-400">[{log.timestamp}]</span>{" "}
+                            <span className={log.color}>{log.level}:</span>{" "}
+                            <span className="text-gray-300">{log.message}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center space-x-2 mt-4">
+                        <Button className="bg-green-600 hover:bg-green-700 shadow-sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          Export CSV
+                        </Button>
+                        <Button variant="outline" className="shadow-sm">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Export TXT
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            </>
+          )}
 
-      {activeTab === "reports" && (
-        <>
-          {/* Analytics Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            {analyticsData.map((item, index) => (
-              <Card key={index}>
-                <CardContent className="p-4">
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-1">{item.metric}</p>
-                    <p className="text-xl font-bold mb-1">{item.value}</p>
-                    <p className={`text-xs ${item.changeType === "positive" ? "text-green-600" : "text-red-600"}`}>
-                      {item.change}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Report Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">Report Filters</h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select report type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Reports</SelectItem>
-                      <SelectItem value="user">User Analytics</SelectItem>
-                      <SelectItem value="performance">Performance</SelectItem>
-                      <SelectItem value="financial">Financial</SelectItem>
-                      <SelectItem value="operations">Operations</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select date range" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="week">This Week</SelectItem>
-                      <SelectItem value="month">This Month</SelectItem>
-                      <SelectItem value="quarter">This Quarter</SelectItem>
-                      <SelectItem value="year">This Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">Apply Filters</Button>
+          {activeTab === "reports" && (
+            <>
+              {/* Analytics Overview Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                {analyticsData.map((item, index) => (
+                  <Card key={index}>
+                    <CardContent className="p-4">
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600 mb-1">{item.metric}</p>
+                        <p className="text-xl font-bold mb-1">{item.value}</p>
+                        <p className={`text-xs ${item.changeType === "positive" ? "text-green-600" : "text-red-600"}`}>
+                          {item.change}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
-              {/* Quick Report Generation */}
-              <div className="mt-6 pt-6 border-t">
-                <h4 className="font-medium mb-3">Quick Reports</h4>
-                <div className="space-y-2">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    User Activity
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Activity className="h-4 w-4 mr-2" />
-                    System Performance
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Revenue Analysis
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <PieChart className="h-4 w-4 mr-2" />
-                    Route Efficiency
-                  </Button>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Report Filters */}
+                <Card className="shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold">Report Filters</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select report type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Reports</SelectItem>
+                            <SelectItem value="user">User Analytics</SelectItem>
+                            <SelectItem value="performance">Performance</SelectItem>
+                            <SelectItem value="financial">Financial</SelectItem>
+                            <SelectItem value="operations">Operations</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select date range" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="today">Today</SelectItem>
+                            <SelectItem value="week">This Week</SelectItem>
+                            <SelectItem value="month">This Month</SelectItem>
+                            <SelectItem value="quarter">This Quarter</SelectItem>
+                            <SelectItem value="year">This Year</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-sm">Apply Filters</Button>
+                    </div>
+
+                    {/* Quick Report Generation */}
+                    <div className="mt-6 pt-6">
+                      <h4 className="font-medium mb-3 text-gray-900">Quick Reports</h4>
+                      <div className="space-y-2">
+                        <Button variant="outline" size="sm" className="w-full justify-start shadow-sm hover:bg-gray-50">
+                          <Users className="h-4 w-4 mr-2" />
+                          User Activity
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full justify-start shadow-sm hover:bg-gray-50">
+                          <Activity className="h-4 w-4 mr-2" />
+                          System Performance
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full justify-start shadow-sm hover:bg-gray-50">
+                          <TrendingUp className="h-4 w-4 mr-2" />
+                          Revenue Analysis
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full justify-start shadow-sm hover:bg-gray-50">
+                          <PieChart className="h-4 w-4 mr-2" />
+                          Route Efficiency
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Reports List */}
+                <div className="lg:col-span-3">
+                  <Card className="shadow-sm">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>Generated Reports</CardTitle>
+                          <p className="text-sm text-gray-600">View and download previously generated reports</p>
+                        </div>
+                        <Button className="bg-blue-600 hover:bg-blue-700 shadow-sm">
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          Generate Report
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Report Name</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Last Generated</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Size</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {reports.map((report) => (
+                            <TableRow key={report.id}>
+                              <TableCell className="font-medium">{report.name}</TableCell>
+                              <TableCell>
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                  {report.type}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{report.lastGenerated}</TableCell>
+                              <TableCell>
+                                <Badge className={report.statusColor}>{report.status}</Badge>
+                              </TableCell>
+                              <TableCell>{report.size}</TableCell>
+                              <TableCell>
+                                <div className="flex items-center space-x-2">
+                                  <Button variant="ghost" size="sm">
+                                    <Eye className="h-4 w-4 text-blue-600" />
+                                  </Button>
+                                  <Button variant="ghost" size="sm">
+                                    <Download className="h-4 w-4 text-green-600" />
+                                  </Button>
+                                  <Button variant="ghost" size="sm">
+                                    <RefreshCw className="h-4 w-4 text-orange-600" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+
+                  {/* Chart Visualization Area */}
+                  <Card className="mt-6">
+                    <CardHeader>
+                      <CardTitle>Data Visualization</CardTitle>
+                      <p className="text-sm text-gray-600">Interactive charts and graphs</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-gray-50 rounded-lg p-6 text-center">
+                          <BarChart3 className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                          <h4 className="font-medium mb-2">User Growth Trends</h4>
+                          <p className="text-sm text-gray-600">Monthly user registration and activity patterns</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-6 text-center">
+                          <PieChart className="h-12 w-12 text-green-600 mx-auto mb-4" />
+                          <h4 className="font-medium mb-2">Revenue Distribution</h4>
+                          <p className="text-sm text-gray-600">Revenue breakdown by routes and services</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
-            </div>
-
-            {/* Reports List */}
-            <div className="lg:col-span-3">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Generated Reports</CardTitle>
-                      <p className="text-sm text-gray-600">View and download previously generated reports</p>
-                    </div>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Generate Report
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Report Name</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Last Generated</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Size</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {reports.map((report) => (
-                        <TableRow key={report.id}>
-                          <TableCell className="font-medium">{report.name}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                              {report.type}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{report.lastGenerated}</TableCell>
-                          <TableCell>
-                            <Badge className={report.statusColor}>{report.status}</Badge>
-                          </TableCell>
-                          <TableCell>{report.size}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4 text-blue-600" />
-                              </Button>
-                              <Button variant="ghost" size="sm">
-                                <Download className="h-4 w-4 text-green-600" />
-                              </Button>
-                              <Button variant="ghost" size="sm">
-                                <RefreshCw className="h-4 w-4 text-orange-600" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              {/* Chart Visualization Area */}
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Data Visualization</CardTitle>
-                  <p className="text-sm text-gray-600">Interactive charts and graphs</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gray-50 rounded-lg p-6 text-center">
-                      <BarChart3 className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                      <h4 className="font-medium mb-2">User Growth Trends</h4>
-                      <p className="text-sm text-gray-600">Monthly user registration and activity patterns</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-6 text-center">
-                      <PieChart className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                      <h4 className="font-medium mb-2">Revenue Distribution</h4>
-                      <p className="text-sm text-gray-600">Revenue breakdown by routes and services</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </>
-      )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

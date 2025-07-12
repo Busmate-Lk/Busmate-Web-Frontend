@@ -110,24 +110,24 @@ export function NotificationPanel() {
   return (
     <div>
       {/* Filters */}
-      <Card className="mb-6">
-        <CardContent className="p-6">
+      <Card className="mb-6 shadow-lg">
+        <CardContent className="p-6 bg-gradient-to-r from-gray-50 to-white rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Input
                 placeholder="Search notifications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 shadow-sm"
               />
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             </div>
             <div>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger>
+                <SelectTrigger className="shadow-sm">
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="shadow-lg">
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="error">Errors</SelectItem>
                   <SelectItem value="warning">Warnings</SelectItem>
@@ -138,10 +138,10 @@ export function NotificationPanel() {
             </div>
             <div>
               <Select value={filterPriority} onValueChange={setFilterPriority}>
-                <SelectTrigger>
+                <SelectTrigger className="shadow-sm">
                   <SelectValue placeholder="Filter by priority" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="shadow-lg">
                   <SelectItem value="all">All Priorities</SelectItem>
                   <SelectItem value="critical">Critical</SelectItem>
                   <SelectItem value="high">High</SelectItem>
@@ -150,7 +150,7 @@ export function NotificationPanel() {
                 </SelectContent>
               </Select>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 shadow-sm">
               <Filter className="h-4 w-4 mr-2" />
               Apply Filters
             </Button>
@@ -163,7 +163,7 @@ export function NotificationPanel() {
         {notifications.map((notification) => (
           <Card
             key={notification.id}
-            className={`${!notification.read ? "border-l-4 border-l-blue-500" : ""} cursor-pointer hover:shadow-md transition-shadow`}
+            className={`${!notification.read ? "border-l-4 border-l-blue-500" : ""} cursor-pointer hover:shadow-lg transition-all duration-200 shadow-md`}
             onClick={() => handleNotificationClick(notification.id)}
           >
             <CardContent className="p-6">
@@ -173,7 +173,7 @@ export function NotificationPanel() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className={`text-lg font-medium ${!notification.read ? "text-gray-900" : "text-gray-600"}`}>
+                        <h3 className={`text-lg font-semibold ${!notification.read ? "text-gray-900" : "text-gray-600"}`}>
                           {notification.title}
                         </h3>
                         {!notification.read && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}
@@ -197,6 +197,7 @@ export function NotificationPanel() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="shadow-sm"
                           onClick={(e) => {
                             e.stopPropagation()
                             // Handle mark as read
@@ -208,6 +209,7 @@ export function NotificationPanel() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="shadow-sm"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleNotificationClick(notification.id)
@@ -226,7 +228,7 @@ export function NotificationPanel() {
 
       {/* Load More */}
       <div className="text-center mt-6">
-        <Button variant="outline">Load More Notifications</Button>
+        <Button variant="outline" className="shadow-sm">Load More Notifications</Button>
       </div>
     </div>
   )

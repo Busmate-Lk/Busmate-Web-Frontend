@@ -38,7 +38,7 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
       </div>
 
       {/* Profile Header */}
-      <Card className="mb-6">
+      <Card className="mb-6 shadow-lg bg-gradient-to-br from-white to-gray-50">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div className="relative">
@@ -81,8 +81,8 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Employment Information */}
-        <Card>
-          <CardHeader>
+        <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
             <CardTitle>Employment Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -134,8 +134,8 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
 
         {/* Performance & Financial */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Performance Metrics</CardTitle>
             </CardHeader>
             <CardContent>
@@ -160,8 +160,8 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Financial Overview</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -188,12 +188,12 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Current Assignments</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="border rounded-lg p-3">
+              <div className="bg-white rounded-lg p-3 shadow-sm">
                 <h4 className="font-medium">Primary Route</h4>
                 <p className="text-sm text-gray-600">Colombo - Kandy Express</p>
                 <p className="text-xs text-gray-500">Mon, Wed, Fri</p>
@@ -209,8 +209,8 @@ export function ConductorProfile({ userId }: ConductorProfileProps) {
 
         {/* Recent Activity & Admin Actions */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-lg bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
               <CardTitle>Recent Trip Logs</CardTitle>
             </CardHeader>
             <CardContent>

@@ -27,30 +27,40 @@ export default function LogsLayout({
             <NavigationBreadcrumb items={breadcrumbItems} />
             <Header title="System Logs" />
 
-            <div className="bg-white rounded-lg shadow-sm border">
-                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                    <div className="border-b px-6 py-4">
-                        <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="user-activity" className="flex items-center gap-2">
-                                <User className="h-4 w-4" />
-                                User Activity Logs
-                            </TabsTrigger>
-                            <TabsTrigger value="application" className="flex items-center gap-2">
-                                <Code className="h-4 w-4" />
-                                Application Logs
-                            </TabsTrigger>
-                            <TabsTrigger value="security" className="flex items-center gap-2">
-                                <Shield className="h-4 w-4" />
-                                Security Logs
-                            </TabsTrigger>
-                        </TabsList>
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                <div className="bg-white rounded-lg shadow-lg px-6 py-4 bg-gradient-to-r from-gray-50 to-white mb-6">
+                    <div className="flex items-center space-x-8">
+                        <button
+                            onClick={() => handleTabChange("user-activity")}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "user-activity" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            <User className="h-4 w-4" />
+                            <span>User Activity Logs</span>
+                        </button>
+                        <button
+                            onClick={() => handleTabChange("application")}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "application" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            <Code className="h-4 w-4" />
+                            <span>Application Logs</span>
+                        </button>
+                        <button
+                            onClick={() => handleTabChange("security")}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "security" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            <Shield className="h-4 w-4" />
+                            <span>Security Logs</span>
+                        </button>
                     </div>
+                </div>
 
-                    <div className="p-6">
-                        {children}
-                    </div>
-                </Tabs>
-            </div>
+                <div>
+                    {children}
+                </div>
+            </Tabs>
         </div>
     )
 }

@@ -122,7 +122,7 @@ export function ApiHealth() {
                     <h2 className="text-lg font-semibold text-gray-900">API Health Dashboard</h2>
                     <p className="text-sm text-gray-600">Monitor the health and performance of all API endpoints</p>
                 </div>
-                <Button onClick={handleRefresh} variant="outline" size="sm">
+                <Button onClick={handleRefresh} variant="outline" size="sm" className="shadow-sm">
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Refresh
                 </Button>
@@ -130,49 +130,49 @@ export function ApiHealth() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-green-50 to-white">
                         <div className="flex items-center space-x-2">
                             <CheckCircle className="h-5 w-5 text-green-600" />
                             <div>
                                 <p className="text-2xl font-bold text-gray-900">{healthyCount}</p>
-                                <p className="text-sm text-gray-600">Healthy APIs</p>
+                                <p className="text-sm text-gray-600 font-medium">Healthy APIs</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-yellow-50 to-white">
                         <div className="flex items-center space-x-2">
                             <AlertTriangle className="h-5 w-5 text-yellow-600" />
                             <div>
                                 <p className="text-2xl font-bold text-gray-900">{warningCount}</p>
-                                <p className="text-sm text-gray-600">Warning APIs</p>
+                                <p className="text-sm text-gray-600 font-medium">Warning APIs</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-red-50 to-white">
                         <div className="flex items-center space-x-2">
                             <XCircle className="h-5 w-5 text-red-600" />
                             <div>
                                 <p className="text-2xl font-bold text-gray-900">{errorCount}</p>
-                                <p className="text-sm text-gray-600">Failed APIs</p>
+                                <p className="text-sm text-gray-600 font-medium">Failed APIs</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-4">
+                <Card className="shadow-md">
+                    <CardContent className="p-4 bg-gradient-to-br from-blue-50 to-white">
                         <div className="flex items-center space-x-2">
                             <Activity className="h-5 w-5 text-blue-600" />
                             <div>
                                 <p className="text-2xl font-bold text-gray-900">{apiEndpoints.length}</p>
-                                <p className="text-sm text-gray-600">Total APIs</p>
+                                <p className="text-sm text-gray-600 font-medium">Total APIs</p>
                             </div>
                         </div>
                     </CardContent>
@@ -180,8 +180,8 @@ export function ApiHealth() {
             </div>
 
             {/* API Endpoints List */}
-            <Card>
-                <CardHeader>
+            <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                     <CardTitle className="flex items-center space-x-2">
                         <Activity className="h-5 w-5" />
                         <span>API Endpoints Status</span>
@@ -190,12 +190,12 @@ export function ApiHealth() {
                 <CardContent>
                     <div className="space-y-4">
                         {apiEndpoints.map((api) => (
-                            <div key={api.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div key={api.id} className="flex items-center justify-between p-4 rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-sm bg-white">
                                 <div className="flex items-center space-x-4">
                                     {getStatusIcon(api.status)}
                                     <div>
-                                        <h4 className="font-medium text-gray-900">{api.name}</h4>
-                                        <p className="text-sm text-gray-600">{api.endpoint}</p>
+                                        <h4 className="font-semibold text-gray-900">{api.name}</h4>
+                                        <p className="text-sm text-gray-600 font-medium">{api.endpoint}</p>
                                     </div>
                                 </div>
 
@@ -214,17 +214,17 @@ export function ApiHealth() {
                                     </div>
 
                                     <div className="text-center">
-                                        <p className="text-sm font-medium text-gray-900">{api.uptime}</p>
-                                        <p className="text-xs text-gray-600">Uptime</p>
+                                        <p className="text-sm font-semibold text-gray-900">{api.uptime}</p>
+                                        <p className="text-xs text-gray-600 font-medium">Uptime</p>
                                     </div>
 
                                     <div className="text-center">
-                                        <p className="text-sm font-medium text-gray-900">{api.requests24h}</p>
-                                        <p className="text-xs text-gray-600">24h Requests</p>
+                                        <p className="text-sm font-semibold text-gray-900">{api.requests24h}</p>
+                                        <p className="text-xs text-gray-600 font-medium">24h Requests</p>
                                     </div>
 
                                     <div className="text-center">
-                                        <div className="flex items-center space-x-1 text-xs text-gray-500">
+                                        <div className="flex items-center space-x-1 text-xs text-gray-500 font-medium">
                                             <Clock className="h-3 w-3" />
                                             <span>{api.lastChecked}</span>
                                         </div>

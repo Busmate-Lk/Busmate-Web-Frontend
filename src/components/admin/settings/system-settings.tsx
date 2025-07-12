@@ -70,235 +70,239 @@ export function SystemSettings() {
   return (
     <div>
       {/* Tabs */}
-      <div className="flex items-center space-x-8 border-b mb-6">
-        <button
-          onClick={() => setActiveTab("general")}
-          className={`flex items-center space-x-2 pb-2 ${activeTab === "general" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-            }`}
-        >
-          <Settings className="h-4 w-4" />
-          <span>General Settings</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("maintenance")}
-          className={`flex items-center space-x-2 pb-2 ${activeTab === "maintenance" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-            }`}
-        >
-          <Wrench className="h-4 w-4" />
-          <span>Maintenance</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("backup")}
-          className={`flex items-center space-x-2 pb-2 ${activeTab === "backup" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-            }`}
-        >
-          <Database className="h-4 w-4" />
-          <span>Backup & Recovery</span>
-        </button>
+      <div className="bg-white rounded-lg shadow-lg px-6 py-4 bg-gradient-to-r from-gray-50 to-white mb-6">
+        <div className="flex items-center space-x-8">
+          <button
+            onClick={() => setActiveTab("general")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "general" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+              }`}
+          >
+            <Settings className="h-4 w-4" />
+            <span>General Settings</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("maintenance")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "maintenance" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+              }`}
+          >
+            <Wrench className="h-4 w-4" />
+            <span>Maintenance</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("backup")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "backup" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+              }`}
+          >
+            <Database className="h-4 w-4" />
+            <span>Backup & Recovery</span>
+          </button>
+        </div>
       </div>
 
       {activeTab === "general" && (
-        <div className="bg-white rounded-lg shadow p-6">
-          {/* System Information */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">System Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="systemName">System Name</Label>
-                <Input id="systemName" defaultValue="BUSMATE LK Production" />
-              </div>
-              <div>
-                <Label htmlFor="timeZone">Time Zone</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Asia/Colombo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="asia/colombo">Asia/Colombo</SelectItem>
-                    <SelectItem value="utc">UTC</SelectItem>
-                  </SelectContent>
-                </Select>
+        <Card className="shadow-sm">
+          <CardContent className="p-6">
+            {/* System Information */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">System Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="systemName">System Name</Label>
+                  <Input id="systemName" defaultValue="BUSMATE LK Production" />
+                </div>
+                <div>
+                  <Label htmlFor="timeZone">Time Zone</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Asia/Colombo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="asia/colombo">Asia/Colombo</SelectItem>
+                      <SelectItem value="utc">UTC</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Security Settings */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
-                <Input id="sessionTimeout" type="number" defaultValue="60" />
+            {/* Security Settings */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
+                  <Input id="sessionTimeout" type="number" defaultValue="60" />
+                </div>
+                <div>
+                  <Label htmlFor="passwordExpiry">Password Expiry (days)</Label>
+                  <Input id="passwordExpiry" type="number" defaultValue="90" />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="passwordExpiry">Password Expiry (days)</Label>
-                <Input id="passwordExpiry" type="number" defaultValue="90" />
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="twoFactor" className="text-base font-medium">
+                      Two-Factor Authentication
+                    </Label>
+                    <p className="text-sm text-gray-600">Require 2FA for admin accounts</p>
+                  </div>
+                  <Switch id="twoFactor" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="loginAttempts" className="text-base font-medium">
+                      Lock Account After Failed Attempts
+                    </Label>
+                    <p className="text-sm text-gray-600">Lock accounts after 5 failed login attempts</p>
+                  </div>
+                  <Switch id="loginAttempts" defaultChecked />
+                </div>
               </div>
             </div>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="twoFactor" className="text-base font-medium">
-                    Two-Factor Authentication
-                  </Label>
-                  <p className="text-sm text-gray-600">Require 2FA for admin accounts</p>
-                </div>
-                <Switch id="twoFactor" />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="loginAttempts" className="text-base font-medium">
-                    Lock Account After Failed Attempts
-                  </Label>
-                  <p className="text-sm text-gray-600">Lock accounts after 5 failed login attempts</p>
-                </div>
-                <Switch id="loginAttempts" defaultChecked />
-              </div>
-            </div>
-          </div>
 
-          {/* API Configuration */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">API Configuration</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="rateLimitPerHour">Rate Limit (requests/hour)</Label>
-                <Input id="rateLimitPerHour" type="number" defaultValue="1000" />
+            {/* API Configuration */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">API Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="rateLimitPerHour">Rate Limit (requests/hour)</Label>
+                  <Input id="rateLimitPerHour" type="number" defaultValue="1000" />
+                </div>
+                <div>
+                  <Label htmlFor="apiTimeout">API Timeout (seconds)</Label>
+                  <Input id="apiTimeout" type="number" defaultValue="30" />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="apiTimeout">API Timeout (seconds)</Label>
-                <Input id="apiTimeout" type="number" defaultValue="30" />
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="apiLogging" className="text-base font-medium">
+                      API Request Logging
+                    </Label>
+                    <p className="text-sm text-gray-600">Log all API requests for monitoring</p>
+                  </div>
+                  <Switch id="apiLogging" defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="corsEnabled" className="text-base font-medium">
+                      CORS Protection
+                    </Label>
+                    <p className="text-sm text-gray-600">Enable Cross-Origin Resource Sharing protection</p>
+                  </div>
+                  <Switch id="corsEnabled" defaultChecked />
+                </div>
               </div>
             </div>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="apiLogging" className="text-base font-medium">
-                    API Request Logging
-                  </Label>
-                  <p className="text-sm text-gray-600">Log all API requests for monitoring</p>
-                </div>
-                <Switch id="apiLogging" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="corsEnabled" className="text-base font-medium">
-                    CORS Protection
-                  </Label>
-                  <p className="text-sm text-gray-600">Enable Cross-Origin Resource Sharing protection</p>
-                </div>
-                <Switch id="corsEnabled" defaultChecked />
-              </div>
-            </div>
-          </div>
 
-          {/* Data Retention */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Data Retention</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="logRetention">System Log Retention (days)</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="30 days" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7">7 days</SelectItem>
-                    <SelectItem value="30">30 days</SelectItem>
-                    <SelectItem value="90">90 days</SelectItem>
-                    <SelectItem value="365">1 year</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="userActivityRetention">User Activity Retention (days)</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="90 days" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="30">30 days</SelectItem>
-                    <SelectItem value="90">90 days</SelectItem>
-                    <SelectItem value="365">1 year</SelectItem>
-                    <SelectItem value="unlimited">Unlimited</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Data Retention */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">Data Retention</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="logRetention">System Log Retention (days)</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="30 days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7">7 days</SelectItem>
+                      <SelectItem value="30">30 days</SelectItem>
+                      <SelectItem value="90">90 days</SelectItem>
+                      <SelectItem value="365">1 year</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="userActivityRetention">User Activity Retention (days)</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="90 days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="30">30 days</SelectItem>
+                      <SelectItem value="90">90 days</SelectItem>
+                      <SelectItem value="365">1 year</SelectItem>
+                      <SelectItem value="unlimited">Unlimited</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Performance Settings */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Performance Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="cacheExpiry">Cache Expiry (minutes)</Label>
-                <Input id="cacheExpiry" type="number" defaultValue="15" />
+            {/* Performance Settings */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">Performance Settings</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="cacheExpiry">Cache Expiry (minutes)</Label>
+                  <Input id="cacheExpiry" type="number" defaultValue="15" />
+                </div>
+                <div>
+                  <Label htmlFor="maxConnections">Max Database Connections</Label>
+                  <Input id="maxConnections" type="number" defaultValue="100" />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="maxConnections">Max Database Connections</Label>
-                <Input id="maxConnections" type="number" defaultValue="100" />
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="compressionEnabled" className="text-base font-medium">
+                      Response Compression
+                    </Label>
+                    <p className="text-sm text-gray-600">Enable GZIP compression for API responses</p>
+                  </div>
+                  <Switch id="compressionEnabled" defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="cachingEnabled" className="text-base font-medium">
+                      Aggressive Caching
+                    </Label>
+                    <p className="text-sm text-gray-600">Enable aggressive caching for better performance</p>
+                  </div>
+                  <Switch id="cachingEnabled" defaultChecked />
+                </div>
               </div>
             </div>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="compressionEnabled" className="text-base font-medium">
-                    Response Compression
-                  </Label>
-                  <p className="text-sm text-gray-600">Enable GZIP compression for API responses</p>
-                </div>
-                <Switch id="compressionEnabled" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="cachingEnabled" className="text-base font-medium">
-                    Aggressive Caching
-                  </Label>
-                  <p className="text-sm text-gray-600">Enable aggressive caching for better performance</p>
-                </div>
-                <Switch id="cachingEnabled" defaultChecked />
-              </div>
-            </div>
-          </div>
 
-          {/* Global Notifications */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Global Notifications</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="emailNotifications" className="text-base font-medium">
-                    Email Notifications
-                  </Label>
-                  <p className="text-sm text-gray-600">Send system alerts via email</p>
+            {/* Global Notifications */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">Global Notifications</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="emailNotifications" className="text-base font-medium">
+                      Email Notifications
+                    </Label>
+                    <p className="text-sm text-gray-600">Send system alerts via email</p>
+                  </div>
+                  <Switch id="emailNotifications" checked={emailNotifications} onCheckedChange={setEmailNotifications} />
                 </div>
-                <Switch id="emailNotifications" checked={emailNotifications} onCheckedChange={setEmailNotifications} />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="smsAlerts" className="text-base font-medium">
-                    SMS Alerts
-                  </Label>
-                  <p className="text-sm text-gray-600">Send critical alerts via SMS</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="smsAlerts" className="text-base font-medium">
+                      SMS Alerts
+                    </Label>
+                    <p className="text-sm text-gray-600">Send critical alerts via SMS</p>
+                  </div>
+                  <Switch id="smsAlerts" checked={smsAlerts} onCheckedChange={setSmsAlerts} />
                 </div>
-                <Switch id="smsAlerts" checked={smsAlerts} onCheckedChange={setSmsAlerts} />
               </div>
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-3">
-            <Button variant="outline">Cancel</Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
-          </div>
-        </div>
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3">
+              <Button variant="outline">Cancel</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 shadow-sm">Save Changes</Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {activeTab === "maintenance" && (
         <div className="space-y-6">
           {/* System Status */}
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Server className="h-5 w-5 text-green-600 mr-2" />
@@ -307,7 +311,7 @@ export function SystemSettings() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-green-50 rounded-lg p-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-green-700">System Health</p>
@@ -316,7 +320,7 @@ export function SystemSettings() {
                     <CheckCircle className="h-8 w-8 text-green-600" />
                   </div>
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-blue-700">Active Sessions</p>
@@ -325,7 +329,7 @@ export function SystemSettings() {
                     <Users className="h-8 w-8 text-blue-600" />
                   </div>
                 </div>
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <div className="bg-purple-50 rounded-lg p-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-purple-700">Uptime</p>
@@ -340,7 +344,7 @@ export function SystemSettings() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Maintenance Windows */}
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle>Maintenance Windows</CardTitle>
                 <p className="text-sm text-gray-600">Configure scheduled maintenance periods</p>
@@ -502,7 +506,7 @@ export function SystemSettings() {
         <>
           {/* System Status Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
+            <Card className="shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -516,7 +520,7 @@ export function SystemSettings() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
@@ -530,7 +534,7 @@ export function SystemSettings() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-purple-100 rounded-lg">
@@ -544,7 +548,7 @@ export function SystemSettings() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-yellow-100 rounded-lg">
@@ -562,7 +566,7 @@ export function SystemSettings() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Backup Configuration */}
             <div className="lg:col-span-1">
-              <Card>
+              <Card className="shadow-sm">
                 <CardHeader>
                   <CardTitle>Backup Configuration</CardTitle>
                 </CardHeader>
@@ -614,7 +618,7 @@ export function SystemSettings() {
                     <Switch id="encryption" checked={encryptBackups} onCheckedChange={setEncryptBackups} />
                   </div>
 
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-sm">
                     <Settings className="h-4 w-4 mr-2" />
                     Save Configuration
                   </Button>
@@ -622,24 +626,24 @@ export function SystemSettings() {
               </Card>
 
               {/* Quick Actions */}
-              <Card className="mt-6">
+              <Card className="mt-6 shadow-sm">
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start shadow-sm">
                     <Database className="h-4 w-4 mr-2" />
                     Database Backup
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start shadow-sm">
                     <HardDrive className="h-4 w-4 mr-2" />
                     Full System Backup
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start shadow-sm">
                     <Settings className="h-4 w-4 mr-2" />
                     Configuration Backup
                   </Button>
-                  <Button variant="outline" className="w-full justify-start text-orange-600">
+                  <Button variant="outline" className="w-full justify-start text-orange-600 shadow-sm">
                     <Upload className="h-4 w-4 mr-2" />
                     Restore from Backup
                   </Button>
