@@ -70,6 +70,12 @@ export function Sidebar({
       href: '/mot/bus-permits',
     },
     {
+      icon: Route,
+      label: 'Routes Management',
+      active: activeItem === 'bus-routes',
+      href: '/mot/bus-routes',
+    },
+    {
       icon: Calendar,
       label: 'Schedule Management',
       active: activeItem === 'schedule',
