@@ -53,7 +53,7 @@ export function AddMotForm() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">
-            <Button variant="ghost" size="sm" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+            <Button variant="ghost" size="sm" asChild className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 shadow-md">
               <Link href="/admin/users">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to User Management
@@ -517,7 +517,7 @@ export function AddMotForm() {
         <div className="flex justify-between items-center mt-8 pt-6 bg-gradient-to-r from-gray-50 to-white rounded-lg p-6 shadow-sm">
           <Button
             variant="outline"
-            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+            className="bg-red-500/20 text-red-600 border-red-200 hover:bg-red-500/30 shadow-md"
             asChild
           >
             <Link href="/admin/users">
@@ -526,10 +526,10 @@ export function AddMotForm() {
             </Link>
           </Button>
           <div className="flex space-x-3">
-            <Button variant="outline" className="border-gray-300 hover:bg-gray-50">
+            <Button variant="outline" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
               Save & Add Another
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
+            <Button className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md px-6">
               <UserCheck className="h-4 w-4 mr-2" />
               Create User Account
             </Button>

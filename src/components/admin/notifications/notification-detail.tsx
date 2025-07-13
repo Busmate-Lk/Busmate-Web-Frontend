@@ -63,7 +63,7 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
             <div className="text-center py-12">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-2">Notification Not Found</h2>
                 <p className="text-gray-600 mb-4">The notification you're looking for doesn't exist or has been removed.</p>
-                <Button onClick={() => router.push("/admin/notifications/received")}>
+                <Button onClick={() => router.push("/admin/notifications/received")} className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
                     Back to Notifications
                 </Button>
             </div>
@@ -114,7 +114,7 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="sm" asChild className="shadow-sm">
+                    <Button variant="ghost" size="sm" asChild className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md">
                         <Link href="/admin/notifications/received">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Notifications
@@ -123,11 +123,11 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                 </div>
                 <div className="flex items-center space-x-2">
                     {!notification.read && (
-                        <Button variant="outline" size="sm" className="shadow-sm">
+                        <Button variant="outline" size="sm" className="bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                             Mark as Read
                         </Button>
                     )}
-                    <Button variant="ghost" size="sm" className="shadow-sm">
+                    <Button variant="ghost" size="sm" className="bg-yellow-500/20 text-yellow-600 hover:bg-yellow-500/30 shadow-md">
                         Archive
                     </Button>
                 </div>

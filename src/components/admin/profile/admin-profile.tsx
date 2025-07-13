@@ -123,7 +123,7 @@ export function AdminProfile() {
                 <Badge className="bg-green-100 text-green-800">Active</Badge>
                 <Badge className="bg-blue-100 text-blue-800">Verified</Badge>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                 Change Avatar
               </Button>
             </CardContent>
@@ -163,15 +163,15 @@ export function AdminProfile() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                 <Settings className="h-4 w-4 mr-2" />
                 Change Password
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-purple-500/20 text-purple-600 border-purple-200 hover:bg-purple-500/30 shadow-md">
                 <Shield className="h-4 w-4 mr-2" />
                 Security Settings
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
                 <Activity className="h-4 w-4 mr-2" />
                 View Login History
               </Button>
@@ -179,10 +179,10 @@ export function AdminProfile() {
           </Card>
 
           <div className="flex space-x-3">
-            <Button variant="outline" className="flex-1">
+            <Button variant="outline" className="flex-1 bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
               Cancel
             </Button>
-            <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
+            <Button className="flex-1 bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
               <Save className="h-4 w-4 mr-2" />
               Save Changes
             </Button>

@@ -92,13 +92,13 @@ export function UserTable() {
           </div>
 
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm" className="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 shadow-sm">
+            <Button variant="outline" size="sm" className="bg-yellow-500/20 text-yellow-600 border-yellow-200 hover:bg-yellow-500/30 shadow-md">
               Suspend
             </Button>
-            <Button variant="outline" size="sm" className="bg-green-50 text-green-700 hover:bg-green-100 shadow-sm">
+            <Button variant="outline" size="sm" className="bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
               Activate
             </Button>
-            <Button variant="outline" size="sm" className="bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-sm">
+            <Button variant="outline" size="sm" className="bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
               Send Message
             </Button>
           </div>
@@ -176,14 +176,14 @@ export function UserTable() {
               <TableCell className="text-gray-600">{user.lastLogin}</TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm">
-                    <Eye className="h-4 w-4 text-blue-600" />
+                  <Button variant="ghost" size="sm" className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 shadow-md">
+                    <Eye className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    <Edit className="h-4 w-4 text-green-600" />
+                  <Button variant="ghost" size="sm" className="bg-green-500/20 text-green-600 hover:bg-green-500/30 shadow-md">
+                    <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    <Ban className="h-4 w-4 text-red-600" />
+                  <Button variant="ghost" size="sm" className="bg-red-500/20 text-red-600 hover:bg-red-500/30 shadow-md">
+                    <Ban className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>
@@ -195,19 +195,19 @@ export function UserTable() {
       <div className="p-6 bg-gradient-to-r from-gray-50 to-white rounded-b-lg flex items-center justify-between">
         <p className="text-sm text-gray-600 font-medium">Showing 1 to 10 of 13,302 results</p>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" className="shadow-sm">
+          <Button variant="outline" size="sm" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
             Previous
           </Button>
-          <Button variant="outline" size="sm" className="bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
+          <Button variant="outline" size="sm" className="bg-blue-500/90 text-white border-blue-500 hover:bg-blue-600 shadow-md">
             1
           </Button>
-          <Button variant="outline" size="sm" className="shadow-sm">
+          <Button variant="outline" size="sm" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
             2
           </Button>
-          <Button variant="outline" size="sm" className="shadow-sm">
+          <Button variant="outline" size="sm" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
             3
           </Button>
-          <Button variant="outline" size="sm" className="shadow-sm">
+          <Button variant="outline" size="sm" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
             Next
           </Button>
         </div>

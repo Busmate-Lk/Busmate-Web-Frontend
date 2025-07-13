@@ -151,11 +151,11 @@ export function SecurityLogs() {
                     <p className="text-sm text-gray-600">Monitor security events, threats, and access control violations</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Button onClick={handleRefresh} variant="outline" size="sm">
+                    <Button onClick={handleRefresh} variant="outline" size="sm" className="bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Refresh
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
                         <Download className="h-4 w-4 mr-2" />
                         Export
                     </Button>
@@ -253,7 +253,7 @@ export function SecurityLogs() {
                             </SelectContent>
                         </Select>
 
-                        <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Button className="bg-blue-500/90 text-white border-blue-600 hover:bg-blue-600/90 shadow-md">
                             <Filter className="h-4 w-4 mr-2" />
                             Apply Filters
                         </Button>

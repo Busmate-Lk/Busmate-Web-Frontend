@@ -46,16 +46,16 @@ export function UserFilters() {
 
       <div className="flex justify-between items-center">
         <div className="flex space-x-2">
-          <Button variant="outline" className="shadow-sm">Apply Filters</Button>
-          <Button variant="ghost" className="shadow-sm">Clear All</Button>
+          <Button variant="outline" className="bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">Apply Filters</Button>
+          <Button variant="ghost" className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md">Clear All</Button>
         </div>
 
         <div className="flex space-x-2">
-          <Button variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 shadow-sm">
+          <Button variant="outline" className="bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
-          <Button variant="outline" className="bg-red-50 text-red-700 hover:bg-red-100 shadow-sm">
+          <Button variant="outline" className="bg-red-500/20 text-red-600 border-red-200 hover:bg-red-500/30 shadow-md">
             <FileText className="h-4 w-4 mr-2" />
             Export PDF
           </Button>

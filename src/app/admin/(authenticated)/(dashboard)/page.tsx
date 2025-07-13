@@ -4,7 +4,7 @@ import { StatsCards, QuickActions, ActivityFeed } from "@/components/admin/dashb
 export default function DashboardPage() {
   return (
     <div className="p-0">
-      <Header title="System Dashboard" />
+      <Header title="System Dashboard" description="Monitor system performance, user activity, and key metrics" />
 
       <div className="p-6">
         <StatsCards />

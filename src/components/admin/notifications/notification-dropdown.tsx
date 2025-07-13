@@ -70,7 +70,7 @@ export function NotificationDropdown() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative h-9 w-9 rounded-full hover:bg-slate-100">
+        <Button variant="ghost" size="sm" className="relative h-9 w-9 rounded-full bg-gray-500/10 hover:bg-gray-500/20 shadow-md">
           <Bell className="h-4 w-4 text-slate-600" />
           {unreadCount > 0 && (
             <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center p-0 animate-pulse">
@@ -125,7 +125,7 @@ export function NotificationDropdown() {
 
         <div className="p-3 border-t border-slate-100">
           <Link href="/admin/notifications/received">
-            <Button variant="ghost" className="w-full justify-between text-slate-600 hover:text-slate-900">
+            <Button variant="ghost" className="w-full justify-between bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 shadow-md">
               View all notifications
               <ArrowRight className="h-4 w-4" />
             </Button>

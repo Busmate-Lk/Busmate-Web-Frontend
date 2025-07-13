@@ -150,7 +150,7 @@ export function NotificationPanel() {
                 </SelectContent>
               </Select>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 shadow-sm">
+            <Button className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
               <Filter className="h-4 w-4 mr-2" />
               Apply Filters
             </Button>
@@ -197,7 +197,7 @@ export function NotificationPanel() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="shadow-sm"
+                          className="bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md"
                           onClick={(e) => {
                             e.stopPropagation()
                             // Handle mark as read
@@ -209,7 +209,7 @@ export function NotificationPanel() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="shadow-sm"
+                        className="bg-green-500/20 text-green-600 hover:bg-green-500/30 shadow-md"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleNotificationClick(notification.id)
@@ -228,7 +228,7 @@ export function NotificationPanel() {
 
       {/* Load More */}
       <div className="text-center mt-6">
-        <Button variant="outline" className="shadow-sm">Load More Notifications</Button>
+        <Button variant="outline" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">Load More Notifications</Button>
       </div>
     </div>
   )

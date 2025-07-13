@@ -5,9 +5,11 @@ import { Download } from "lucide-react"
 
 export default function SettingsPage() {
   return (
-    <div className="p-6">
-      <Header title="System Settings" />
-      <SystemSettings />
+    <div className="p-0">
+      <Header title="System Settings" description="Configure system preferences, maintenance options, and backup settings" />
+      <div className="p-6">
+        <SystemSettings />
+      </div>
     </div>
   )
 }

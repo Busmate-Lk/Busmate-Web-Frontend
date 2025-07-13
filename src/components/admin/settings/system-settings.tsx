@@ -292,8 +292,8 @@ export function SystemSettings() {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3">
-              <Button variant="outline">Cancel</Button>
-              <Button className="bg-blue-600 hover:bg-blue-700 shadow-sm">Save Changes</Button>
+              <Button variant="outline" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">Cancel</Button>
+              <Button className="bg-blue-500/90 hover:bg-blue-600 text-white shadow-md">Save Changes</Button>
             </div>
           </CardContent>
         </Card>
@@ -401,7 +401,7 @@ export function SystemSettings() {
                   <Switch id="notifyMaintenance" defaultChecked />
                 </div>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button className="w-full bg-blue-500/90 hover:bg-blue-600 text-white shadow-md">
                   Save Maintenance Settings
                 </Button>
               </CardContent>
@@ -415,19 +415,19 @@ export function SystemSettings() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                     <Database className="h-4 w-4 mr-2" />
                     Database Optimization
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
                     <HardDrive className="h-4 w-4 mr-2" />
                     Clear System Cache
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-purple-500/20 text-purple-600 border-purple-200 hover:bg-purple-500/30 shadow-md">
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Restart Services
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
                     <Shield className="h-4 w-4 mr-2" />
                     Security Scan
                   </Button>
@@ -436,11 +436,11 @@ export function SystemSettings() {
                 <div className="border-t pt-4">
                   <h4 className="font-medium mb-3">Emergency Actions</h4>
                   <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start text-orange-600 border-orange-200">
+                    <Button variant="outline" className="w-full justify-start bg-orange-500/20 text-orange-600 border-orange-200 hover:bg-orange-500/30 shadow-md">
                       <AlertTriangle className="h-4 w-4 mr-2" />
                       Enable Maintenance Mode
                     </Button>
-                    <Button variant="outline" className="w-full justify-start text-red-600 border-red-200">
+                    <Button variant="outline" className="w-full justify-start bg-red-500/20 text-red-600 border-red-200 hover:bg-red-500/30 shadow-md">
                       <Zap className="h-4 w-4 mr-2" />
                       Emergency Shutdown
                     </Button>
@@ -618,7 +618,7 @@ export function SystemSettings() {
                     <Switch id="encryption" checked={encryptBackups} onCheckedChange={setEncryptBackups} />
                   </div>
 
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-sm">
+                  <Button className="w-full bg-blue-500/90 hover:bg-blue-600 text-white shadow-md">
                     <Settings className="h-4 w-4 mr-2" />
                     Save Configuration
                   </Button>
@@ -631,19 +631,19 @@ export function SystemSettings() {
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start shadow-sm">
+                  <Button variant="outline" className="w-full justify-start bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                     <Database className="h-4 w-4 mr-2" />
                     Database Backup
                   </Button>
-                  <Button variant="outline" className="w-full justify-start shadow-sm">
+                  <Button variant="outline" className="w-full justify-start bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
                     <HardDrive className="h-4 w-4 mr-2" />
                     Full System Backup
                   </Button>
-                  <Button variant="outline" className="w-full justify-start shadow-sm">
+                  <Button variant="outline" className="w-full justify-start bg-purple-500/20 text-purple-600 border-purple-200 hover:bg-purple-500/30 shadow-md">
                     <Settings className="h-4 w-4 mr-2" />
                     Configuration Backup
                   </Button>
-                  <Button variant="outline" className="w-full justify-start text-orange-600 shadow-sm">
+                  <Button variant="outline" className="w-full justify-start bg-orange-500/20 text-orange-600 border-orange-200 hover:bg-orange-500/30 shadow-md">
                     <Upload className="h-4 w-4 mr-2" />
                     Restore from Backup
                   </Button>
@@ -660,7 +660,7 @@ export function SystemSettings() {
                       <CardTitle>Backup History</CardTitle>
                       <p className="text-sm text-gray-600">Recent backup operations and their status</p>
                     </div>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
+                    <Button className="bg-blue-500/90 hover:bg-blue-600 text-white shadow-md">
                       <Play className="h-4 w-4 mr-2" />
                       Start Backup
                     </Button>
@@ -724,14 +724,14 @@ export function SystemSettings() {
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <h4 className="font-medium text-blue-900 mb-2">Point-in-Time Recovery</h4>
                       <p className="text-sm text-blue-700 mb-3">Restore system to a specific date and time</p>
-                      <Button size="sm" variant="outline" className="border-blue-300 text-blue-700">
+                      <Button size="sm" variant="outline" className="bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                         Configure Recovery Point
                       </Button>
                     </div>
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <h4 className="font-medium text-green-900 mb-2">Disaster Recovery</h4>
                       <p className="text-sm text-green-700 mb-3">Full system recovery procedures</p>
-                      <Button size="sm" variant="outline" className="border-green-300 text-green-700">
+                      <Button size="sm" variant="outline" className="bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
                         View Recovery Plan
                       </Button>
                     </div>

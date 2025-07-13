@@ -139,7 +139,7 @@ export function MessageHistory() {
               </div>
             </div>
             <div className="flex items-end">
-              <Button className="bg-blue-600 hover:bg-blue-700 w-full shadow-sm">Apply Filters</Button>
+              <Button className="bg-blue-500/90 text-white hover:bg-blue-600 w-full shadow-md">Apply Filters</Button>
             </div>
           </div>
         )}

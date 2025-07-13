@@ -15,7 +15,7 @@ export function PassengerProfile({ userId }: PassengerProfileProps) {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md">
             <Link href="/admin/users">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
@@ -27,11 +27,11 @@ export function PassengerProfile({ userId }: PassengerProfileProps) {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline">
+          <Button variant="outline" className="bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
             <Download className="h-4 w-4 mr-2" />
             Export Data
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
             <Edit className="h-4 w-4 mr-2" />
             Edit Profile
           </Button>
@@ -303,19 +303,19 @@ export function PassengerProfile({ userId }: PassengerProfileProps) {
               <CardTitle className="flex items-center">⚙️ Admin Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Reset Password
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-green-500/20 text-green-600 border-green-200 hover:bg-green-500/30 shadow-md">
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Send Message
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
                 <FileText className="h-4 w-4 mr-2" />
                 Generate Report
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start text-red-600 hover:text-red-700">
+              <Button variant="outline" size="sm" className="w-full justify-start bg-red-500/20 text-red-600 border-red-200 hover:bg-red-500/30 shadow-md">
                 <Ban className="h-4 w-4 mr-2" />
                 Block User
               </Button>

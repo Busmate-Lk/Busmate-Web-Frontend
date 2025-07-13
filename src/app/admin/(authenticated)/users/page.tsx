@@ -6,22 +6,24 @@ import Link from "next/link"
 
 export default function UsersPage() {
   return (
-    <div className="p-6">
-      <Header title="User Management" />
-      <UserStats />
+    <div className="p-0">
+      <Header title="User Management" description="Manage users, permissions, and account settings across the platform" />
+      <div className="p-6">
+        <UserStats />
 
-      {/* Add User Button */}
-      <div className="flex justify-end mb-6">
-        <Button asChild className="bg-blue-600 hover:bg-blue-700">
-          <Link href="/admin/users/add-mot">
-            <Plus className="h-4 w-4 mr-2" />
-            Add MoT User
-          </Link>
-        </Button>
+        {/* Add User Button */}
+        <div className="flex justify-end mb-6">
+          <Button asChild className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
+            <Link href="/admin/users/add-mot">
+              <Plus className="h-4 w-4 mr-2" />
+              Add MoT User
+            </Link>
+          </Button>
+        </div>
+
+        <UserFilters />
+        <UserTable />
       </div>
-
-      <UserFilters />
-      <UserTable />
     </div>
   )
 }

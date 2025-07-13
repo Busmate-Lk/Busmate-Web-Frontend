@@ -8,10 +8,12 @@ export default function ProfilePage() {
   const breadcrumbItems = [{ label: "Dashboard", href: "/admin" }, { label: "Admin Profile" }]
 
   return (
-    <div className="p-6">
+    <div className="p-0">
       <NavigationBreadcrumb items={breadcrumbItems} />
-      <Header title="Admin Profile" />
-      <AdminProfile />
+      <Header title="Admin Profile" description="Manage your admin account settings, preferences, and security options" />
+      <div className="p-6">
+        <AdminProfile />
+      </div>
     </div>
   )
 }
