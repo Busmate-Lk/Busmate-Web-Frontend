@@ -8,7 +8,7 @@ import { LiveMapView } from "@/components/mot/live-map-view";
 import { BusListSidebar } from "@/components/mot/bus-list-sidebar";
 import { BusDetailsModal } from "@/components/mot/bus-details-modal";
 import { useState, useEffect } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 interface Bus {
   id: string;

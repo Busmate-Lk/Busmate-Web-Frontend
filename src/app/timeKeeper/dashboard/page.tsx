@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 // import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
 import { ScheduleStatsCards } from "@/components/timeKeeper/schedule-stats-cards";
 import { Calendar, Clock, TrendingUp, AlertCircle } from "lucide-react";

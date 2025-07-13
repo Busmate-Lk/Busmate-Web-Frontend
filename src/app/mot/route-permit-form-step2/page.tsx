@@ -9,7 +9,7 @@ import { PermitApplicationSummary } from "@/components/mot/permit-application-su
 import { PermitFormStep2Actions } from "@/components/mot/permit-form-step2-actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function RoutePermitFormStep2() {
   const router = useRouter();

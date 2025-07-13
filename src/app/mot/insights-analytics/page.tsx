@@ -9,7 +9,7 @@ import { RidershipAnalytics } from "@/components/mot/ridership-analytics";
 import { RevenueAnalytics } from "@/components/mot/revenue-analytics";
 import { PerformanceAnalytics } from "@/components/mot/performance-analytics";
 import { useState } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function InsightsAnalytics() {
   const [selectedRegion, setSelectedRegion] = useState("all");

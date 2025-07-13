@@ -10,7 +10,7 @@ import { DaysOfOperationSelector } from "@/components/mot/days-of-operation-sele
 import { ScheduleActionButtons } from "@/components/mot/schedule-action-buttons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function ScheduleForm() {
   const router = useRouter();

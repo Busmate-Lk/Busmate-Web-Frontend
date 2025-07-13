@@ -11,7 +11,7 @@ import { BusPermitStatsCards } from '@/components/mot/bus-permit-stats-cards';
 import { BusPermitSearchFilters } from '@/components/mot/bus-permit-search-filters';
 import { BusPermitsTable, BusPermit } from '@/components/mot/bus-permits-table';
 import { usePagination } from '@/components/mot/pagination';
-import { Layout } from '@/app/shared/layout';
+import { Layout } from '@/components/shared/layout';
 
 export default function BusPermitManagement() {
  

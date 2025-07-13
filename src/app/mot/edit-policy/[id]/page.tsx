@@ -10,7 +10,7 @@ import { VersionHistorySection } from "@/components/mot/version-history-section"
 import { EditPolicyActions } from "@/components/mot/edit-policy-actions";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function EditPolicy() {
   const router = useRouter();

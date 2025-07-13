@@ -11,7 +11,7 @@ import { InternalNotes } from "@/components/mot/internal-notes";
 import { RoutePermitActions } from "@/components/mot/route-permit-actions";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function RoutePermitDetails() {
   const router = useRouter();

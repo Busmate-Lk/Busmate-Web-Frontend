@@ -21,7 +21,7 @@ import {
   MaintenanceBuses,
   MaintenanceBus,
 } from '@/components/mot/maintenance-buses';
-import { Layout } from '@/app/shared/layout';
+import { Layout } from '@/components/shared/layout';
 
 export default function Dashboard() {
   const broadcastMessages: BroadcastMessage[] = [

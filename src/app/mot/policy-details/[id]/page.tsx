@@ -12,7 +12,7 @@ import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
 } from '../../../../components/mot/confirmation-modals';
-import { Layout } from '@/app/shared/layout';
+import { Layout } from "@/components/shared/layout";
 
 export default function PolicyDetails() {
   const router = useRouter();

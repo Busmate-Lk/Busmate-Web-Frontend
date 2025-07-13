@@ -12,7 +12,7 @@ import {
 import { usePagination } from "@/components/mot/pagination";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function ScheduleManagement() {
   const router = useRouter();

@@ -1,6 +1,5 @@
 "use client";
 
-import { MOTLayout } from "@/components/mot/layout";
 import { PermitOperatorInformation } from "@/components/mot/permit-operator-information";
 import { PermitRouteDetails } from "@/components/mot/permit-route-details";
 import {
@@ -10,7 +9,7 @@ import {
 import { PermitFormActions } from "@/components/mot/permit-form-actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function RoutePermitForm() {
   const router = useRouter();

@@ -10,7 +10,7 @@ import { DaysOfOperationCard } from "@/components/mot/days-of-operation-card";
 import { IntermediateStopsCard } from "@/components/mot/intermediate-stops-card";
 import { ScheduleDetailsActions } from "@/components/mot/schedule-details-actions";
 import { useRouter, useParams } from "next/navigation";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function ScheduleDetails() {
   const router = useRouter();

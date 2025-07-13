@@ -10,7 +10,7 @@ import { ScheduleActionButtons } from "@/components/timeKeeper/schedule-action-b
 import { ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Layout } from "@/app/shared/layout";
+import { Layout } from "@/components/shared/layout";
 
 export default function ScheduleForm() {
   const router = useRouter();

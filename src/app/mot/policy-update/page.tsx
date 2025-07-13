@@ -8,7 +8,7 @@ import { PolicyStatsCards } from '@/components/mot/policy-stats-cards';
 import { PolicySearchFilters } from '@/components/mot/policy-search-filters';
 import { PoliciesTable, Policy } from '@/components/mot/policies-table';
 import { usePagination } from '@/components/mot/pagination';
-import { Layout } from '@/app/shared/layout';
+import { Layout } from "@/components/shared/layout";
 
 export default function PolicyUpdate() {
   const router = useRouter();
