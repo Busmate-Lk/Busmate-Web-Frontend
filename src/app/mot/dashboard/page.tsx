@@ -1,14 +1,14 @@
 'use client';
 
-// import { MOTLayout } from "@/components/mot/layout";
-import { Bus, Users, DollarSign, Route } from 'lucide-react';
+import { MapPin, Route, Calendar, ClipboardList, Users, Bus, FileCheck, UserCheck } from 'lucide-react';
 import {
   DashboardMetricsCards,
   DashboardMetric,
 } from '@/components/mot/dashboard-metrics-cards';
-import { RidershipChart } from '@/components/mot/ridership-chart';
-import { BusTypesChart } from '@/components/mot/bus-types-chart';
-import { TopRoutesRevenue } from '@/components/mot/top-routes-revenue';
+import { RouteDistributionChart } from '@/components/mot/route-distribution-chart';
+import { PermitCategoriesChart } from '@/components/mot/permit-categories-chart';
+import { AssignmentTrendsChart } from '@/components/mot/assignment-trends-chart';
+import { OperatorPerformanceChart } from '@/components/mot/operator-performance-chart';
 import {
   BroadcastCenter,
   BroadcastMessage,
@@ -65,95 +65,116 @@ export default function Dashboard() {
     },
   ];
 
-  const chartData = [
-    { day: 'Mon', value: 85000, height: 'h-16' },
-    { day: 'Tue', value: 92000, height: 'h-20' },
-    { day: 'Wed', value: 78000, height: 'h-14' },
-    { day: 'Thu', value: 88000, height: 'h-18' },
-    { day: 'Fri', value: 95000, height: 'h-22' },
-    { day: 'Sat', value: 89000, height: 'h-19' },
-    { day: 'Sun', value: 89432, height: 'h-24', isToday: true },
-  ];
-
-  const busTypesData = {
-    total: 1247,
-    regular: 520,
-    express: 280,
-  };
-
-  // Calculate metrics based on actual data
-  const totalBuses = busTypesData.total;
-  const activeBuses = totalBuses - maintenanceBuses.length; // Subtract buses in maintenance
-  const totalRoutes = routeAlerts.length + 3; // Current route alerts + additional approved routes
-  const todaysRidership = chartData.find((day) => day.isToday)?.value || 89432;
-  const estimatedFarePerRider = 35; // Average fare in Rs.
-  const totalFareCollected = (
-    todaysRidership * estimatedFarePerRider
-  ).toLocaleString();
+  // MOT Admin Dashboard Data
+  const totalRoutes = 247;
+  const routeGroups = 12;
+  const totalSchedules = 1850;
+  const totalStops = 3420;
+  const activePermits = 189;
+  const permitRequests = 23;
+  const totalOperators = 85;
+  const totalBuses = 1247;
+  const scheduleAssignments = 2156;
 
   const metrics: DashboardMetric[] = [
     {
-      title: 'Total Active Buses',
-      value: activeBuses.toString(),
-      subtitle: `${totalBuses} total, ${maintenanceBuses.length} in maintenance`,
-      icon: Bus,
+      title: 'Total Routes',
+      value: totalRoutes.toString(),
+      subtitle: `${routeGroups} route groups`,
+      icon: Route,
       color: 'text-blue-800',
       bgColor: 'bg-blue-50',
       borderColor: 'border-l-blue-800',
-      trend: '+12%',
-      trendColor: 'text-green-600',
-    },
-    {
-      title: 'Approved Routes',
-      value: totalRoutes.toString(),
-      subtitle: `${routeAlerts.length} need attention`,
-      icon: Route,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-l-green-600',
       trend: '+5%',
       trendColor: 'text-green-600',
     },
     {
-      title: "Today's Ridership",
-      value: todaysRidership.toLocaleString(),
-      subtitle: '+8% from yesterday',
-      icon: Users,
-      color: 'text-slate-700',
-      bgColor: 'bg-slate-50',
-      borderColor: 'border-l-slate-500',
+      title: 'Total Schedules',
+      value: totalSchedules.toLocaleString(),
+      subtitle: 'Active operational schedules',
+      icon: Calendar,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-l-green-600',
+      trend: '+12%',
+      trendColor: 'text-green-600',
+    },
+    {
+      title: 'Total Stops',
+      value: totalStops.toLocaleString(),
+      subtitle: 'Registered bus stops',
+      icon: MapPin,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-l-purple-600',
       trend: '+8%',
       trendColor: 'text-green-600',
     },
     {
-      title: 'Total Fare Collected',
-      value: `Rs.${totalFareCollected}`,
-      subtitle: "Today's collection",
-      icon: DollarSign,
+      title: 'Active Permits',
+      value: activePermits.toString(),
+      subtitle: `${permitRequests} pending requests`,
+      icon: FileCheck,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      borderColor: 'border-l-orange-600',
+      trend: '+3%',
+      trendColor: 'text-green-600',
+    },
+    {
+      title: 'Operators',
+      value: totalOperators.toString(),
+      subtitle: 'Registered operators',
+      icon: UserCheck,
+      color: 'text-cyan-600',
+      bgColor: 'bg-cyan-50',
+      borderColor: 'border-l-cyan-600',
+      trend: '+7%',
+      trendColor: 'text-green-600',
+    },
+    {
+      title: 'Total Buses',
+      value: totalBuses.toLocaleString(),
+      subtitle: 'Fleet across all operators',
+      icon: Bus,
       color: 'text-blue-800',
       bgColor: 'bg-blue-50',
       borderColor: 'border-l-blue-800',
       trend: '+15%',
       trendColor: 'text-green-600',
     },
+    {
+      title: 'Schedule Assignments',
+      value: scheduleAssignments.toLocaleString(),
+      subtitle: 'Active route assignments',
+      icon: ClipboardList,
+      color: 'text-slate-700',
+      bgColor: 'bg-slate-50',
+      borderColor: 'border-l-slate-500',
+      trend: '+10%',
+      trendColor: 'text-green-600',
+    },
   ];
 
   return (
-    <Layout activeItem="dashboard" role = "mot">
+    <Layout activeItem="dashboard" role="mot">
       <div className="space-y-6">
-        {/* Metrics Cards */}
+        {/* Metrics Cards - MOT Admin Dashboard */}
         <DashboardMetricsCards metrics={metrics} />
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RidershipChart chartData={chartData} />
-          <BusTypesChart data={busTypesData} />
+        {/* Charts Section - New MOT Admin Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <RouteDistributionChart />
+          <PermitCategoriesChart />
+          <AssignmentTrendsChart />
         </div>
 
-        {/* Top Routes Section */}
-        <TopRoutesRevenue />
+        {/* Additional Analytics Section */}
+        <div className="grid grid-cols-1 gap-6">
+          <OperatorPerformanceChart />
+        </div>
 
-        {/* Bottom Section */}
+        {/* Bottom Section - Alerts and Maintenance */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <BroadcastCenter messages={broadcastMessages} />
           <RoutePermitAlerts alerts={routeAlerts} />
