@@ -39,7 +39,7 @@ export default function EditSchedule() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeItem="schedule" />
+      {/* <Sidebar activeItem="schedule" /> */}
 
       <div className="flex-1">
         <Header />

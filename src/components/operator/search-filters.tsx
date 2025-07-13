@@ -55,10 +55,10 @@ export function SearchFilters({
       <div className="relative">
         <button
           onClick={() => setStatusOpen(!statusOpen)}
-          className="flex h-10 w-32 items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex h-10 w-32 text-gray-400 items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <span>{statusOptions.find((opt) => opt.value === statusFilter)?.label}</span>
-          <ChevronDown className="h-4 w-4 opacity-50" />
+          <ChevronDown className="h-4 w-4 opacity-50 " />
         </button>
         {statusOpen && (
           <div className="absolute top-full mt-1 w-32 rounded-md border border-gray-200 bg-white shadow-lg z-50">
@@ -82,7 +82,7 @@ export function SearchFilters({
       <div className="relative">
         <button
           onClick={() => setTimeOpen(!timeOpen)}
-          className="flex h-10 w-32 items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex h-10 w-32 text-gray-400 items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <span>{timeOptions.find((opt) => opt.value === timeFilter)?.label}</span>
           <ChevronDown className="h-4 w-4 opacity-50" />

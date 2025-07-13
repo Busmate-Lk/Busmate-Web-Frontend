@@ -68,7 +68,7 @@ export default function RoutePermitManagement() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeItem="permits" />
+      {/* <Sidebar activeItem="permits" /> */}
 
       <div className="flex-1">
         <Header />
