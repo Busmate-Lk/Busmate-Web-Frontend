@@ -2,21 +2,7 @@
 
 import { useState } from 'react';
 import { X, MapPin, Clock, Users, Bus, Calendar, Navigation, Route as RouteIcon } from 'lucide-react';
-
-interface Route {
-  id: string;
-  routeName: string;
-  routeNumber: string;
-  group: string;
-  stopsCount: number;
-  status: 'Active' | 'Inactive' | 'Maintenance';
-  operator: string;
-  distance: string;
-  estimatedTime: string;
-  scheduleCount: number;
-  lastUpdated: string;
-  stops: string[];
-}
+import { BusRoute } from '@/components/mot/bus-routes-table';
 
 interface Schedule {
   id: string;
@@ -31,7 +17,7 @@ interface Schedule {
 interface RouteDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  route: Route | null;
+  route: BusRoute | null;
 }
 
 export function RouteDetailsModal({ isOpen, onClose, route }: RouteDetailsModalProps) {
