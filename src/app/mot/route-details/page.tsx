@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArrowLeft, MapPin, Clock, Users, Bus, Calendar, Navigation, Route as RouteIcon } from 'lucide-react';
+import { Layout } from "@/components/shared/layout";
 
 interface Route {
   id: string;
@@ -36,7 +37,7 @@ export default function RouteDetailsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  const routeId = searchParams.get('id');
+  const routeId = searchParams?.get('id');
 
   // Mock data for schedules
   const schedules: Schedule[] = [
@@ -144,35 +145,54 @@ export default function RouteDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading route details...</p>
+      <Layout 
+        activeItem="bus-routes" 
+        pageTitle="Route Details" 
+        pageDescription="Loading route information..."
+        role="mot"
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading route details...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (!route) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Route not found</h2>
-          <p className="text-gray-600 mb-4">The requested route could not be found.</p>
-          <button
-            onClick={handleBack}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go Back
-          </button>
+      <Layout 
+        activeItem="bus-routes" 
+        pageTitle="Route Not Found" 
+        pageDescription="The requested route could not be found"
+        role="mot"
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Route not found</h2>
+            <p className="text-gray-600 mb-4">The requested route could not be found.</p>
+            <button
+              onClick={handleBack}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Layout 
+      activeItem="bus-routes" 
+      pageTitle="Route Details" 
+      pageDescription="View and manage route information"
+      role="mot"
+    >
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
           <div className="flex items-center justify-between p-6">
@@ -430,6 +450,6 @@ export default function RouteDetailsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
