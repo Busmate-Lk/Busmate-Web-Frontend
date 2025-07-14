@@ -91,7 +91,7 @@ export function Sidebar({
       icon: Bus,
       label: 'Bus Information',
       active: activeItem === 'information',
-      href: '/mot/bus-info',
+      href: '/mot/bus-infomation',
     },
     {
       icon: DollarSign,
