@@ -236,7 +236,7 @@ export default function BusRoutesPage() {
         <BusRouteStatsCards stats={stats} />
 
         {/* Search and Filters + Add Buttons */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 ">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex-1">
             <BusRouteSearchFilters
               searchTerm={searchTerm}

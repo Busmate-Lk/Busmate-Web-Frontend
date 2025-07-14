@@ -14,7 +14,7 @@ import { Layout } from "@/components/shared/layout";
 export default function RoutePermitForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const permitId = searchParams.get("permitId");
+  const permitId = searchParams?.get("permitId");
   const isEdit = !!permitId;
 
   const [stops, setStops] = useState<Stop[]>([
