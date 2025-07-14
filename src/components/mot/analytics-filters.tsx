@@ -22,7 +22,7 @@ export function AnalyticsFilters({
       <select
         value={selectedRegion}
         onChange={(e) => setSelectedRegion(e.target.value)}
-        className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value="all">All Regions</option>
         <option value="western">Western Province</option>
@@ -34,7 +34,7 @@ export function AnalyticsFilters({
       <select
         value={selectedOperator}
         onChange={(e) => setSelectedOperator(e.target.value)}
-        className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value="all">All Operators</option>
         <option value="sltb">SLTB</option>
@@ -44,7 +44,7 @@ export function AnalyticsFilters({
       <select
         value={selectedPeriod}
         onChange={(e) => setSelectedPeriod(e.target.value)}
-        className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value="7">Last 7 Days</option>
         <option value="30">Last 30 Days</option>
