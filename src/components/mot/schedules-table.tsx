@@ -6,7 +6,7 @@ import { Pagination } from "./pagination";
 interface Schedule {
   id: string;
   routeId: string;
-  busNo: string;
+  routeName: string;
   startPoint: string;
   endPoint: string;
   departure: string;
@@ -14,6 +14,7 @@ interface Schedule {
   validFrom: string;
   validUntil: string;
   days: string;
+  frequency: string;
   status: string;
 }
 
@@ -78,31 +79,13 @@ export function SchedulesTable({
                   Schedule ID
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Route ID
+                  Route
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Bus No.
+                  Departure Time
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Start Point
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  End Point
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Departure
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Arrival
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Valid From
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Valid Until
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Days
+                  Frequency
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
                   Status
@@ -121,32 +104,38 @@ export function SchedulesTable({
                   <td className="py-3 px-4 font-medium text-gray-900">
                     {schedule.id}
                   </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.routeId}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">{schedule.busNo}</td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.startPoint}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.endPoint}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.departure}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.arrival}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.validFrom}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {schedule.validUntil}
+                  <td className="py-3 px-4">
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {schedule.routeName}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {schedule.startPoint} → {schedule.endPoint}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Route ID: {schedule.routeId}
+                      </div>
+                    </div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border">
-                      {schedule.days}
-                    </span>
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {schedule.departure}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Arrives: {schedule.arrival}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border">
+                        {schedule.frequency}
+                      </span>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {schedule.days}
+                      </div>
+                    </div>
                   </td>
                   <td className="py-3 px-4">
                     <span

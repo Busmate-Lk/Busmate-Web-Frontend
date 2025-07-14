@@ -19,7 +19,7 @@ export default function ScheduleForm() {
   const isEditMode = Boolean(scheduleId);
 
   const [routeId, setRouteId] = useState("");
-  const [busNo, setBusNo] = useState("");
+  const [frequency, setFrequency] = useState("");
   const [startPoint, setStartPoint] = useState("");
   const [endPoint, setEndPoint] = useState("");
   const [validFrom, setValidFrom] = useState("");
@@ -42,7 +42,7 @@ export default function ScheduleForm() {
       const mockData = {
         SCH001: {
           routeId: "RT001",
-          busNo: "NB1234",
+          frequency: "Every 30 minutes",
           startPoint: "Colombo Fort",
           endPoint: "Kandy Central",
           validFrom: "2024-01-01",
@@ -60,7 +60,7 @@ export default function ScheduleForm() {
         },
         SCH002: {
           routeId: "RT002",
-          busNo: "NB5678",
+          frequency: "Every 20 minutes",
           startPoint: "Galle",
           endPoint: "Matara",
           validFrom: "2024-03-15",
@@ -81,7 +81,7 @@ export default function ScheduleForm() {
       const existingData = mockData[scheduleId as keyof typeof mockData];
       if (existingData) {
         setRouteId(existingData.routeId);
-        setBusNo(existingData.busNo);
+        setFrequency(existingData.frequency);
         setStartPoint(existingData.startPoint);
         setEndPoint(existingData.endPoint);
         setValidFrom(existingData.validFrom);
@@ -157,9 +157,9 @@ export default function ScheduleForm() {
 
         <RouteInformationForm
           routeId={routeId}
-          busNo={busNo}
+          frequency={frequency}
           onRouteIdChange={setRouteId}
-          onBusNoChange={setBusNo}
+          onFrequencyChange={setFrequency}
         />
 
         <JourneyDetailsForm

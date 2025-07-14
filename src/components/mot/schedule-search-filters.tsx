@@ -7,8 +7,6 @@ interface ScheduleSearchFiltersProps {
   setSearchTerm?: (term: string) => void;
   statusFilter?: string;
   setStatusFilter?: (status: string) => void;
-  operatorFilter?: string;
-  setOperatorFilter?: (operator: string) => void;
   routeFilter?: string;
   setRouteFilter?: (route: string) => void;
   onAddNew: () => void;
@@ -20,19 +18,16 @@ export function ScheduleSearchFilters({
   setSearchTerm,
   statusFilter = '',
   setStatusFilter,
-  operatorFilter = '',
-  setOperatorFilter,
   routeFilter = '',
   setRouteFilter,
   onAddNew,
   onExportAll,
 }: ScheduleSearchFiltersProps) {
-  const hasActiveFilters = searchTerm || statusFilter || operatorFilter || routeFilter;
+  const hasActiveFilters = searchTerm || statusFilter || routeFilter;
 
   const clearAllFilters = () => {
     setSearchTerm?.('');
     setStatusFilter?.('');
-    setOperatorFilter?.('');
     setRouteFilter?.('');
   };
 
@@ -43,7 +38,7 @@ export function ScheduleSearchFilters({
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
-              placeholder="Search by schedule ID, bus no, or route name..."
+              placeholder="Search by schedule ID, route name, or frequency..."
               value={searchTerm}
               onChange={(e) => setSearchTerm?.(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
@@ -61,20 +56,6 @@ export function ScheduleSearchFilters({
               <option value="Active">Active</option>
               <option value="Pending">Pending</option>
               <option value="Inactive">Inactive</option>
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
-          </div>
-          
-          {/* Operator Filter */}
-          <div className="relative">
-            <select
-              value={operatorFilter}
-              onChange={(e) => setOperatorFilter?.(e.target.value)}
-              className="appearance-none px-4 py-2 pr-8 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              <option value="">All Operators</option>
-              <option value="SLTB">SLTB</option>
-              <option value="Private">Private</option>
             </select>
             <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
           </div>
@@ -139,11 +120,6 @@ export function ScheduleSearchFilters({
           {statusFilter && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               Status: {statusFilter}
-            </span>
-          )}
-          {operatorFilter && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-              Operator: {operatorFilter}
             </span>
           )}
           {routeFilter && (

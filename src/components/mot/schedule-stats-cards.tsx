@@ -6,7 +6,7 @@ interface ScheduleStats {
   activeSchedules: number;
   onTimePerformance: number;
   routesCovered: number;
-  busesAssigned: number;
+  scheduleSlots: number;
 }
 
 interface ScheduleStatsCardsProps {
@@ -19,7 +19,7 @@ export function ScheduleStatsCards({ stats }: ScheduleStatsCardsProps) {
     activeSchedules: 156,
     onTimePerformance: 98.5,
     routesCovered: 42,
-    busesAssigned: 89,
+    scheduleSlots: 89,
   };
 
   const displayStats = stats || defaultStats;
@@ -96,9 +96,9 @@ export function ScheduleStatsCards({ stats }: ScheduleStatsCardsProps) {
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">{displayStats.busesAssigned}</h3>
+              <h3 className="text-2xl font-bold text-gray-900">{displayStats.scheduleSlots}</h3>
               <p className="text-sm font-medium text-gray-600">
-                Buses Assigned
+                Schedule Slots
               </p>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp className="h-3 w-3 text-orange-600" />
@@ -108,7 +108,7 @@ export function ScheduleStatsCards({ stats }: ScheduleStatsCardsProps) {
               </div>
             </div>
             <div className="p-2 bg-orange-50 rounded-lg">
-              <Bus className="h-5 w-5 text-orange-600" />
+              <Clock className="h-5 w-5 text-orange-600" />
             </div>
           </div>
         </div>

@@ -1,15 +1,15 @@
 interface RouteInformationFormProps {
   routeId: string;
-  busNo: string;
+  frequency: string;
   onRouteIdChange: (value: string) => void;
-  onBusNoChange: (value: string) => void;
+  onFrequencyChange: (value: string) => void;
 }
 
 export function RouteInformationForm({
   routeId,
-  busNo,
+  frequency,
   onRouteIdChange,
-  onBusNoChange,
+  onFrequencyChange,
 }: RouteInformationFormProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -41,21 +41,26 @@ export function RouteInformationForm({
           </div>
           <div className="space-y-2">
             <label
-              htmlFor="busNo"
+              htmlFor="frequency"
               className="block text-sm font-medium text-gray-700"
             >
-              Bus No. (Departure for Fixed schedules)
+              Service Frequency *
             </label>
             <select
-              id="busNo"
-              value={busNo}
-              onChange={(e) => onBusNoChange(e.target.value)}
+              id="frequency"
+              value={frequency}
+              onChange={(e) => onFrequencyChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white text-gray-900"
             >
-              <option value="">Select Bus</option>
-              <option value="NB1234">NB-1234</option>
-              <option value="NB5678">NB-5678</option>
-              <option value="NB9012">NB-9012</option>
+              <option value="">Select Frequency</option>
+              <option value="Every 15 minutes">Every 15 minutes</option>
+              <option value="Every 20 minutes">Every 20 minutes</option>
+              <option value="Every 30 minutes">Every 30 minutes</option>
+              <option value="Every 45 minutes">Every 45 minutes</option>
+              <option value="Every 1 hour">Every 1 hour</option>
+              <option value="Every 1.5 hours">Every 1.5 hours</option>
+              <option value="Every 2 hours">Every 2 hours</option>
+              <option value="Every 3 hours">Every 3 hours</option>
             </select>
           </div>
         </div>

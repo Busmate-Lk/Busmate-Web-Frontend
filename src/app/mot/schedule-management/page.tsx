@@ -1,6 +1,5 @@
 "use client";
 
-// import { MOTLayout } from "@/components/mot/layout";
 import { ScheduleStatsCards } from "@/components/mot/schedule-stats-cards";
 import { ScheduleSearchFilters } from "@/components/mot/schedule-search-filters";
 import { SchedulesTable } from "@/components/mot/schedules-table";
@@ -20,7 +19,6 @@ export default function ScheduleManagement() {
   const [isStopsModalOpen, setIsStopsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [operatorFilter, setOperatorFilter] = useState('');
   const [routeFilter, setRouteFilter] = useState('');
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
@@ -133,8 +131,6 @@ export default function ScheduleManagement() {
       id: "SCH001",
       routeId: "001",
       routeName: "Colombo - Kandy",
-      operator: "SLTB",
-      busNo: "NB-1234",
       startPoint: "Colombo Fort",
       endPoint: "Kandy",
       departure: "06:00 AM",
@@ -142,14 +138,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-01-01",
       validUntil: "2024-12-31",
       days: "Mon-Fri",
+      frequency: "Every 30 minutes",
       status: "Active",
     },
     {
       id: "SCH002",
       routeId: "002",
       routeName: "Galle - Matara",
-      operator: "SLTB",
-      busNo: "NB-5678",
       startPoint: "Galle",
       endPoint: "Matara",
       departure: "07:15 AM",
@@ -157,14 +152,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-03-15",
       validUntil: "2024-12-31",
       days: "Daily",
+      frequency: "Every 20 minutes",
       status: "Active",
     },
     {
       id: "SCH003",
       routeId: "003",
       routeName: "Colombo-Kataragama",
-      operator: "Private",
-      busNo: "NB-9012",
       startPoint: "Colombo",
       endPoint: "Kataragama",
       departure: "08:30 AM",
@@ -172,14 +166,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-02-01",
       validUntil: "2024-11-30",
       days: "Daily",
+      frequency: "Every 2 hours",
       status: "Pending",
     },
     {
       id: "SCH004",
       routeId: "004",
       routeName: "Colombo-Mannar",
-      operator: "SLTB",
-      busNo: "NB-9019",
       startPoint: "Colombo",
       endPoint: "Mannar",
       departure: "07:00 AM",
@@ -187,14 +180,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-06-01",
       validUntil: "2025-05-31",
       days: "Mon-Fri",
+      frequency: "Every 1 hour",
       status: "Active",
     },
     {
       id: "SCH005",
       routeId: "005",
       routeName: "Colombo-Kurunegala",
-      operator: "Private",
-      busNo: "NB-2345",
       startPoint: "Colombo",
       endPoint: "Kurunegala",
       departure: "09:00 AM",
@@ -202,14 +194,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-04-10",
       validUntil: "2025-04-09",
       days: "Daily",
+      frequency: "Every 45 minutes",
       status: "Inactive",
     },
     {
       id: "SCH006",
       routeId: "006",
       routeName: "Jaffna - Vavuniya",
-      operator: "SLTB",
-      busNo: "NB-6789",
       startPoint: "Jaffna",
       endPoint: "Vavuniya",
       departure: "05:30 AM",
@@ -217,14 +208,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-07-01",
       validUntil: "2025-06-30",
       days: "Daily",
+      frequency: "Every 40 minutes",
       status: "Active",
     },
     {
       id: "SCH007",
       routeId: "007",
       routeName: "Negombo - Anuradhapura",
-      operator: "Private",
-      busNo: "NB-3456",
       startPoint: "Negombo",
       endPoint: "Anuradhapura",
       departure: "06:30 AM",
@@ -232,14 +222,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-05-20",
       validUntil: "2025-05-19",
       days: "Mon-Sat",
+      frequency: "Every 1.5 hours",
       status: "Pending",
     },
     {
       id: "SCH008",
       routeId: "008",
       routeName: "Colombo - Trincomalee",
-      operator: "SLTB",
-      busNo: "NB-7890",
       startPoint: "Colombo",
       endPoint: "Trincomalee",
       departure: "08:00 AM",
@@ -247,14 +236,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-08-01",
       validUntil: "2025-07-31",
       days: "Daily",
+      frequency: "Every 2 hours",
       status: "Active",
     },
     {
       id: "SCH009",
       routeId: "009",
       routeName: "Matara - Nuwara Eliya",
-      operator: "Private",
-      busNo: "NB-4567",
       startPoint: "Matara",
       endPoint: "Nuwara Eliya",
       departure: "07:30 AM",
@@ -262,14 +250,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-02-15",
       validUntil: "2024-12-31",
       days: "Daily",
+      frequency: "Every 3 hours",
       status: "Inactive",
     },
     {
       id: "SCH010",
       routeId: "010",
       routeName: "Batticaloa - Polonnaruwa",
-      operator: "SLTB",
-      busNo: "NB-8901",
       startPoint: "Batticaloa",
       endPoint: "Polonnaruwa",
       departure: "09:15 AM",
@@ -277,14 +264,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-09-01",
       validUntil: "2025-08-31",
       days: "Mon-Fri",
+      frequency: "Every 1 hour",
       status: "Active",
     },
     {
       id: "SCH011",
       routeId: "001",
       routeName: "Colombo - Kandy",
-      operator: "SLTB",
-      busNo: "NB-1235",
       startPoint: "Colombo Fort",
       endPoint: "Kandy",
       departure: "10:00 AM",
@@ -292,14 +278,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-01-01",
       validUntil: "2024-12-31",
       days: "Daily",
+      frequency: "Every 30 minutes",
       status: "Active",
     },
     {
       id: "SCH012",
       routeId: "002",
       routeName: "Galle - Matara",
-      operator: "Private",
-      busNo: "NB-5679",
       startPoint: "Galle",
       endPoint: "Matara",
       departure: "12:15 PM",
@@ -307,14 +292,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-03-15",
       validUntil: "2024-12-31",
       days: "Daily",
+      frequency: "Every 20 minutes",
       status: "Active",
     },
     {
       id: "SCH013",
       routeId: "001",
       routeName: "Colombo - Kandy",
-      operator: "Private",
-      busNo: "NB-1236",
       startPoint: "Colombo Fort",
       endPoint: "Kandy",
       departure: "02:00 PM",
@@ -322,14 +306,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-01-01",
       validUntil: "2024-12-31",
       days: "Mon-Fri",
+      frequency: "Every 30 minutes",
       status: "Pending",
     },
     {
       id: "SCH014",
       routeId: "003",
       routeName: "Colombo-Kataragama",
-      operator: "SLTB",
-      busNo: "NB-9013",
       startPoint: "Colombo",
       endPoint: "Kataragama",
       departure: "10:30 AM",
@@ -337,14 +320,13 @@ export default function ScheduleManagement() {
       validFrom: "2024-02-01",
       validUntil: "2024-11-30",
       days: "Daily",
+      frequency: "Every 2 hours",
       status: "Active",
     },
     {
       id: "SCH015",
       routeId: "004",
       routeName: "Colombo-Mannar",
-      operator: "Private",
-      busNo: "NB-9020",
       startPoint: "Colombo",
       endPoint: "Mannar",
       departure: "11:00 AM",
@@ -352,24 +334,24 @@ export default function ScheduleManagement() {
       validFrom: "2024-06-01",
       validUntil: "2025-05-31",
       days: "Daily",
+      frequency: "Every 1 hour",
       status: "Active",
     },
   ];
 
-  // Filter schedules based on search term, status, operator, and route
+  // Filter schedules based on search term, status, and route
   const filteredSchedules = schedules.filter(schedule => {
     const matchesSearch = searchTerm === '' || 
       schedule.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       schedule.routeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      schedule.busNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       schedule.startPoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      schedule.endPoint.toLowerCase().includes(searchTerm.toLowerCase());
+      schedule.endPoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      schedule.frequency.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === '' || schedule.status === statusFilter;
-    const matchesOperator = operatorFilter === '' || schedule.operator === operatorFilter;
     const matchesRoute = routeFilter === '' || schedule.routeId === routeFilter;
     
-    return matchesSearch && matchesStatus && matchesOperator && matchesRoute;
+    return matchesSearch && matchesStatus && matchesRoute;
   });
 
   // Use pagination hook with initial page size of 5
@@ -387,7 +369,7 @@ export default function ScheduleManagement() {
   const calculateScheduleStats = () => {
     const activeSchedules = filteredSchedules.filter(schedule => schedule.status === 'Active').length;
     const uniqueRoutes = new Set(filteredSchedules.map(schedule => schedule.routeId)).size;
-    const uniqueBuses = new Set(filteredSchedules.map(schedule => schedule.busNo)).size;
+    const totalScheduleSlots = filteredSchedules.length;
     const totalSchedules = filteredSchedules.length;
     
     // Calculate on-time performance (simulated based on active schedules)
@@ -398,7 +380,7 @@ export default function ScheduleManagement() {
       activeSchedules,
       onTimePerformance,
       routesCovered: uniqueRoutes,
-      busesAssigned: uniqueBuses,
+      scheduleSlots: totalScheduleSlots,
     };
   };
 
@@ -471,8 +453,6 @@ export default function ScheduleManagement() {
           setSearchTerm={setSearchTerm}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          operatorFilter={operatorFilter}
-          setOperatorFilter={setOperatorFilter}
           routeFilter={routeFilter}
           setRouteFilter={setRouteFilter}
           onAddNew={() => router.push("/mot/schedule-form")}
