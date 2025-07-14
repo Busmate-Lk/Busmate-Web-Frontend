@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, Search, Filter, Eye, Edit, Trash2, MapPin, Clock, Users, Route as RouteIcon } from 'lucide-react';
 import { Layout } from '@/components/shared/layout';
 import { CreateRouteGroupModal } from '@/components/mot/create-route-group-modal';
 import { EditRouteGroupModal } from '@/components/mot/edit-route-group-modal';
 import { DeleteConfirmationModal } from '@/components/mot/delete-confirmation-modal';
 import { RouteDetailsModal } from '@/components/mot/route-details-modal';
+import { DeleteConfirmationModal as RouteDeleteModal } from '@/components/mot/confirmation-modals';
 
 export interface Route {
   id: string;
@@ -32,6 +34,8 @@ export interface RouteGroup {
 }
 
 export default function BusRoutesPage() {
+  const router = useRouter();
+  
   const [routes, setRoutes] = useState<Route[]>([
     {
       id: '1',
@@ -94,8 +98,10 @@ export default function BusRoutesPage() {
   const [showEditGroupModal, setShowEditGroupModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRouteDetailsModal, setShowRouteDetailsModal] = useState(false);
+  const [showRouteDeleteModal, setShowRouteDeleteModal] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
   const [selectedRouteGroup, setSelectedRouteGroup] = useState<RouteGroup | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Filter routes based on search and filters
   const filteredRoutes = routes.filter((route) => {
@@ -122,7 +128,30 @@ export default function BusRoutesPage() {
 
   const handleViewRoute = (route: Route) => {
     // Navigate to single route view page
-    window.location.href = `/mot/bus-routes/${route.id}`;
+    router.push(`/mot/route-details?id=${route.id}`);
+  };
+
+  const handleEditRoute = (route: Route) => {
+    router.push(`/mot/route-form?routeId=${route.id}`);
+  };
+
+  const handleDeleteRoute = (route: Route) => {
+    setSelectedRoute(route);
+    setShowRouteDeleteModal(true);
+  };
+
+  const confirmDeleteRoute = async () => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsLoading(false);
+    
+    if (selectedRoute) {
+      setRoutes(routes.filter(r => r.id !== selectedRoute.id));
+      setShowRouteDeleteModal(false);
+      setSelectedRoute(null);
+      alert(`Route "${selectedRoute.routeName}" has been deleted successfully.`);
+    }
   };
 
   const handleEditGroup = (group: RouteGroup) => {
@@ -246,7 +275,7 @@ export default function BusRoutesPage() {
               Create Route Group
             </button>
             <button
-              onClick={() => {/* TODO: Implement create route */}}
+              onClick={() => router.push('/mot/route-form')}
               className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus className="h-4 w-4" />
@@ -374,12 +403,14 @@ export default function BusRoutesPage() {
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
+                          onClick={() => handleEditRoute(route)}
                           className="p-1 text-gray-400 hover:text-green-600"
                           title="Edit Route"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
+                          onClick={() => handleDeleteRoute(route)}
                           className="p-1 text-gray-400 hover:text-red-600"
                           title="Delete Route"
                         >
@@ -506,6 +537,19 @@ export default function BusRoutesPage() {
           setSelectedRoute(null);
         }}
         route={selectedRoute}
+      />
+
+      {/* Route Delete Confirmation Modal */}
+      <RouteDeleteModal
+        isOpen={showRouteDeleteModal}
+        onClose={() => {
+          setShowRouteDeleteModal(false);
+          setSelectedRoute(null);
+        }}
+        onConfirm={confirmDeleteRoute}
+        title="Delete Route"
+        itemName={selectedRoute?.routeName || ''}
+        isLoading={isLoading}
       />
     </Layout>
   );
