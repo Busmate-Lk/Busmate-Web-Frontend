@@ -17,6 +17,15 @@ interface BusDetailedInfoProps {
   bus: Bus
 }
 
+// Helper function to format dates consistently
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${day}/${month}/${year}` // DD/MM/YYYY format
+}
+
 export default function BusDetailedInfo({ bus }: BusDetailedInfoProps) {
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200">
@@ -36,7 +45,7 @@ export default function BusDetailedInfo({ bus }: BusDetailedInfoProps) {
             <Calendar className="w-5 h-5 text-blue-600" />
             <div>
               <p className="text-sm text-gray-500">Registration Date</p>
-              <p className="font-medium">{new Date(bus.registrationDate).toLocaleDateString()}</p>
+              <p className="font-medium">{formatDate(bus.registrationDate)}</p>
             </div>
           </div>
 
@@ -84,7 +93,7 @@ export default function BusDetailedInfo({ bus }: BusDetailedInfoProps) {
             <Calendar className="w-5 h-5 text-blue-600" />
             <div>
               <p className="text-sm text-gray-500">Last Inspection</p>
-              <p className="font-medium">{new Date(bus.lastInspectionDate).toLocaleDateString()}</p>
+              <p className="font-medium">{formatDate(bus.lastInspectionDate)}</p>
             </div>
           </div>
 
@@ -100,7 +109,7 @@ export default function BusDetailedInfo({ bus }: BusDetailedInfoProps) {
             <Calendar className="w-5 h-5 text-blue-600" />
             <div>
               <p className="text-sm text-gray-500">Next Maintenance</p>
-              <p className="font-medium">{new Date(bus.nextMaintenanceDate).toLocaleDateString()}</p>
+              <p className="font-medium">{formatDate(bus.nextMaintenanceDate)}</p>
             </div>
           </div>
         </div>

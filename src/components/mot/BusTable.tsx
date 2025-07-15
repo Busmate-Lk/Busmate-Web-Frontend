@@ -106,7 +106,7 @@ export default function BusTable({
                     <button onClick={() => router.push(`/mot/bus-information-details?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
                       <Eye className="w-4 h-4" />
                     </button>
-                    <button onClick={() => router.push(`/mot/bus-information-details?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
+                    <button onClick={() => router.push(`/mot/bus-information-form?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
                       <Edit className="w-4 h-4" />
                     </button>
                     <button className="text-red-600 hover:text-red-700">

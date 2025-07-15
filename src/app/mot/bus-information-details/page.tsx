@@ -173,7 +173,8 @@ export default function ViewBus() {
   }
 
   const handleEdit = () => {
-    router.push(`/add-bus?edit=${bus.id}`)
+    console.log("Edit button clicked, bus ID:", busId)
+    router.push(`/mot/bus-information-form?edit=${busId}`)
   }
 
   const handleViewFullSize = () => {
