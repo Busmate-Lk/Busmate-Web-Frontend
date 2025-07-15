@@ -136,6 +136,7 @@ const sriLankanBuses: Bus[] = [
 ]
 
 export default function BusInfo() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [busTypeFilter, setBusTypeFilter] = useState("All Types")
   const [operatorTypeFilter, setOperatorTypeFilter] = useState("All Operators")
@@ -178,7 +179,9 @@ export default function BusInfo() {
               setStatusFilter={setStatusFilter}
             />
           </div>
-          <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded whitespace-nowrap">
+          <button 
+          onClick={() => router.push("/mot/bus-information-form")}
+          className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded whitespace-nowrap">
             <Plus className="w-4 h-4 mr-2" />
             Add New Bus
           </button>
