@@ -97,7 +97,7 @@ export function Sidebar({
       icon: DollarSign,
       label: 'Fare Management',
       active: activeItem === 'fare',
-      href: '/mot/fare-management',
+      href: '/mot/bus-fare',
     },
     {
       icon: BarChart3,
