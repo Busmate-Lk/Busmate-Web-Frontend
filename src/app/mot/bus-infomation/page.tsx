@@ -153,6 +153,14 @@ export default function BusInfo() {
     return matchesSearch && matchesBusType && matchesOperatorType && matchesStatus
   })
 
+  const handleView = (bus: Bus) => {
+    router.push(`/mot/bus-details?id=${bus.id}`)
+  }
+
+  const handleEdit = (bus: Bus) => {
+    router.push(`/mot/bus-information-form?edit=${bus.id}`)
+  }
+
   return (
     <Layout
       activeItem="bus-infomation"
@@ -188,8 +196,8 @@ export default function BusInfo() {
         </div>
         <BusTable
           buses={filteredBuses}
-          onView={(bus) => { /* handle view */ }}
-          onEdit={(bus) => { /* handle edit */ }}
+          onView={handleView}
+          onEdit={handleEdit}
         />
       </div>
     </Layout>

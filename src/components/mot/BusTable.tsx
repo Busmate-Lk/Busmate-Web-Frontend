@@ -1,4 +1,5 @@
 import { Eye, Edit, Trash2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import type { Bus } from "@/app/mot/bus-infomation/page"
 
 export default function BusTable({
@@ -10,6 +11,7 @@ export default function BusTable({
   onView: (bus: Bus) => void
   onEdit: (bus: Bus) => void
 }) {
+  const router = useRouter();
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Active":
@@ -63,6 +65,7 @@ export default function BusTable({
   }
 
   return (
+    
     <div className="bg-white rounded-lg shadow">
       <div className="px-6 py-4">
         <h3 className="text-lg font-semibold text-gray-900">Bus Fleet Directory</h3>
@@ -88,13 +91,22 @@ export default function BusTable({
                 <td className="px-6 py-4">{bus.operator}</td>
                 <td className="px-6 py-4">{getOperatorTypeBadge(bus.operatorType)}</td>
                 <td className="px-6 py-4">{bus.seatingCapacity}</td>
-                <td className="px-6 py-4">{getStatusBadge(bus.status)}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    bus.status === 'Active' ? 'bg-green-100 text-green-800' :
+                    bus.status === 'Maintenance' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {bus.status}
+                  </span>
+                </td>
+
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <button onClick={() => onView(bus)} className="text-gray-600 hover:text-gray-900">
+                    <button onClick={() => router.push(`/mot/bus-information-details?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
                       <Eye className="w-4 h-4" />
                     </button>
-                    <button onClick={() => onEdit(bus)} className="text-gray-600 hover:text-gray-900">
+                    <button onClick={() => router.push(`/mot/bus-information-details?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
                       <Edit className="w-4 h-4" />
                     </button>
                     <button className="text-red-600 hover:text-red-700">
