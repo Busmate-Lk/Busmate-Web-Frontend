@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Edit, Trash2, MapPin, Clock, Users, Filter } from "lucide-react";
+import { Eye, Edit, Trash2, MapPin, Clock, Users, Filter, Calendar } from "lucide-react";
 import { Pagination } from "./pagination";
 
 export interface BusRoute {
@@ -10,7 +10,7 @@ export interface BusRoute {
   group: string;
   stopsCount: number;
   status: 'Active' | 'Inactive' | 'Maintenance';
-  operator: string;
+   
   distance: string;
   estimatedTime: string;
   scheduleCount: number;
@@ -29,6 +29,7 @@ interface BusRoutesTableProps {
   onView: (routeId: string) => void;
   onEdit: (routeId: string) => void;
   onDelete: (routeId: string, routeName: string) => void;
+  onAddSchedule: (routeId: string) => void;
   activeFilters?: {
     status?: string;
     group?: string;
@@ -48,6 +49,7 @@ export function BusRoutesTable({
   onView,
   onEdit,
   onDelete,
+  onAddSchedule,
   activeFilters = {},
   routeGroups = [],
 }: BusRoutesTableProps) {
@@ -142,8 +144,7 @@ export function BusRoutesTable({
                         {route.routeName}
                       </div>
                       <div className="text-sm text-gray-500">#{route.routeNumber}</div>
-                      <div className="text-xs text-gray-400">{route.operator}</div>
-                    </div>
+                     </div>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
@@ -189,6 +190,13 @@ export function BusRoutesTable({
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
+                      <button
+                        className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-purple-50 rounded transition-colors"
+                        onClick={() => onAddSchedule(route.id)}
+                        title="Add Schedule"
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </button>
                       <button
                         className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
                         onClick={() => onView(route.id)}

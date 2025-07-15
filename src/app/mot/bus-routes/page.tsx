@@ -40,9 +40,8 @@ export default function BusRoutesPage() {
       routeName: 'Colombo - Galle Express',
       routeNumber: '001A',
       group: 'Express Routes',
-      stopsCount: 15,
+      stopsCount: 6,
       status: 'Active',
-      operator: 'Ceylon Transport Board',
       distance: '119 km',
       estimatedTime: '2h 30m',
       scheduleCount: 8,
@@ -58,36 +57,76 @@ export default function BusRoutesPage() {
     },
     {
       id: '2',
-      routeName: 'Kandy Circular Route',
-      routeNumber: '145B',
-      group: 'City Routes',
-      stopsCount: 22,
+      routeName: 'Colombo - Kandy',
+      routeNumber: '003',
+      group: 'Long Distance Highway',
+      stopsCount: 5,
       status: 'Active',
-      operator: 'Private Bus Association',
-      distance: '25 km',
-      estimatedTime: '1h 15m',
+      distance: '115 km',
+      estimatedTime: '3h 15m',
       scheduleCount: 12,
       lastUpdated: '2024-01-14',
       stops: [
-        'Kandy Bus Stand',
-        'Temple of Tooth',
-        'University of Peradeniya',
-        'Botanical Gardens',
+        'Colombo Fort',
+        'Kadawatha',
+        'Ambepussa',
+        'Peradeniya',
+        'Kandy Central Bus Stand',
       ],
     },
     {
       id: '3',
-      routeName: 'Airport Shuttle',
-      routeNumber: '187',
-      group: 'Special Routes',
-      stopsCount: 8,
-      status: 'Maintenance',
-      operator: 'Airport Express Ltd',
-      distance: '35 km',
-      estimatedTime: '45m',
+      routeName: 'Kandy - Nuwara Eliya',
+      routeNumber: '015B',
+      group: 'Long Distance Highway',
+      stopsCount: 6,
+      status: 'Active',
+      distance: '76 km',
+      estimatedTime: '2h 45m',
       scheduleCount: 6,
       lastUpdated: '2024-01-13',
-      stops: ['Colombo Fort', 'Negombo', 'Katunayake Airport'],
+      stops: [
+        'Kandy',
+        'Gampola',
+        'Nawalapitiya',
+        'Pussellawa',
+        'Ramboda',
+        'Nuwara Eliya',
+      ],
+    },
+    {
+      id: '4',
+      routeName: 'Galle - Matara',
+      routeNumber: '101C',
+      group: 'Long Distance Highway',
+      stopsCount: 7,
+      status: 'Active',
+      distance: '45 km',
+      estimatedTime: '1h 20m',
+      scheduleCount: 10,
+      lastUpdated: '2024-01-10',
+      stops: [
+        'Galle',
+        'Unawatuna',
+        'Ahangama',
+        'Weligama',
+        'Mirissa',
+        'Kamburugamuwa',
+        'Matara',
+      ],
+    },
+    {
+      id: '5',
+      routeName: 'Colombo - Kurunegala',
+      routeNumber: '066X',
+      group: 'Long Distance Highway',
+      stopsCount: 5,
+      status: 'Active',
+      distance: '94 km',
+      estimatedTime: '2h 00m',
+      scheduleCount: 9,
+      lastUpdated: '2024-01-11',
+      stops: ['Colombo Fort', 'Ja-Ela', 'Negombo', 'Alawwa', 'Kurunegala'],
     },
   ];
 
@@ -101,17 +140,10 @@ export default function BusRoutesPage() {
     },
     {
       id: '2',
-      name: 'City Routes',
+      name: 'Long DIstance Highway',
       description: 'Urban and suburban routes',
       routeCount: 12,
       color: '#10B981',
-    },
-    {
-      id: '3',
-      name: 'Special Routes',
-      description: 'Airport and special services',
-      routeCount: 3,
-      color: '#F59E0B',
     },
   ]);
 
@@ -130,7 +162,6 @@ export default function BusRoutesPage() {
       searchTerm === '' ||
       route.routeNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       route.routeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      route.operator.toLowerCase().includes(searchTerm.toLowerCase()) ||
       route.id.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
@@ -202,6 +233,10 @@ export default function BusRoutesPage() {
   const handleExportAll = () => {
     // Handle export functionality
     console.log('Exporting all routes...');
+  };
+
+  const handleAddSchedule = (routeId: string) => {
+    router.push(`/mot/route-schedule/${routeId}`);
   };
 
   const handleEditGroup = (group: RouteGroup) => {
@@ -311,6 +346,7 @@ export default function BusRoutesPage() {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDeleteClick}
+          onAddSchedule={handleAddSchedule}
           activeFilters={{
             status: selectedStatus,
             group: selectedGroup,

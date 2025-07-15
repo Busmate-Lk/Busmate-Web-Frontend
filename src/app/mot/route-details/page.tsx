@@ -69,117 +69,111 @@ export default function RouteDetailsPage() {
   
   const routeId = searchParams?.get('id');
 
-  // Mock comprehensive route data based on form structure
-  const mockRoute: Route = {
-    id: routeId || '1',
-    // Basic Information
-    routeName: 'Colombo - Galle Express',
-    routeNumber: '001A',
-    routeGroup: 'Express Routes',
-    startingPoint: 'Colombo Central',
-    endPoint: 'Galle Bus Station',
-    startLat: '6.9271',
-    startLng: '79.8612',
-    endLat: '7.2906',
-    endLng: '80.6337',
-    status: 'Active',
-    // Performance Metrics
-    totalDistance: '115.5',
-    estimatedTravelTime: '03:30',
-    averageSpeed: '33.0',
-    fuelConsumption: '8.5',
-    // Additional fields
-    operator: 'Lanka Bus Services',
-    scheduleCount: 3,
-    lastUpdated: '2024-12-15',
-    // Intermediate stops with travel time data
-    intermediateStops: [
-      {
-        id: 1,
-        name: "Kadawatha Junction",
-        latitude: "7.0101",
-        longitude: "79.9513",
-        travelTimeFromPrevious: "30", // 30 minutes from start
-        sequence: 1,
-      },
-      {
-        id: 2,
-        name: "Kegalle Town",
-        latitude: "7.2513",
-        longitude: "80.3464",
-        travelTimeFromPrevious: "45", // 45 minutes from previous stop
-        sequence: 2,
-      },
-      {
-        id: 3,
-        name: "Mawanella",
-        latitude: "7.2513",
-        longitude: "80.4464",
-        travelTimeFromPrevious: "25", // 25 minutes from previous stop
-        sequence: 3,
-      },
-      {
-        id: 4,
-        name: "Ratnapura",
-        latitude: "6.6828",
-        longitude: "80.3992",
-        travelTimeFromPrevious: "40", // 40 minutes from previous stop
-        sequence: 4,
-      },
-    ],
-    // Schedules
-    schedules: [
-      {
-        id: '1',
-        departureTime: '06:00',
-        arrivalTime: '09:30',
-        busType: 'luxury',
-        frequency: 'hourly',
-        operatingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-        busNumber: 'BUS-001',
-        driverName: 'John Silva',
-        status: 'Active',
-      },
-      {
-        id: '2',
-        departureTime: '14:00',
-        arrivalTime: '17:30',
-        busType: 'semi-luxury',
-        frequency: '30min',
-        operatingDays: ['saturday', 'sunday'],
-        busNumber: 'BUS-002',
-        driverName: 'Mary Fernando',
-        status: 'Active',
-      },
-      {
-        id: '3',
-        departureTime: '10:00',
-        arrivalTime: '13:30',
-        busType: 'standard',
-        frequency: 'hourly',
-        operatingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-        busNumber: 'BUS-003',
-        driverName: 'David Perera',
-        status: 'Delayed',
-      },
-    ],
-  };
+  // Static route data (copied from bus-routes/page.tsx)
+  const routes: Route[] = [
+    {
+      id: '1',
+      routeName: 'Colombo - Galle Express',
+      routeNumber: '001A',
+      routeGroup: 'Express Routes',
+      startingPoint: 'Colombo Fort',
+      endPoint: 'Galle',
+      startLat: '6.9271',
+      startLng: '79.8612',
+      endLat: '7.2906',
+      endLng: '80.6337',
+      status: 'Active',
+      totalDistance: '119',
+      estimatedTravelTime: '2h 30m',
+      averageSpeed: '33.0',
+      fuelConsumption: '8.5',
+      operator: 'Lanka Bus Services',
+      scheduleCount: 8,
+      lastUpdated: '2024-01-15',
+      intermediateStops: [
+        { id: 1, name: 'Mount Lavinia', latitude: '', longitude: '', travelTimeFromPrevious: '20', sequence: 1 },
+        { id: 2, name: 'Kalutara', latitude: '', longitude: '', travelTimeFromPrevious: '25', sequence: 2 },
+        { id: 3, name: 'Bentota', latitude: '', longitude: '', travelTimeFromPrevious: '20', sequence: 3 },
+        { id: 4, name: 'Hikkaduwa', latitude: '', longitude: '', travelTimeFromPrevious: '15', sequence: 4 },
+      ],
+      schedules: [
+        {
+          id: '1',
+          departureTime: '06:00',
+          arrivalTime: '09:30',
+          busType: 'luxury',
+          frequency: 'hourly',
+          operatingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+          busNumber: 'BUS-001',
+          driverName: 'John Silva',
+          status: 'Active',
+        },
+        {
+          id: '2',
+          departureTime: '14:00',
+          arrivalTime: '17:30',
+          busType: 'semi-luxury',
+          frequency: '30min',
+          operatingDays: ['saturday', 'sunday'],
+          busNumber: 'BUS-002',
+          driverName: 'Mary Fernando',
+          status: 'Active',
+        },
+        {
+          id: '3',
+          departureTime: '10:00',
+          arrivalTime: '13:30',
+          busType: 'standard',
+          frequency: 'hourly',
+          operatingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+          busNumber: 'BUS-003',
+          driverName: 'David Perera',
+          status: 'Delayed',
+        },
+      ],
+    },
+    {
+      id: '2',
+      routeName: 'Colombo - Kandy',
+      routeNumber: '003',
+      routeGroup: 'Long Distance Highway',
+      startingPoint: 'Colombo Fort',
+      endPoint: 'Kandy Central Bus Stand',
+      startLat: '',
+      startLng: '',
+      endLat: '',
+      endLng: '',
+      status: 'Active',
+      totalDistance: '115',
+      estimatedTravelTime: '3h 15m',
+      averageSpeed: '',
+      fuelConsumption: '',
+      operator: '',
+      scheduleCount: 12,
+      lastUpdated: '2024-01-14',
+      intermediateStops: [
+        { id: 1, name: 'Kadawatha', latitude: '', longitude: '', travelTimeFromPrevious: '30', sequence: 1 },
+        { id: 2, name: 'Ambepussa', latitude: '', longitude: '', travelTimeFromPrevious: '40', sequence: 2 },
+        { id: 3, name: 'Peradeniya', latitude: '', longitude: '', travelTimeFromPrevious: '25', sequence: 3 },
+      ],
+      schedules: [],
+    },
+    // ...add other routes as needed...
+  ];
 
   useEffect(() => {
-    // Simulate API call to fetch route data
+    setLoading(true);
     const fetchRouteData = async () => {
-      setLoading(true);
-      // In real app, make API call here using routeId
+      // Simulate API call
+      const foundRoute = routes.find(r => r.id === routeId);
       setTimeout(() => {
-        setRoute(mockRoute);
+        setRoute(foundRoute || null);
         setLoading(false);
       }, 500);
     };
-
     if (routeId) {
       fetchRouteData();
     } else {
-      // If no routeId, redirect to routes list or show error
       router.push('/mot/bus-routes');
     }
   }, [routeId, router]);

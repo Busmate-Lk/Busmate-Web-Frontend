@@ -23,7 +23,7 @@ export function RouteInformationForm({
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div className="px-6 py-4 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          🚌 Route Information
+        Route Information
         </h3>
       </div>
       <div className="p-6 space-y-4">
