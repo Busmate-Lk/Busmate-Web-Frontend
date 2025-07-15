@@ -315,35 +315,23 @@ export default function ScheduleForm() {
   return (
     <Layout
     role = "mot"
-      activeItem="schedule"
+      activeItem="bus-routes"
       pageTitle={pageTitle}
       pageDescription={pageDescription}
     >
       <div className="space-y-6">
-        {/* Back Button */}
-        <div className="flex items-center gap-2">
+        {/*Bread Crumb*/}
+      <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
           <button
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            onClick={() => router.push("/mot/schedule-management")}
+            className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline p-0 h-auto"
+            onClick={() => router.push("/mot/bus-routes")}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Schedule Management
+            Routes Management
           </button>
+          <span>/</span>
+          <span>Shedule Form</span>
         </div>
-
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">{pageTitle}</h2>
-            <p className="text-gray-600">{pageDescription}</p>
-            {isEditMode && (
-              <p className="text-sm text-blue-600 mt-1">
-                Editing Schedule #{scheduleId}
-              </p>
-            )}
-          </div>
-        </div>
-
+        
         <RouteInformationForm
           routeId={routeId}
           routeGroup={routeGroup}
