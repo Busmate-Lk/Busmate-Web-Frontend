@@ -64,12 +64,6 @@ export function Sidebar({
       href: '/mot/dashboard',
     },
     {
-      icon: FileText,
-      label: 'Bus Permit Management',
-      active: activeItem === 'bus-permits',
-      href: '/mot/bus-permits',
-    },
-    {
       icon: Route,
       label: 'Routes Management',
       active: activeItem === 'bus-routes',
@@ -80,6 +74,12 @@ export function Sidebar({
       label: 'Schedule Management',
       active: activeItem === 'schedule',
       href: '/mot/schedule-management',
+    },
+    {
+      icon: FileText,
+      label: 'Bus Permit Management',
+      active: activeItem === 'bus-permits',
+      href: '/mot/bus-permits',
     },
     {
       icon: MapPin,

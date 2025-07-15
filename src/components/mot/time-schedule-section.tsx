@@ -1,4 +1,4 @@
-import { Clock, Plus } from "lucide-react";
+import { Clock, Plus, X } from "lucide-react";
 
 interface TimeSlot {
   departure: string;
@@ -9,12 +9,14 @@ interface TimeScheduleSectionProps {
   timeSlots: TimeSlot[];
   onAddTimeSlot: () => void;
   onUpdateTimeSlot: (index: number, field: string, value: string) => void;
+  onRemoveTimeSlot?: (index: number) => void;
 }
 
 export function TimeScheduleSection({
   timeSlots,
   onAddTimeSlot,
   onUpdateTimeSlot,
+  onRemoveTimeSlot,
 }: TimeScheduleSectionProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -27,8 +29,18 @@ export function TimeScheduleSection({
         {timeSlots.map((slot, index) => (
           <div
             key={index}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg"
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg relative"
           >
+            {timeSlots.length > 1 && onRemoveTimeSlot && (
+              <button
+                type="button"
+                onClick={() => onRemoveTimeSlot(index)}
+                className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                title="Remove time slot"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
             <div className="space-y-2">
               <label
                 htmlFor={`departure${index}`}
