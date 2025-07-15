@@ -69,7 +69,7 @@ export default function RouteForm() {
           name: "Kadawatha Junction",
           latitude: "7.0101",
           longitude: "79.9513",
-          arrivalTime: "06:30",
+          travelTimeFromPrevious: "30", // 30 minutes from start
           sequence: 1,
         },
         {
@@ -77,7 +77,7 @@ export default function RouteForm() {
           name: "Kegalle Town",
           latitude: "7.2513",
           longitude: "80.3464",
-          arrivalTime: "07:45",
+          travelTimeFromPrevious: "75", // 75 minutes from previous stop
           sequence: 2,
         },
       ];
@@ -115,7 +115,7 @@ export default function RouteForm() {
       name: "",
       latitude: "",
       longitude: "",
-      arrivalTime: "",
+      travelTimeFromPrevious: "",
       sequence: intermediateStops.length + 1,
     };
     setIntermediateStops([...intermediateStops, newStop]);
@@ -263,9 +263,9 @@ export default function RouteForm() {
            longitude >= -180 && longitude <= 180;
   };
 
-  const validateTimeFormat = (time: string) => {
-    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    return timeRegex.test(time);
+  const validateTravelTime = (time: string) => {
+    const timeValue = parseFloat(time);
+    return !isNaN(timeValue) && timeValue > 0;
   };
 
   const validateForm = () => {
@@ -319,8 +319,10 @@ export default function RouteForm() {
         } else if (!validateCoordinates(stop.latitude, stop.longitude)) {
           newErrors[`stop_${stop.id}_coords`] = "Please enter valid coordinates for this stop";
         }
-        if (!stop.arrivalTime.trim()) {
-          newErrors[`stop_${stop.id}_time`] = "Arrival time is required";
+        if (!stop.travelTimeFromPrevious.trim()) {
+          newErrors[`stop_${stop.id}_time`] = "Travel time is required";
+        } else if (isNaN(parseFloat(stop.travelTimeFromPrevious)) || parseFloat(stop.travelTimeFromPrevious) <= 0) {
+          newErrors[`stop_${stop.id}_time`] = "Please enter a valid travel time in minutes";
         }
       }
     });

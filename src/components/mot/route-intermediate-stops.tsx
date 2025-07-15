@@ -5,7 +5,7 @@ export interface IntermediateStop {
   name: string;
   latitude: string;
   longitude: string;
-  arrivalTime: string;
+  travelTimeFromPrevious: string; // Time taken to travel from previous stop (in minutes)
   sequence: number;
 }
 
@@ -53,7 +53,7 @@ export function RouteIntermediateStops({
           </button>
         </div>
         <p className="text-sm text-gray-600 mt-1">
-          Add intermediate stops along the route with arrival times
+          Add intermediate stops along the route with travel time between each stop
         </p>
       </div>
       <div className="p-6 space-y-4">
@@ -63,9 +63,20 @@ export function RouteIntermediateStops({
             className="border border-gray-200 rounded-lg p-4 bg-gray-50"
           >
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-medium text-gray-900">
-                Stop {index + 1}
-              </h4>
+              <div>
+                <h4 className="text-md font-medium text-gray-900">
+                  Stop {index + 1}
+                </h4>
+                {/* Calculate and display cumulative travel time */}
+                {stops.slice(0, index + 1).some(s => s.travelTimeFromPrevious) && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Total time from start: {
+                      stops.slice(0, index + 1)
+                        .reduce((total, s) => total + (parseFloat(s.travelTimeFromPrevious) || 0), 0)
+                    } minutes
+                  </p>
+                )}
+              </div>
               {stops.length > 1 && (
                 <button
                   type="button"
@@ -142,18 +153,21 @@ export function RouteIntermediateStops({
                 />
               </div>
 
-              {/* Arrival Time */}
+              {/* Travel Time from Previous Stop */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
-                  Arrival Time *
+                  {index === 0 ? "Travel Time from Start (min) *" : "Travel Time from Previous Stop (min) *"}
                 </label>
                 <input
-                  type="time"
-                  value={stop.arrivalTime}
-                  onChange={(e) => onUpdateStop(stop.id, "arrivalTime", e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 ${
+                  type="number"
+                  placeholder="Enter time in minutes"
+                  value={stop.travelTimeFromPrevious}
+                  onChange={(e) => onUpdateStop(stop.id, "travelTimeFromPrevious", e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500 ${
                     errors[`stop_${stop.id}_time`] ? 'border-red-500' : 'border-gray-300'
                   }`}
+                  min="0"
+                  step="1"
                 />
                 {errors[`stop_${stop.id}_time`] && (
                   <p className="text-sm text-red-600">{errors[`stop_${stop.id}_time`]}</p>

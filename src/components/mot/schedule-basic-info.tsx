@@ -2,10 +2,11 @@
 
 interface ScheduleBasicInfoProps {
   schedule: {
-    id: string;
+    
     routeId: string;
-    busNo: string;
+    routeName:string
     status: string;
+
   };
 }
 
@@ -27,17 +28,21 @@ export function ScheduleBasicInfo({ schedule }: ScheduleBasicInfoProps) {
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div>
+          {/* <div>
             <p className="text-sm text-gray-600 mb-1">Schedule ID</p>
             <p className="font-semibold text-lg">{schedule.id}</p>
-          </div>
+          </div> */}
           <div>
             <p className="text-sm text-gray-600 mb-1">Route ID</p>
-            <p className="font-semibold text-lg">{schedule.routeId}</p>
+            <p className="font-semibold text-lg text-blue-600">{schedule.routeId}</p>
           </div>
-          <div>
+          {/* <div>
             <p className="text-sm text-gray-600 mb-1">Bus Number</p>
             <p className="font-semibold text-lg">{schedule.busNo}</p>
+          </div> */}
+          <div>
+            <p className="text-sm text-gray-600 mb-1">Route Name</p>
+            <p className="font-semibold text-lg text-blue-600">{schedule.routeName}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600 mb-1">Status</p>
