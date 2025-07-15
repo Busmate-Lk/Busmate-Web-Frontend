@@ -97,7 +97,7 @@ export default function Fare() {
   })
 
   const handleAddFare = () => {
-    router.push("/mot/add-fare")
+    router.push("/mot/bus-fare-form")
   }
 
   const handleViewChart = () => {
@@ -105,7 +105,7 @@ export default function Fare() {
   }
 
   const handleEditFare = (fare: FareStructure) => {
-    router.push(`/mot/add-fare?edit=${fare.id}`)
+    router.push(`/mot/bus-fare-form?edit=${fare.id}`)
   }
 
   const handleViewFare = (fare: FareStructure) => {
@@ -114,10 +114,12 @@ export default function Fare() {
 
   const handleDeleteFare = (fare: FareStructure) => {
     console.log("Delete fare:", fare.id)
+    // Add your delete logic here
   }
 
   const handleCalculator = () => {
     console.log("Open fare calculator")
+    // Add calculator logic here
   }
 
   const handleApplyFilters = () => {
