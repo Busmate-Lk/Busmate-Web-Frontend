@@ -231,8 +231,12 @@ export default function ScheduleAssignment() {
   const scheduleStats = calculateScheduleStats();
 
   const handleAssignBuses = (scheduleId: string, routeName: string) => {
-    // Navigate to bus assignment page
-    router.push(`/mot/schedule-assignment/${scheduleId}/assign-buses`);
+    // Find the schedule to get route ID
+    const schedule = routeSchedules.find(s => s.id === scheduleId);
+    const routeId = schedule?.routeId || '';
+    
+    // Navigate to bus assignment page with schedule and route information
+    router.push(`/mot/schedule-assign-form?scheduleId=${scheduleId}&routeId=${routeId}&routeName=${encodeURIComponent(routeName)}`);
   };
 
   const handleDeleteClick = (scheduleId: string, routeName: string) => {

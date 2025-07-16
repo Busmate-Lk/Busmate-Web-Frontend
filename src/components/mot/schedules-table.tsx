@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Edit, MapPin, Power, Trash2 } from "lucide-react";
+import { Eye, Edit, MapPin, Bus, Power, Trash2 } from "lucide-react";
 import { Pagination } from "./pagination";
 
 interface Schedule {
@@ -30,6 +30,7 @@ interface SchedulesTableProps {
   onView: (scheduleId: string) => void;
   onEdit: (scheduleId: string) => void;
   onIntermediateStops: (scheduleId: string) => void;
+  onAssignBuses: (scheduleId: string, routeId: string, routeName: string) => void;
   onDeactivate: (scheduleId: string, routeName: string) => void;
   onDelete: (scheduleId: string, routeName: string) => void;
 }
@@ -45,6 +46,7 @@ export function SchedulesTable({
   onView,
   onEdit,
   onIntermediateStops,
+  onAssignBuses,
   onDeactivate,
   onDelete,
 }: SchedulesTableProps) {
@@ -218,6 +220,13 @@ export function SchedulesTable({
                         title="View Intermediate Stops"
                       >
                         <MapPin className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="p-2 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-md transition-colors"
+                        onClick={() => onAssignBuses(schedule.id, schedule.routeId, schedule.routeName)}
+                        title="Assign Buses to Schedule"
+                      >
+                        <Bus className="h-4 w-4" />
                       </button>
                       <button
                         className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-md transition-colors"
