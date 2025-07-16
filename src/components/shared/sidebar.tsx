@@ -71,9 +71,9 @@ export function Sidebar({
     },
     {
       icon: Calendar,
-      label: 'Schedule Management',
+      label: 'Schedule Assignment',
       active: activeItem === 'schedule',
-      href: '/mot/schedule-management',
+      href: '/mot/schedule-assignment',
     },
     {
       icon: FileText,
@@ -134,7 +134,7 @@ export function Sidebar({
     },
     {
       icon: Calendar,
-      label: 'Schedule Management',
+      label: 'Schedule Assignment',
       active: activeItem === 'schedule',
       href: '/timeKeeper/schedule',
     },
