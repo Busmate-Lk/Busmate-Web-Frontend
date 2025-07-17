@@ -76,10 +76,6 @@ export function Header({ title, description }: HeaderProps) {
                                     <span>Profile Settings</span>
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer">
-                                <Settings className="h-4 w-4 mr-2" />
-                                <span>Account Settings</span>
-                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
                                 <LogOut className="h-4 w-4 mr-2" />

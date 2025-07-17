@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Bus, LayoutDashboard, Users, MessageSquare, BarChart3, Settings, ChevronRight, FileText } from "lucide-react"
+import { LayoutDashboard, Users, MessageSquare, BarChart3, Settings, ChevronRight, FileText } from "lucide-react"
+import Image from "next/image"
 
 const navigation = [
   {
@@ -44,10 +45,17 @@ export function Sidebar() {
   return (
     <div className="w-80 bg-[#1E40AE] text-white flex flex-col shadow-2xl">
       {/* Header */}
-      <div className="px-8 py-6 bg-[#1E40AE] border-b border-blue-700">
+      <div className="px-8 py-3 bg-[#1E40AE] border-b border-blue-700">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-            <Bus className="h-7 w-7 text-[#1E40AE]" />
+          <div className="w-24 h-24 rounded-lg flex items-center justify-center">
+            <Image
+              src="/Busmate Lk.svg"
+              alt="Busmate LK Logo"
+              width={96}
+              height={96}
+              className="w-20 h-20"
+              priority
+            />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white">BUSMATE LK</h1>
