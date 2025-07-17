@@ -1,4 +1,5 @@
-import { MessageSquare, CheckCircle, Clock, Filter, Search, AlertTriangle, Eye, Edit, Copy } from "lucide-react"
+import { MessageSquare, CheckCircle, Clock, Filter, Search, AlertTriangle, Eye, Edit } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export interface BroadcastMessage {
   id: string
@@ -20,7 +21,25 @@ interface MessageBoxProps {
 }
 
 export default function MessageBox({ messages, sentMessages, pendingMessages }: MessageBoxProps) {
+  const router = useRouter()
   const recentMessages = messages.slice(0, 5)
+
+  const handleSentMessagesClick = () => {
+    router.push('/mot/Sent-Messages')  
+  }
+
+  const handlePendingMessagesClick = () => {
+    router.push('/mot/Pending-Messages') 
+  }
+
+  const handleViewMessage = (messageId: string) => {
+    router.push(`/mot/broadcast-message-view?id=${messageId}`)
+  }
+
+  const handleEditMessage = (messageId: string) => {
+    console.log("Edit message:", messageId)
+    // Add edit logic or navigate to edit page
+  }
 
   const getTargetGroupBadge = (groups: string[]) => {
     const group = groups[0]
@@ -180,7 +199,10 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="p-4 bg-green-50 rounded-lg border border-green-200 cursor-pointer hover:bg-green-100 transition-colors">
+          <div 
+            onClick={handleSentMessagesClick}
+            className="p-4 bg-green-50 rounded-lg border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-green-800">Sent Messages</p>
@@ -191,7 +213,10 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
             <p className="text-xs text-green-600 mt-2">Click to view all →</p>
           </div>
 
-          <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition-colors">
+          <div 
+            onClick={handlePendingMessagesClick}
+            className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition-colors"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-yellow-800">Pending Messages</p>
@@ -236,14 +261,19 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded">
+                  <button 
+                    onClick={() => handleViewMessage(message.id)}
+                    className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded"
+                    title="View message details"
+                  >
                     <Eye className="w-4 h-4" />
                   </button>
-                  <button className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded">
+                  <button 
+                    onClick={() => handleEditMessage(message.id)}
+                    className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded"
+                    title="Edit message"
+                  >
                     <Edit className="w-4 h-4" />
-                  </button>
-                  <button className="p-1 text-green-600 hover:text-green-700 hover:bg-green-50 rounded">
-                    <Copy className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -252,10 +282,16 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
 
           <div className="mt-4 pt-4 border-t">
             <div className="flex items-center justify-between gap-2">
-              <button className="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">
+              <button 
+                onClick={handleSentMessagesClick}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100"
+              >
                 View All Sent Messages
               </button>
-              <button className="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">
+              <button 
+                onClick={handlePendingMessagesClick}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100"
+              >
                 View Pending Messages
               </button>
             </div>
