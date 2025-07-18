@@ -8,7 +8,7 @@ import {
 import { RouteDistributionChart } from '@/components/mot/route-distribution-chart';
 import { PermitCategoriesChart } from '@/components/mot/permit-categories-chart';
 import { AssignmentTrendsChart } from '@/components/mot/assignment-trends-chart';
-import { OperatorPerformanceChart } from '@/components/mot/operator-performance-chart';
+// import { OperatorPerformanceChart } from '@/components/mot/operator-performance-chart';
 import {
   BroadcastCenter,
   BroadcastMessage,
@@ -169,10 +169,10 @@ export default function Dashboard() {
           <AssignmentTrendsChart />
         </div>
 
-        {/* Additional Analytics Section */}
+        {/* Additional Analytics Section
         <div className="grid grid-cols-1 gap-6">
           <OperatorPerformanceChart />
-        </div>
+        </div> */}
 
         {/* Bottom Section - Alerts and Maintenance */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
