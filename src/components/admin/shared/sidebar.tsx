@@ -44,7 +44,7 @@ export function Sidebar() {
 
   return (
     <div className="w-80 bg-[#1E40AE] text-white flex flex-col shadow-2xl">
-      {/* Header */}
+      {/* Heade */}
       <div className="px-8 py-3 bg-[#1E40AE] border-b border-blue-700">
         <div className="flex items-center space-x-4">
           <div className="w-24 h-24 rounded-lg flex items-center justify-center">
