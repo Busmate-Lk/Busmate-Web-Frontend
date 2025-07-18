@@ -6,15 +6,15 @@ import { Layout } from '@/components/shared/layout';
 import { BusRouteStatsCards } from '@/components/mot/bus-route-stats-cards';
 import { BusRouteSearchFilters } from '@/components/mot/bus-route-search-filters';
 import { BusRoutesTable, BusRoute } from '@/components/mot/bus-routes-table';
-import { CreateRouteGroupModal } from '@/components/mot/create-route-group-modal';
-import { EditRouteGroupModal } from '@/components/mot/edit-route-group-modal';
+import { CreateRouteGroupModal } from '@/components/mot/create-route-category-modal';
+import { EditRouteGroupModal } from '@/components/mot/edit-route-category-modal';
 import { DeleteConfirmationModal } from '@/components/mot/confirmation-modals';
 import { RouteDetailsModal } from '@/components/mot/route-details-modal';
 import { RouteDeleteModal } from '@/components/mot/route-delete-modal';
 import { usePagination } from '@/components/mot/pagination';
 import { Edit, Trash2, Plus } from 'lucide-react';
 
-export interface RouteGroup {
+export interface RouteCategory {
   id: string;
   name: string;
   description: string;
@@ -39,7 +39,7 @@ export default function BusRoutesPage() {
       id: '1',
       routeName: 'Colombo - Galle Express',
       routeNumber: '001A',
-      group: 'Express Routes',
+      category: 'Express Routes',
       stopsCount: 6,
       status: 'Active',
       distance: '119 km',
@@ -59,7 +59,7 @@ export default function BusRoutesPage() {
       id: '2',
       routeName: 'Colombo - Kandy',
       routeNumber: '003',
-      group: 'Long Distance Highway',
+      category: 'Long Distance Highway',
       stopsCount: 5,
       status: 'Active',
       distance: '115 km',
@@ -78,7 +78,7 @@ export default function BusRoutesPage() {
       id: '3',
       routeName: 'Kandy - Nuwara Eliya',
       routeNumber: '015B',
-      group: 'Long Distance Highway',
+      category: 'Long Distance Highway',
       stopsCount: 6,
       status: 'Active',
       distance: '76 km',
@@ -98,7 +98,7 @@ export default function BusRoutesPage() {
       id: '4',
       routeName: 'Galle - Matara',
       routeNumber: '101C',
-      group: 'Long Distance Highway',
+      category: 'Long Distance Highway',
       stopsCount: 7,
       status: 'Active',
       distance: '45 km',
@@ -119,7 +119,7 @@ export default function BusRoutesPage() {
       id: '5',
       routeName: 'Colombo - Kurunegala',
       routeNumber: '066X',
-      group: 'Long Distance Highway',
+      category: 'Long Distance Highway',
       stopsCount: 5,
       status: 'Active',
       distance: '94 km',
@@ -130,7 +130,7 @@ export default function BusRoutesPage() {
     },
   ];
 
-  const [routeGroups, setRouteGroups] = useState<RouteGroup[]>([
+  const [routeCategory, setRouteGroups] = useState<RouteCategory[]>([
     {
       id: '1',
       name: 'Express Routes',
@@ -154,9 +154,9 @@ export default function BusRoutesPage() {
   const [showRouteDetailsModal, setShowRouteDetailsModal] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState<BusRoute | null>(null);
   const [selectedRouteGroup, setSelectedRouteGroup] =
-    useState<RouteGroup | null>(null);
+    useState<RouteCategory | null>(null);
 
-  // Filter routes based on search term, status, and group
+  // Filter routes based on search term, status, and category
   const filteredRoutes = routes.filter((route) => {
     const matchesSearch =
       searchTerm === '' ||
@@ -166,7 +166,7 @@ export default function BusRoutesPage() {
 
     const matchesStatus =
       selectedStatus === '' || route.status === selectedStatus;
-    const matchesGroup = selectedGroup === '' || route.group === selectedGroup;
+    const matchesGroup = selectedGroup === '' || route.category === selectedGroup;
 
     return matchesSearch && matchesStatus && matchesGroup;
   });
@@ -239,20 +239,20 @@ export default function BusRoutesPage() {
     router.push(`/mot/route-schedule/${routeId}`);
   };
 
-  const handleEditGroup = (group: RouteGroup) => {
-    setSelectedRouteGroup(group);
+  const handleEditGroup = (category: RouteCategory) => {
+    setSelectedRouteGroup(category);
     setShowEditGroupModal(true);
   };
 
-  const handleDeleteGroup = (group: RouteGroup) => {
-    setSelectedRouteGroup(group);
+  const handleDeleteGroup = (category: RouteCategory) => {
+    setSelectedRouteGroup(category);
     setShowDeleteModal(true);
   };
 
   const confirmDeleteGroup = () => {
     if (selectedRouteGroup) {
       setRouteGroups(
-        routeGroups.filter((group) => group.id !== selectedRouteGroup.id)
+        routeCategory.filter((category) => category.id !== selectedRouteGroup.id)
       );
       setShowDeleteModal(false);
       setSelectedRouteGroup(null);
@@ -280,7 +280,7 @@ export default function BusRoutesPage() {
               setStatusFilter={setSelectedStatus}
               groupFilter={selectedGroup}
               setGroupFilter={setSelectedGroup}
-              routeGroups={routeGroups}
+              routeCategory={routeCategory}
               onAddNewRoute={handleAddNewRoute}
               onExportAll={handleExportAll}
             />
@@ -291,44 +291,44 @@ export default function BusRoutesPage() {
               className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="h-4 w-4" />
-              Create Route Group
+              Create Route Category
             </button>
           </div>
         </div>
 
         {/* Route Groups Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {routeGroups.map((group) => (
+          {routeCategory.map((category) => (
             <div
-              key={group.id}
+              key={category.id}
               className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div
                     className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: group.color }}
+                    style={{ backgroundColor: category.color }}
                   ></div>
-                  <h3 className="font-semibold text-gray-900">{group.name}</h3>
+                  <h3 className="font-semibold text-gray-900">{category.name}</h3>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => handleEditGroup(group)}
+                    onClick={() => handleEditGroup(category)}
                     className="p-1 text-gray-400 hover:text-blue-600"
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteGroup(group)}
+                    onClick={() => handleDeleteGroup(category)}
                     className="p-1 text-gray-400 hover:text-red-600"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-2">{group.description}</p>
+              <p className="text-sm text-gray-600 mb-2">{category.description}</p>
               <p className="text-sm font-medium text-gray-900">
-                {group.routeCount} routes
+                {category.routeCount} routes
               </p>
             </div>
           ))}
@@ -349,10 +349,10 @@ export default function BusRoutesPage() {
           onAddSchedule={handleAddSchedule}
           activeFilters={{
             status: selectedStatus,
-            group: selectedGroup,
+            category: selectedGroup,
             search: searchTerm,
           }}
-          routeGroups={routeGroups}
+          routeCategory={routeCategory}
         />
       </div>
 
@@ -366,7 +366,7 @@ export default function BusRoutesPage() {
           color: string;
         }) => {
           setRouteGroups([
-            ...routeGroups,
+            ...routeCategory,
             { ...newGroup, id: Date.now().toString(), routeCount: 0 },
           ]);
           setShowCreateGroupModal(false);
@@ -379,11 +379,11 @@ export default function BusRoutesPage() {
           setShowEditGroupModal(false);
           setSelectedRouteGroup(null);
         }}
-        routeGroup={selectedRouteGroup}
-        onSuccess={(updatedGroup: RouteGroup) => {
+        routeCategory={selectedRouteGroup}
+        onSuccess={(updatedGroup: RouteCategory) => {
           setRouteGroups(
-            routeGroups.map((group) =>
-              group.id === updatedGroup.id ? updatedGroup : group
+            routeCategory.map((category) =>
+              category.id === updatedGroup.id ? updatedGroup : category
             )
           );
           setShowEditGroupModal(false);
@@ -398,7 +398,7 @@ export default function BusRoutesPage() {
           setSelectedRouteGroup(null);
         }}
         onConfirm={confirmDeleteGroup}
-        title="Delete Route Group"
+        title="Delete Route Category"
         itemName={selectedRouteGroup?.name || ''}
         isLoading={false}
       />

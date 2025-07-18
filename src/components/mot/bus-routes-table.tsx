@@ -7,7 +7,7 @@ export interface BusRoute {
   id: string;
   routeName: string;
   routeNumber: string;
-  group: string;
+  category: string;
   stopsCount: number;
   status: 'Active' | 'Inactive' | 'Maintenance';
    
@@ -32,10 +32,10 @@ interface BusRoutesTableProps {
   onAddSchedule: (routeId: string) => void;
   activeFilters?: {
     status?: string;
-    group?: string;
+   category?: string;
     search?: string;
   };
-  routeGroups?: Array<{ id: string; name: string; color: string }>;
+  routeCategory?: Array<{ id: string; name: string; color: string }>;
 }
 
 export function BusRoutesTable({
@@ -51,7 +51,7 @@ export function BusRoutesTable({
   onDelete,
   onAddSchedule,
   activeFilters = {},
-  routeGroups = [],
+  routeCategory = [],
 }: BusRoutesTableProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -67,8 +67,8 @@ export function BusRoutesTable({
   };
 
   const getGroupColor = (groupName: string) => {
-    const group = routeGroups.find(g => g.name === groupName);
-    return group?.color || '#6B7280';
+    const category = routeCategory.find(g => g.name === groupName);
+    return category?.color || '#6B7280';
   };
 
   return (
@@ -103,9 +103,9 @@ export function BusRoutesTable({
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">
                   <div className="flex items-center gap-2">
-                    Group
-                    {activeFilters.group && (
-                      <div title={`Filtered by: ${activeFilters.group}`}>
+                   category
+                    {activeFilters.category && (
+                      <div title={`Filtered by: ${activeFilters.category}`}>
                         <Filter className="h-3 w-3 text-blue-500" />
                       </div>
                     )}
@@ -151,10 +151,10 @@ export function BusRoutesTable({
                       <div 
                         className="w-2 h-2 rounded-full"
                         style={{ 
-                          backgroundColor: getGroupColor(route.group)
+                          backgroundColor: getGroupColor(route.category)
                         }}
                       ></div>
-                      <span className="text-sm text-gray-900">{route.group}</span>
+                      <span className="text-sm text-gray-900">{route.category}</span>
                     </div>
                   </td>
                   <td className="py-3 px-4">

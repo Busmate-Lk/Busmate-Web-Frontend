@@ -11,7 +11,7 @@ interface BusRouteSearchFiltersProps {
   setStatusFilter: (status: string) => void;
   groupFilter: string;
   setGroupFilter: (group: string) => void;
-  routeGroups?: Array<{ id: string; name: string }>;
+  routeCategory?: Array<{ id: string; name: string }>;
 }
 
 export function BusRouteSearchFilters({
@@ -23,7 +23,7 @@ export function BusRouteSearchFilters({
   setStatusFilter,
   groupFilter,
   setGroupFilter,
-  routeGroups = [],
+  routeCategory = [],
 }: BusRouteSearchFiltersProps) {
   const hasActiveFilters = searchTerm || statusFilter || groupFilter;
 
@@ -70,7 +70,7 @@ export function BusRouteSearchFilters({
               className="appearance-none px-4 py-2 pr-8 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
             >
               <option value="">All Groups</option>
-              {routeGroups.map((group) => (
+              {routeCategory.map((group) => (
                 <option key={group.id} value={group.name}>
                   {group.name}
                 </option>
