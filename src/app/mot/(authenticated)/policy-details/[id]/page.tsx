@@ -11,7 +11,7 @@ import { useState } from 'react';
 import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
-} from '../../../../components/mot/confirmation-modals';
+} from '../../../../../components/mot/confirmation-modals';
 import { Layout } from "@/components/shared/layout";
 
 export default function PolicyDetails() {
