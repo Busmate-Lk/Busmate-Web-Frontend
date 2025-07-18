@@ -165,7 +165,7 @@ export function AddStaffForm() {
                   type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => updateFormData("dateOfBirth", e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  className="flex h-10 w-full rounded-md border border-gray-300 text-gray-700 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 />
               </div>
 
@@ -365,7 +365,7 @@ export function AddStaffForm() {
                   type="date"
                   value={formData.licenseExpiryDate}
                   onChange={(e) => updateFormData("licenseExpiryDate", e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  className="flex h-10 w-full rounded-md border text-gray-700 border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 />
               </div>
             </div>

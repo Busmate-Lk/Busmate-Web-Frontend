@@ -11,10 +11,41 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Sign in:", { email, password, rememberMe })
-  }
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    // console.log("Sign in:", { email, password, rememberMe });
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log("✅ Logged in successfully:", data);
+  
+        // ⬇️ Save the access token somewhere
+        localStorage.setItem("access_token", data.access_token);
+  
+        // Redirect or set global auth state
+        // navigate("/dashboard"); // if using React Router
+      } else {
+        console.error("❌ Login failed:", data.message || data.error);
+        alert("Login failed: " + (data.message || "Unknown error"));
+      }
+  
+    } catch (err) {
+      console.error("💥 Error logging in:", err);
+      alert("Something went wrong. Try again.");
+    }
+  };
+  
 
   const handleForgotPassword = () => {
     console.log("Forgot password")
@@ -69,7 +100,7 @@ export default function Login() {
                     placeholder="username@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     required
                   />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -85,7 +116,7 @@ export default function Login() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-4 pr-10 py-3 border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     required
                   />
                   <button
