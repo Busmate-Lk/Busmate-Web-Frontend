@@ -1,5 +1,6 @@
 import { Bus, ChevronDown, Bell, User, LogOut } from "lucide-react"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 interface HeaderProps{
   pageTitle?:string
@@ -19,6 +20,7 @@ interface Notification {
 export function Header({pageTitle,pageDescription}:HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const router = useRouter()
   
   // Sample notifications - replace with actual data from your API
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -85,6 +87,37 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
       case 'warning': return '⚠️'
       case 'error': return '❌'
       default: return 'ℹ️'
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      // Clear any stored authentication data
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('userRole')
+      localStorage.removeItem('userData')
+      sessionStorage.clear()
+      
+      // Optional: Make API call to logout endpoint if you have one
+      // await fetch("http://10.22.162.220:8080/api/auth/logout", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Authorization": `Bearer ${localStorage.getItem('authToken')}`
+      //   },
+      // });
+      
+      // Close dropdown
+      setIsDropdownOpen(false)
+      
+      // Redirect to login page
+      router.push('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Even if API call fails, still clear local data and redirect
+      localStorage.clear()
+      sessionStorage.clear()
+      router.push('/')
     }
   }
 
@@ -199,7 +232,10 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                   <User className="w-4 h-4" />
                   View Profile
                 </button>
-                <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                <button 
+                  className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={handleLogout}
+                >
                   <LogOut className="w-4 h-4" />
                   Logout
                 </button>
