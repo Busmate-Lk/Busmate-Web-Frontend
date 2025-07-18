@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Layout } from "@/components/shared/layout"
-import FilterBar from "@/components/mot/ FilterBar"
+import FilterBar from "@/components/mot/FilterBar"
 import MessageTabs from "@/components/mot/MessageTabs"
 import PendingMessagesTable from "@/components/mot/PendingMessagesTable"
 
