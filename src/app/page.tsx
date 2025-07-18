@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   return (
@@ -79,10 +80,55 @@ function LoginForm() {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle login logic here
+    try {
+      const response = await fetch("http://192.168.64.101:8080/api/auth/login", {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email,password})
+      });
+      const data = await response.json();
+
+      // console.log("modaya1111111")
+      if(response.ok){
+        // console.log("modaya");
+        console.log(data.user.app_role);
+
+        // const role = data.user.app_role?.toLowerCase();
+        
+        // Navigate to appropriate dashboard based on user role
+        if (data.user.app_role) {
+          switch(data.user.app_role) {
+            case 'Mot':
+              router.push('/mot/dashboard');
+              break;
+            case 'operator':
+              router.push('/operator/dashboard');
+              break;
+            case 'timekeeper':
+              router.push('/timeKeeper/dashboard');
+              break;
+            default:
+              // Default to operator dashboard if role is unclear
+              router.push('/operator/dashboard');
+          }
+        } else {
+          // If no role specified, default to operator dashboard
+          // router.push('/login');
+          // console.log(data)
+        }
+      } else {
+        // Handle login error
+        console.error('Login failed:', data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
     console.log("Login attempt:", { email, password, rememberMe });
   };
 
