@@ -76,17 +76,6 @@ export function TimekeeperProfile({ userId }: TimeKeeperProfileProps) {
               </div>
             </div>
             <div className="text-right space-y-2">
-              <div className="flex items-center space-x-2">
-                <Button size="sm" className="bg-green-500/90 text-white hover:bg-green-600 shadow-md">
-                  ✓ Mark Present
-                </Button>
-                <Button size="sm" variant="outline" className="bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">
-                  Mark Absent
-                </Button>
-                <Button size="sm" variant="outline" className="bg-yellow-500/20 text-yellow-600 border-yellow-200 hover:bg-yellow-500/30 shadow-md">
-                  On Leave
-                </Button>
-              </div>
               <div className="flex items-center space-x-2 text-sm">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-green-600">On Duty</span>
