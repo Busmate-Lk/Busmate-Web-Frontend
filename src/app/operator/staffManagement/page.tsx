@@ -67,7 +67,7 @@ export default function StaffManagement() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeItem="staff" />
+      {/* <Sidebar activeItem="staff" /> */}
 
       <div className="flex-1">
         <Header />

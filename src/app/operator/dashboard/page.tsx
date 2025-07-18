@@ -25,7 +25,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeItem="dashboard" />
+      {/* <Sidebar activeItem="dashboard" /> */}
 
       <div className="flex-1">
         <Header />
@@ -74,23 +74,21 @@ export default function Dashboard() {
               icon={<Bus className="w-6 h-6 text-red-600" />}
               warning={true}
             />
+            <MetricCard
+              title="Active Routes"
+              value={23}
+              trend={{
+                value: "+2",
+                type: "positive",
+                label: "since last month",
+              }}
+              icon={<Map className="w-6 h-6 text-purple-600" />}
+              iconBgColor="bg-purple-100"/>
 
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-              <div className="p-6">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-4">Live Fleet Map</h3>
-                  <div className="bg-gray-100 rounded-lg p-8 flex items-center justify-center min-h-[120px]">
-                    <div className="text-center">
-                      <Map className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500">Map will load here</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-gray-600">
             <ChartPlaceholder
               title="Revenue Trends"
               selectedPeriod={revenuePeriod}

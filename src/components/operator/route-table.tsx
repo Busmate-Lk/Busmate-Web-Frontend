@@ -27,35 +27,35 @@ export function RouteTable({ routes, onEdit, onDelete }: RouteTableProps) {
       <table className="w-full caption-bottom text-sm">
         <thead className="[&_tr]:border-b">
           <tr className="border-b transition-colors hover:bg-gray-50">
-            <th className="h-12 px-4 text-left align-middle font-medium text-gray-500">Route Name</th>
-            <th className="h-12 px-4 text-left align-middle font-medium text-gray-500">Start/End Points</th>
-            <th className="h-12 px-4 text-left align-middle font-medium text-gray-500">Schedule Time</th>
-            <th className="h-12 px-4 text-left align-middle font-medium text-gray-500">Assigned Bus</th>
-            <th className="h-12 px-4 text-left align-middle font-medium text-gray-500">Status</th>
-            <th className="h-12 px-4 text-left align-middle font-medium text-gray-500">Actions</th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-gray-900">Route Name</th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-gray-900">Start/End Points</th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-gray-900">Schedule Time</th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-gray-900">Assigned Bus</th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-gray-900">Status</th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-gray-900">Actions</th>
           </tr>
         </thead>
         <tbody className="[&_tr:last-child]:border-0">
           {routes.map((route) => (
             <tr key={route.id} className="border-b transition-colors hover:bg-gray-50">
-              <td className="p-4 align-middle font-medium">{route.routeName}</td>
+              <td className="p-4 align-middle font-medium text-gray-500">{route.routeName}</td>
               <td className="p-4 align-middle">
                 <div className="flex items-center gap-2">
-                  <span>{route.startPoint}</span>
+                  <span className="text-gray-500">{route.startPoint}</span>
                   <ArrowRight className="w-4 h-4 text-gray-400" />
-                  <span>{route.endPoint}</span>
+                  <span className="text-gray-500">{route.endPoint}</span>
                 </div>
                 <div className="text-sm text-gray-500 mt-1">{route.stops} stops</div>
               </td>
               <td className="p-4 align-middle">
                 <div>
-                  <div className="font-medium">
+                  <div className="font-medium text-gray-500">
                     {route.scheduleStart} - {route.scheduleEnd}
                   </div>
                   <div className="text-sm text-gray-500">{route.frequency}</div>
                 </div>
               </td>
-              <td className="p-4 align-middle">{route.assignedBus}</td>
+              <td className="p-4 align-middle text-gray-500">{route.assignedBus}</td>
               <td className="p-4 align-middle">
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${

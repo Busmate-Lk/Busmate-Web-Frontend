@@ -82,7 +82,7 @@ export default function FleetManagement() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeItem="fleet" />
+      {/* <Sidebar activeItem="fleet" /> */}
 
       <div className="flex-1">
         <Header />

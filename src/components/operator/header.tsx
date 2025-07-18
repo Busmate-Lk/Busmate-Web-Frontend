@@ -5,9 +5,9 @@ export function Header() {
     <div className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="bg-blue-100 p-2 rounded-lg">
+          {/* <div className="bg-blue-100 p-2 rounded-lg">
             <Bus className="w-6 h-6 text-blue-600" />
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center gap-4">

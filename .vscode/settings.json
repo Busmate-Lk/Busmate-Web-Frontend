@@ -1,0 +1,10 @@
+{
+    "files.watcherExclude": {
+        "**/target": true
+    },
+    "github.copilot.chat.scopeSelection": true,
+    "github.copilot.chat.experimental.temporalContext.enabled": true,
+    "chat.experimental.implicitContext": true,
+    "chat.experimental.detectParticipant.enabled": true,
+    "github.copilot.chat.terminalChatLocation": "chatView"
+}
