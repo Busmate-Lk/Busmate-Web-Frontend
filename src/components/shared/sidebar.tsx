@@ -91,13 +91,13 @@ export function Sidebar({
       icon: Bus,
       label: 'Bus Information',
       active: activeItem === 'information',
-      href: '/mot/bus-info',
+      href: '/mot/bus-infomation',
     },
     {
       icon: DollarSign,
       label: 'Fare Management',
       active: activeItem === 'fare',
-      href: '/mot/fare-management',
+      href: '/mot/bus-fare',
     },
     {
       icon: BarChart3,
