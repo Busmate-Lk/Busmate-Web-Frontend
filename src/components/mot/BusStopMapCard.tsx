@@ -1,5 +1,5 @@
 import { MapPin, Search, Navigation } from "lucide-react"
-import type { BusStop } from "@/app/mot/bus-stops/page"
+import type { BusStop } from "@/app/mot/(authenticated)/bus-stops/page"
 
 export default function BusStopMapCard({ busStop }: { busStop: BusStop }) {
   return (

@@ -1,6 +1,6 @@
 import { Eye, Edit, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { BusStop } from "@/app/mot/bus-stops/page"
+import { BusStop } from "@/app/mot/(authenticated)/bus-stops/page"
 
 function getStatusBadge(status: string) {
   switch (status) {

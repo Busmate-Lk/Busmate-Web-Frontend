@@ -1,5 +1,5 @@
 import { Edit } from "lucide-react"
-import type { BusStop } from "@/app/mot/bus-stops/page"
+import type { BusStop } from "@/app/mot/(authenticated)/bus-stops/page"
 
 export default function BusStopInfoCard({ busStop, onEdit }: { busStop: BusStop, onEdit: (busStop: BusStop) => void }) {
   return (

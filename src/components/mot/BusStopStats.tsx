@@ -1,5 +1,5 @@
 import { Bus, CheckCircle, AlertTriangle, MapPin } from "lucide-react"
-import { BusStop } from "@/app/mot/bus-stops/page"
+import { BusStop } from "@/app/mot/(authenticated)/bus-stops/page"
 
 export default function BusStopStats({ busStops }: { busStops: BusStop[] }) {
   return (

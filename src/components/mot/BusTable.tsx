@@ -1,6 +1,6 @@
 import { Eye, Edit, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import type { Bus } from "@/app/mot/bus-infomation/page"
+import type { Bus } from "@/app/mot/(authenticated)/bus-infomation/page"
 
 export default function BusTable({
   buses,
