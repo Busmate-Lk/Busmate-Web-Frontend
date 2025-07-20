@@ -2,7 +2,7 @@
 
 import { Bus, ChevronDown, Bell, User, LogOut } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/context/AuthContext"
 
 interface HeaderProps{
   pageTitle?:string
@@ -22,7 +22,7 @@ interface Notification {
 export function Header({pageTitle,pageDescription}:HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
-  const { user, signOut } = useAuth()
+  const { user, logout, isLoading } = useAuth()
   
   const dropdownRef = useRef<HTMLDivElement>(null)
   const notificationRef = useRef<HTMLDivElement>(null)
@@ -168,15 +168,29 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
       // Close dropdown first
       setIsDropdownOpen(false)
       
-      // Use the signOut function from useAuth hook
-      await signOut()
+      // Use the logout function from AuthContext
+      await logout()
     } catch (error) {
       console.error('Logout error:', error)
-      // Even if there's an error, still try to clear everything and redirect
-      localStorage.clear()
-      sessionStorage.clear()
-      window.location.href = '/'
     }
+  }
+
+  // Show loading state if auth is still loading
+  if (isLoading) {
+    return (
+      <div className="bg-white border-b border-gray-200 px-6 py-4 h-20 flex items-center sticky top-0 z-50">
+        <div className="flex items-center justify-between w-full">
+          <div className="animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

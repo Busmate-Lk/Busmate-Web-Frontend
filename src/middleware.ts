@@ -1,20 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
-
-interface JwtPayload {
-  sub: string;
-  email: string;
-  user_metadata: {
-    user_role: string;
-  };
-  exp: number;
-}
+import { getUserFromToken, isTokenExpired } from '@/lib/utils/jwtHandler';
 
 export async function middleware(request: NextRequest) {
   console.log('Middleware triggered for:', request.nextUrl.pathname);
   
   // Get token from cookies or headers
-  const token = request.cookies.get('access_token')?.value ||
+  const token = request.cookies.get('access_token')?.value || 
                 request.headers.get('Authorization')?.split(' ')[1];
 
   console.log('Token in middleware:', token ? 'Present' : 'Missing');
@@ -43,22 +34,36 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // Decode JWT without verification (since we don't have the secret in middleware)
-    const payload = jwt.decode(token) as JwtPayload;
-    
-    if (!payload || !payload.user_metadata?.user_role) {
-      console.log('Invalid token payload');
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-
     // Check if token is expired
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
+    const expired = isTokenExpired(token);
+    if (expired === null) {
+      console.log('Invalid token format');
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    
+    if (expired) {
       console.log('Token expired');
+      // Check if refresh token exists
+      const refreshToken = request.cookies.get('refresh_token')?.value;
+      if (refreshToken) {
+        // Allow the request to continue so the client can handle token refresh
+        console.log('Token expired but refresh token exists, allowing request to continue');
+        return NextResponse.next();
+      } else {
+        console.log('No refresh token found, redirecting to login');
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    }
+
+    // Get user information from token
+    const user = getUserFromToken(token);
+    
+    if (!user || !user.role) {
+      console.log('Invalid token payload or missing user role');
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    const userRole = payload.user_metadata.user_role;
-    console.log('User role from token:', userRole);
+    console.log('User role from token:', user.role);
 
     // Role-based route protection
     const roleRoutes = {
@@ -69,15 +74,15 @@ export async function middleware(request: NextRequest) {
       'Admin': '/admin',
     };
 
-    const allowedBasePath = roleRoutes[userRole as keyof typeof roleRoutes];
+    const allowedBasePath = roleRoutes[user.role as keyof typeof roleRoutes];
     
     if (!allowedBasePath) {
-      console.log('Unknown role:', userRole);
+      console.log('Unknown role:', user.role);
       return NextResponse.redirect(new URL('/', request.url));
     }
 
     if (!pathname.startsWith(allowedBasePath)) {
-      console.log(`Role ${userRole} not allowed for path ${pathname}, redirecting to ${allowedBasePath}/dashboard`);
+      console.log(`Role ${user.role} not allowed for path ${pathname}, redirecting to ${allowedBasePath}/dashboard`);
       return NextResponse.redirect(new URL(`${allowedBasePath}/dashboard`, request.url));
     }
 

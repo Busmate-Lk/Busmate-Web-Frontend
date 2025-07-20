@@ -13,7 +13,7 @@ import { Button } from "@/components/admin/ui/button"
 import { NotificationDropdown } from "@/components/admin/notifications/notification-dropdown"
 import { User, LogOut, Settings } from "lucide-react"
 import Link from "next/link"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/context/AuthContext"
 
 interface HeaderProps {
     title: string
@@ -21,7 +21,7 @@ interface HeaderProps {
 }
 
 export function Header({ title, description }: HeaderProps) {
-    const { user, signOut } = useAuth()
+    const { user, logout, isLoading } = useAuth()
 
     const getUserDisplayName = () => {
         if (!user) return "Admin User"
@@ -61,15 +61,29 @@ export function Header({ title, description }: HeaderProps) {
 
     const handleLogout = async () => {
         try {
-            // Use the signOut function from useAuth hook
-            await signOut()
+            // Use the logout function from AuthContext
+            await logout()
         } catch (error) {
             console.error("Logout error:", error)
-            // Even if there's an error, still try to clear everything and redirect
-            localStorage.clear()
-            sessionStorage.clear()
-            window.location.href = "/"
         }
+    }
+
+    // Show loading state if auth is still loading
+    if (isLoading) {
+        return (
+            <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl mb-6">
+                <div className="flex h-16 items-center justify-between px-6">
+                    <div className="animate-pulse">
+                        <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+                        {description && <div className="h-4 bg-gray-200 rounded w-32"></div>}
+                    </div>
+                    <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+                        <div className="w-32 h-8 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                </div>
+            </header>
+        )
     }
 
     return (

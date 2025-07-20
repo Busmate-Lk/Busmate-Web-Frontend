@@ -1,107 +1,211 @@
 'use client';
 
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import { User } from '@/types/models/user';
+import { login as apiLogin, logout as apiLogout, getCurrentUser } from '@/lib/api/user-management/auth';
+import { LoginRequest } from '@/types/requestdto/auth';
+import { getUserFromToken, isTokenExpired } from '@/lib/utils/jwtHandler';
+import { getCookie, setCookie, clearAuthCookies, setSecureAuthCookie } from '@/lib/utils/cookieUtils';
 
 interface AuthState {
-  token: string | null;
   user: User | null;
   isLoading: boolean;
-  setAuth: (auth: { token: string; user: User }) => void;
-  clearAuth: () => void;
+  isAuthenticated: boolean;
+  login: (credentials: LoginRequest) => Promise<void>;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthState>({
-  token: null,
+const AuthContext = createContext<AuthState>({
   user: null,
   isLoading: true,
-  setAuth: () => {},
-  clearAuth: () => {},
+  isAuthenticated: false,
+  login: async () => {},
+  logout: async () => {},
+  checkAuth: async () => {},
 });
 
-// Cookie utility functions
-const setCookie = (name: string, value: string, days: number = 7) => {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;secure;samesite=strict`;
-};
-
-const getCookie = (name: string): string | null => {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(';');
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-};
-
-const deleteCookie = (name: string) => {
-  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
-};
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    // Check both cookies and localStorage for token
-    const cookieToken = getCookie('access_token');
-    const localToken = localStorage.getItem('access_token');
-    const storedUser = localStorage.getItem('auth_user');
-
-    const finalToken = cookieToken || localToken;
-
-    if (finalToken && storedUser) {
-      try {
-        setToken(finalToken);
-        setUser(JSON.parse(storedUser));
-        
-        // If token was only in localStorage, also set it in cookie
-        if (!cookieToken && localToken) {
-          setCookie('access_token', localToken);
-        }
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
-        clearAuth();
+  // Check authentication status
+  const checkAuth = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Get token from cookie
+      const token = getCookie('access_token');
+      
+      if (!token) {
+        // No token found, user is not authenticated
+        setUser(null);
+        setIsAuthenticated(false);
+        return;
       }
-    }
-    setIsLoading(false);
-  }, []);
 
-  const setAuth = ({ token, user }: { token: string; user: User }) => {
-    setToken(token);
-    setUser(user);
-    
-    // Store in both localStorage and cookies
-    localStorage.setItem('access_token', token);
-    localStorage.setItem('auth_token', token); // Keep both for compatibility
-    localStorage.setItem('auth_user', JSON.stringify(user));
-    
-    // Set cookie for middleware access
-    setCookie('access_token', token);
+      // Check if token is expired
+      if (isTokenExpired(token)) {
+        console.log('Token expired, attempting refresh...');
+        
+        // Try to refresh token
+        const refreshToken = getCookie('refresh_token');
+        if (refreshToken) {
+          try {
+            // Call refresh endpoint
+            const response = await fetch('/api/auth/refresh', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ refresh_token: refreshToken }),
+            });
+
+            if (response.ok) {
+              const authData = await response.json();
+              
+              // Set new tokens in cookies
+              setSecureAuthCookie('access_token', authData.access_token, authData.expires_in);
+              setSecureAuthCookie('refresh_token', authData.refresh_token, 30 * 24 * 60 * 60); // 30 days
+              
+              // Extract and set user data
+              const userFromToken = getUserFromToken(authData.access_token);
+              if (userFromToken) {
+                const userData: User = {
+                  id: userFromToken.id,
+                  email: userFromToken.email,
+                  user_role: userFromToken.role,
+                  email_verified: userFromToken.emailVerified,
+                };
+                setUser(userData);
+                setIsAuthenticated(true);
+                return;
+              }
+            }
+          } catch (refreshError) {
+            console.error('Token refresh failed:', refreshError);
+          }
+        }
+        
+        // Refresh failed, clear cookies and redirect
+        clearAuthCookies(['access_token', 'refresh_token']);
+        setUser(null);
+        setIsAuthenticated(false);
+        return;
+      }
+
+      // Token is valid, extract user info
+      const userFromToken = getUserFromToken(token);
+      if (userFromToken) {
+        setUser({
+          id: userFromToken.id,
+          email: userFromToken.email,
+          user_role: userFromToken.role,
+          email_verified: userFromToken.emailVerified,
+        });
+        setIsAuthenticated(true);
+      } else {
+        // Invalid token payload
+        clearAuthCookies(['access_token', 'refresh_token']);
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      clearAuthCookies(['access_token', 'refresh_token']);
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const clearAuth = () => {
-    setToken(null);
-    setUser(null);
-    
-    // Clear from localStorage
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-    
-    // Clear from cookies
-    deleteCookie('access_token');
-    deleteCookie('refresh_token');
+  const login = async (credentials: LoginRequest) => {
+    try {
+      setIsLoading(true);
+      
+      // Use the API helper function to get auth response
+      const authResponse = await apiLogin(credentials);
+      
+      // Set tokens in cookies with proper security settings
+      setSecureAuthCookie('access_token', authResponse.access_token, authResponse.expires_in);
+      setSecureAuthCookie('refresh_token', authResponse.refresh_token, 30 * 24 * 60 * 60); // 30 days
+      
+      // Extract user data from response
+      const userData: User = {
+        id: authResponse.user.id,
+        email: authResponse.user.email,
+        user_role: authResponse.user.user_metadata.user_role,
+        email_verified: authResponse.user.user_metadata.email_verified,
+        last_sign_in_at: authResponse.user.last_sign_in_at,
+        created_at: authResponse.user.created_at,
+        updated_at: authResponse.user.updated_at,
+      };
+
+      setUser(userData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Login failed:', error);
+      // Clear any potentially set cookies on login failure
+      clearAuthCookies(['access_token', 'refresh_token']);
+      setUser(null);
+      setIsAuthenticated(false);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Use the API helper function
+      await apiLogout();
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
+    } finally {
+      // Clear client-side state and cookies regardless of API call result
+      setUser(null);
+      setIsAuthenticated(false);
+      
+      // Clear all auth-related cookies
+      clearAuthCookies(['access_token', 'refresh_token']);
+      
+      setIsLoading(false);
+      
+      // Redirect to login page
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const value: AuthState = {
+    user,
+    isLoading,
+    isAuthenticated,
+    login,
+    logout,
+    checkAuth,
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, isLoading, setAuth, clearAuth }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

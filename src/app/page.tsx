@@ -4,14 +4,14 @@ import Image from "next/image";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && isAuthenticated && user) {
       // User is already logged in, redirect to appropriate dashboard
       const getRedirectPath = (userRole: string) => {
         switch (userRole?.toLowerCase()) {
@@ -32,17 +32,20 @@ export default function Home() {
       };
       router.push(getRedirectPath(user.user_role));
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, isAuthenticated, router]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="text-white text-lg">Loading...</div>
+        </div>
       </div>
     );
   }
 
-  if (user) {
+  if (isAuthenticated && user) {
     return null; // Will redirect in useEffect
   }
 
@@ -96,7 +99,7 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   
-  const { signIn } = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,12 +107,10 @@ function LoginForm() {
     setError("");
 
     try {
-      const result = await signIn(email, password);
-      if (!result.success) {
-        setError(result.error || 'Login failed');
-      }
-    } catch (error) {
-      setError('An unexpected error occurred');
+      await login({ email, password });
+      // Success will be handled by the useEffect in the parent component
+    } catch (error: any) {
+      setError(error.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
