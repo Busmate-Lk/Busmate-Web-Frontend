@@ -1,5 +1,3 @@
-import { User } from '@/types/models/user';
-
 export interface AuthResponse {
   access_token: string;
   refresh_token: string;
