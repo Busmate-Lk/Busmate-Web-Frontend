@@ -1,6 +1,8 @@
+"use client"
+
 import { Bus, ChevronDown, Bell, User, LogOut } from "lucide-react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useRef, useEffect } from "react"
+import { useAuth } from "@/hooks/useAuth"
 
 interface HeaderProps{
   pageTitle?:string
@@ -20,7 +22,10 @@ interface Notification {
 export function Header({pageTitle,pageDescription}:HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
-  const router = useRouter()
+  const { user, signOut } = useAuth()
+  
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const notificationRef = useRef<HTMLDivElement>(null)
   
   // Sample notifications - replace with actual data from your API
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -55,6 +60,38 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
 
   const unreadCount = notifications.filter(n => !n.isRead).length
 
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setIsNotificationOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  // Close dropdowns on Escape key
+  useEffect(() => {
+    function handleEscapeKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false)
+        setIsNotificationOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey)
+    }
+  }, [])
+
   const getGreeting = () => {
     const hour = new Date().getHours()
     if (hour < 12) {
@@ -63,6 +100,42 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
       return "Good afternoon"
     } else {
       return "Good evening"
+    }
+  }
+
+  const getUserDisplayName = () => {
+    if (!user) return "User"
+    
+    // Extract first name from email or use email
+    const emailName = user.email.split('@')[0]
+    return emailName.charAt(0).toUpperCase() + emailName.slice(1)
+  }
+
+  const getUserInitials = () => {
+    if (!user) return "U"
+    
+    const displayName = getUserDisplayName()
+    const parts = displayName.split(' ')
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase()
+    }
+    return displayName.substring(0, 2).toUpperCase()
+  }
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case 'systemadmin':
+      case 'system-admin':
+        return 'System Administrator'
+      case 'fleetoperator':
+      case 'operator':
+        return 'Fleet Operator'
+      case 'timekeeper':
+        return 'Timekeeper'
+      case 'mot':
+        return 'MOT Official'
+      default:
+        return role || 'User'
     }
   }
 
@@ -92,67 +165,61 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
 
   const handleLogout = async () => {
     try {
-      // Clear any stored authentication data
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('userRole')
-      localStorage.removeItem('userData')
-      sessionStorage.clear()
-      
-      // Optional: Make API call to logout endpoint if you have one
-      // await fetch("http://10.22.162.220:8080/api/auth/logout", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${localStorage.getItem('authToken')}`
-      //   },
-      // });
-      
-      // Close dropdown
+      // Close dropdown first
       setIsDropdownOpen(false)
       
-      // Redirect to login page
-      router.push('/')
+      // Use the signOut function from useAuth hook
+      await signOut()
     } catch (error) {
       console.error('Logout error:', error)
-      // Even if API call fails, still clear local data and redirect
+      // Even if there's an error, still try to clear everything and redirect
       localStorage.clear()
       sessionStorage.clear()
-      router.push('/')
+      window.location.href = '/'
     }
   }
 
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-4 h-20 flex items-center sticky top-0 z-40">
+    <div className="bg-white border-b border-gray-200 px-6 py-4 h-20 flex items-center sticky top-0 z-50">
       <div className="flex items-center justify-between w-full">
-      <div>
-              {pageTitle ? (
-                <>
-                  <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
-                  {pageDescription && <p className="text-slate-600">{pageDescription}</p>}
-                </>
-              ) : (
-                <>
-                  <h1 className="text-2xl font-bold text-gray-900">{getGreeting()}, Admin!</h1>
-                  <p className="text-slate-600">Welcome back to BUSMATE LK Transportation Dashboard</p>
-                </>
-              )}
-            </div>
+        <div>
+          {pageTitle ? (
+            <>
+              <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
+              {pageDescription && <p className="text-sm text-slate-600 mt-0.5">{pageDescription}</p>}
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {getGreeting()}, {getUserDisplayName()}!
+              </h1>
+              <p className="text-sm text-slate-600 mt-0.5">Welcome back to BUSMATE LK Transportation Dashboard</p>
+            </>
+          )}
+        </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <Bell 
-              className="w-6 h-6 text-gray-600 cursor-pointer hover:text-gray-800" 
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-            />
-            {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center">
-                {unreadCount}
-              </span>
-            )}
+          {/* Notifications */}
+          <div className="relative" ref={notificationRef}>
+            <button
+              className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+              onClick={() => {
+                setIsNotificationOpen(!isNotificationOpen)
+                setIsDropdownOpen(false) // Close other dropdown
+              }}
+              aria-label="Notifications"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-medium">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
             
             {isNotificationOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
-                <div className="px-4 py-2 border-b border-gray-100">
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
+                <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                 </div>
                 
@@ -167,7 +234,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                     {notifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-l-4 ${
+                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-l-4 transition-colors ${
                           notification.isRead 
                             ? 'border-transparent bg-gray-50/50' 
                             : 'border-blue-500 bg-blue-50/30'
@@ -211,29 +278,51 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
             )}
           </div>
 
-          <div className="relative">
-            <div 
-              className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-md"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          {/* User Profile Menu */}
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+              onClick={() => {
+                setIsDropdownOpen(!isDropdownOpen)
+                setIsNotificationOpen(false) // Close other dropdown
+              }}
+              aria-label="User menu"
             >
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">JM</span>
+              <div className="relative">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-white text-sm font-semibold">{getUserInitials()}</span>
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
-              <div className="text-right">
-                    <div className="text-sm font-medium text-gray-900">Admin User</div>
-                    <div className="text-xs text-slate-500">Administrator</div>
+              <div className="hidden md:block text-left">
+                <div className="text-sm font-medium text-gray-900">{getUserDisplayName()}</div>
+                <div className="text-xs text-slate-500">
+                  {user ? getRoleDisplayName(user.user_role) : 'User'}
+                </div>
               </div>
-                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </div>
+              <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
             
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-semibold">{getUserInitials()}</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{getUserDisplayName()}</p>
+                      <p className="text-sm text-gray-500">{user?.email || "user@busmate.lk"}</p>
+                    </div>
+                  </div>
+                </div>
+                
                 <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <User className="w-4 h-4" />
                   View Profile
                 </button>
                 <button 
-                  className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   onClick={handleLogout}
                 >
                   <LogOut className="w-4 h-4" />

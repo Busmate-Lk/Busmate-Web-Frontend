@@ -35,7 +35,7 @@ export function Layout({ children, activeItem = "dashboard", pageTitle, pageDesc
       <div className="min-h-screen bg-gray-50">
         <Sidebar activeItem={activeItem} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} role={role} />
         
-        <div className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'ml-16' : 'ml-64'} min-h-screen`}>
+        <div className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'ml-20' : 'ml-68'} min-h-screen`}>
           <Header pageTitle={pageTitle} pageDescription={pageDescription} />
           
           <main className="p-6">

@@ -13,6 +13,7 @@ import { Button } from "@/components/admin/ui/button"
 import { NotificationDropdown } from "@/components/admin/notifications/notification-dropdown"
 import { User, LogOut, Settings } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from "@/hooks/useAuth"
 
 interface HeaderProps {
     title: string
@@ -20,6 +21,57 @@ interface HeaderProps {
 }
 
 export function Header({ title, description }: HeaderProps) {
+    const { user, signOut } = useAuth()
+
+    const getUserDisplayName = () => {
+        if (!user) return "Admin User"
+
+        // Extract first name from email or use email
+        const emailName = user.email.split("@")[0]
+        return emailName.charAt(0).toUpperCase() + emailName.slice(1)
+    }
+
+    const getUserInitials = () => {
+        if (!user) return "AU"
+
+        const displayName = getUserDisplayName()
+        const parts = displayName.split(" ")
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[1][0]).toUpperCase()
+        }
+        return displayName.substring(0, 2).toUpperCase()
+    }
+
+    const getRoleDisplayName = (role: string) => {
+        switch (role?.toLowerCase()) {
+            case "systemadmin":
+            case "system-admin":
+                return "System Administrator"
+            case "fleetoperator":
+            case "operator":
+                return "Fleet Operator"
+            case "timekeeper":
+                return "Timekeeper"
+            case "mot":
+                return "MOT Official"
+            default:
+                return role || "Administrator"
+        }
+    }
+
+    const handleLogout = async () => {
+        try {
+            // Use the signOut function from useAuth hook
+            await signOut()
+        } catch (error) {
+            console.error("Logout error:", error)
+            // Even if there's an error, still try to clear everything and redirect
+            localStorage.clear()
+            sessionStorage.clear()
+            window.location.href = "/"
+        }
+    }
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl mb-6">
             <div className="flex h-16 items-center justify-between px-6">
@@ -37,36 +89,38 @@ export function Header({ title, description }: HeaderProps) {
                     {/* User Profile Menu */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-10 w-auto rounded-full pl-2 pr-3 hover:bg-slate-100">
+                            <Button variant="ghost" className="relative h-10 w-auto rounded-full pl-2 pr-3 hover:bg-slate-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
                                 <div className="flex items-center space-x-3">
                                     <div className="relative">
                                         <Avatar className="h-8 w-8 ring-2 ring-white shadow-md">
                                             <AvatarImage src="/placeholder.svg" />
                                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                                                AU
+                                                {getUserInitials()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
                                     </div>
                                     <div className="hidden md:block text-left">
-                                        <p className="text-sm font-medium text-slate-900">Admin User</p>
-                                        <p className="text-xs text-slate-500">System Administrator</p>
+                                        <p className="text-sm font-medium text-slate-900">{getUserDisplayName()}</p>
+                                        <p className="text-xs text-slate-500">
+                                            {user ? getRoleDisplayName(user.user_role) : "System Administrator"}
+                                        </p>
                                     </div>
                                 </div>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-64 p-2" align="end">
+                        <DropdownMenuContent className="w-64 p-2" align="end" sideOffset={5}>
                             <DropdownMenuLabel className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2">
                                 <div className="flex items-center space-x-3">
                                     <Avatar className="h-10 w-10">
                                         <AvatarImage src="/placeholder.svg" />
                                         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                            AU
+                                            {getUserInitials()}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-medium text-slate-900">Admin User</p>
-                                        <p className="text-sm text-slate-500">admin@busmate.lk</p>
+                                        <p className="font-medium text-slate-900">{getUserDisplayName()}</p>
+                                        <p className="text-sm text-slate-500">{user?.email || "admin@busmate.lk"}</p>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
@@ -77,7 +131,10 @@ export function Header({ title, description }: HeaderProps) {
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+                            <DropdownMenuItem
+                                className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                                onClick={handleLogout}
+                            >
                                 <LogOut className="h-4 w-4 mr-2" />
                                 <span>Sign Out</span>
                             </DropdownMenuItem>

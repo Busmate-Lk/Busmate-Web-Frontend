@@ -179,7 +179,7 @@ export function Sidebar({
   return (
     <div
       className={`${
-        isCollapsed ? 'w-16' : 'w-64'
+        isCollapsed ? 'w-20' : 'w-68'
       } bg-blue-800 text-white transition-all duration-300 ease-in-out flex flex-col h-screen fixed left-0 top-0 z-40`}
     >
       {/* Header Section */}
@@ -197,14 +197,14 @@ export function Sidebar({
                   alt="Busmate LK Logo"
                   width={24}
                   height={24}
-                  className="w-12 h-12"
+                  className="w-16 h-16"
                 />
               </div>
             )}
             {!isCollapsed && (
-              <div>
+              <div className='w-full justify-center '>
                 <h1 className="text-xl font-bold text-white">BUSMATE LK</h1>
-                <p className="text-blue-200 text-sm">Admin Portal</p>
+                <p className="text-blue-200 text-sm">MoT Portal</p>
               </div>
             )}
           </div>
