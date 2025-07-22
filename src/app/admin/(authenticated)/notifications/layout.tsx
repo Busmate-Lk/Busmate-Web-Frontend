@@ -22,48 +22,56 @@ export default function NotificationsLayout({
     }
 
     const handleSendMessage = () => {
-        router.push("/admin/broadcast/compose")
+        router.push("/admin/notifications/compose")
     }
 
+    const isComposePage = pathname.includes('/compose');
     return (
         <div className="p-0">
             <Header title="Notification Center" description="Send messages, manage notifications, and track communication history" />
 
+
             {/* Send New Message Button */}
-            <div className="flex justify-end px-6 mt-2">
-                <Button onClick={handleSendMessage} className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
-                    <Send className="h-4 w-4 mr-2" />
-                    Send New Message
-                </Button>
-            </div>
+            {!isComposePage && (
+                <div className="flex justify-end px-6 mt-2">
+                    <Button onClick={handleSendMessage} className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
+                        <Send className="h-4 w-4 mr-2" />
+                        Send New Message
+                    </Button>
+                </div>
+            )}
 
             <div className="p-6">
-                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                    <div className="bg-white rounded-lg shadow-lg px-6 py-4 bg-gradient-to-r from-gray-50 to-white mb-6">
-                        <div className="flex items-center space-x-8">
-                            <button
-                                onClick={() => handleTabChange("sent")}
-                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "sent" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
-                                    }`}
-                            >
-                                <Send className="h-4 w-4" />
-                                <span>Sent Notifications</span>
-                            </button>
-                            <button
-                                onClick={() => handleTabChange("received")}
-                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "received" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
-                                    }`}
-                            >
-                                <Bell className="h-4 w-4" />
-                                <span>Received Notifications</span>
-                            </button>
+                {isComposePage ? (
+                    <div>{children}</div>
+                ) : (
+                    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                        <div className="bg-white rounded-lg shadow-lg px-6 py-4 bg-gradient-to-r from-gray-50 to-white mb-6">
+                            <div className="flex items-center space-x-8">
+                                <button
+                                    onClick={() => handleTabChange("sent")}
+                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "sent" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                        }`}
+                                >
+                                    <Send className="h-4 w-4" />
+                                    <span>Sent Notifications</span>
+                                </button>
+                                <button
+                                    onClick={() => handleTabChange("received")}
+                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "received" ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"
+                                        }`}
+                                >
+                                    <Bell className="h-4 w-4" />
+                                    <span>Received Notifications</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        {children}
-                    </div>
-                </Tabs>
+                        <div>
+                            {children}
+                        </div>
+                    </Tabs>
+                )}
             </div>
         </div>
     )

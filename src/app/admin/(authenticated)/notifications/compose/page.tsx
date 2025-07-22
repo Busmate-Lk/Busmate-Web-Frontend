@@ -7,8 +7,7 @@ import Link from "next/link"
 export default function ComposeMessagePage() {
 
   return (
-    <div className="p-6">
-      <Header title="Compose Message" />
+    <div className="p-1">
       <ComposeMessage />
     </div>
   )

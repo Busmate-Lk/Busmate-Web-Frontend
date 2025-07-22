@@ -19,18 +19,15 @@ export function ComposeMessage() {
   const [allUsers, setAllUsers] = useState(true)
 
   return (
-    <div className="p-6">
+    <div className="p-1">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" onClick={() => router.push("/admin/notifications/sent")}>
+          <Button className="shadow-md" variant="ghost" size="sm" onClick={() => router.push("/admin/notifications/sent")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Messages
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Compose Message</h1>
-            <p className="text-gray-600">Create and send broadcast messages to users</p>
-          </div>
+
         </div>
       </div>
 
@@ -49,9 +46,9 @@ export function ComposeMessage() {
                 <div className="grid grid-cols-4 gap-3 mt-3">
                   <button
                     onClick={() => setMessageType("info")}
-                    className={`p-4 rounded-lg border text-center transition-colors ${messageType === "info"
-                      ? "bg-blue-50 border-blue-200 text-blue-700"
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                    className={`p-4 rounded-lg shadow text-center transition-colors ${messageType === "info"
+                      ? "bg-blue-50 text-blue-700"
+                      : "bg-white hover:bg-gray-50"
                       }`}
                   >
                     <div className="text-blue-600 mb-2">ℹ️</div>
@@ -59,9 +56,9 @@ export function ComposeMessage() {
                   </button>
                   <button
                     onClick={() => setMessageType("warning")}
-                    className={`p-4 rounded-lg border text-center transition-colors ${messageType === "warning"
-                      ? "bg-yellow-50 border-yellow-200 text-yellow-700"
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                    className={`p-4 rounded-lg shadow text-center transition-colors ${messageType === "warning"
+                      ? "bg-yellow-50 text-yellow-700"
+                      : "bg-white hover:bg-gray-50"
                       }`}
                   >
                     <div className="text-yellow-600 mb-2">⚠️</div>
@@ -69,9 +66,9 @@ export function ComposeMessage() {
                   </button>
                   <button
                     onClick={() => setMessageType("critical")}
-                    className={`p-4 rounded-lg border text-center transition-colors ${messageType === "critical"
-                      ? "bg-red-50 border-red-200 text-red-700"
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                    className={`p-4 rounded-lg shadow text-center transition-colors ${messageType === "critical"
+                      ? "bg-red-50 text-red-700"
+                      : "bg-white hover:bg-gray-50"
                       }`}
                   >
                     <div className="text-red-600 mb-2">🚨</div>
@@ -79,9 +76,9 @@ export function ComposeMessage() {
                   </button>
                   <button
                     onClick={() => setMessageType("maintenance")}
-                    className={`p-4 rounded-lg border text-center transition-colors ${messageType === "maintenance"
-                      ? "bg-purple-50 border-purple-200 text-purple-700"
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                    className={`p-4 rounded-lg shadow text-center transition-colors ${messageType === "maintenance"
+                      ? "bg-purple-50 text-purple-700"
+                      : "bg-white hover:bg-gray-50"
                       }`}
                   >
                     <div className="text-purple-600 mb-2">🔧</div>
@@ -182,8 +179,8 @@ export function ComposeMessage() {
               {/* Message Content */}
               <div>
                 <Label>Message Content</Label>
-                <div className="border rounded-lg mt-2">
-                  <div className="flex items-center space-x-2 p-3 border-b bg-gray-50">
+                <div className="mt-2">
+                  <div className="flex items-center space-x-2 p-3 bg-gray-50">
                     <Button variant="ghost" size="sm">
                       <Bold className="h-4 w-4" />
                     </Button>
@@ -202,7 +199,7 @@ export function ComposeMessage() {
                   </div>
                   <Textarea
                     placeholder="Type your message here..."
-                    className="min-h-32 border-0 resize-none focus-visible:ring-0"
+                    className="min-h-32 resize-none focus-visible:ring-0 shadow border-none"
                   />
                 </div>
                 <div className="flex justify-between text-sm text-gray-500 mt-2">
@@ -247,7 +244,7 @@ export function ComposeMessage() {
                 </Button>
                 <div className="flex space-x-3">
                   <Button variant="outline">Preview</Button>
-                  <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Button className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
                     <Send className="h-4 w-4 mr-2" />
                     Send Message
                   </Button>
