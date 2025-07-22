@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
@@ -14,10 +14,12 @@ import AdditionalNotesForm from "@/components/mot/AdditionalNotesForm"
 export default function BusInformationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const busId = searchParams.get("id")   // Get ID for editing
+  
+  // Get the correct parameter
+  const busId = searchParams.get("edit")
   const isEditing = !!busId
 
-  // Sample bus data for editing (in real app, this would come from API)
+  // Sample bus data for editing
   const existingBuses = [
     {
       id: "1",
@@ -37,6 +39,7 @@ export default function BusInformationForm() {
       registrationDate: "2022-03-15",
       lastInspectionDate: "2024-11-20",
       nextMaintenanceDate: "2025-01-15",
+      status: "Active",
       notes: "Main bus terminal in Colombo Fort area",
     },
     {
@@ -57,6 +60,7 @@ export default function BusInformationForm() {
       registrationDate: "2021-08-10",
       lastInspectionDate: "2024-10-15",
       nextMaintenanceDate: "2025-02-20",
+      status: "Active",
       notes: "Regular service to airport route",
     },
     {
@@ -77,6 +81,7 @@ export default function BusInformationForm() {
       registrationDate: "2020-12-05",
       lastInspectionDate: "2024-09-30",
       nextMaintenanceDate: "2024-12-15",
+      status: "Active",
       notes: "Currently under maintenance - engine overhaul required",
     },
     {
@@ -97,6 +102,7 @@ export default function BusInformationForm() {
       registrationDate: "2023-01-20",
       lastInspectionDate: "2024-11-05",
       nextMaintenanceDate: "2025-03-10",
+      status: "Active",
       notes: "Express service to southern provinces",
     },
     {
@@ -117,6 +123,7 @@ export default function BusInformationForm() {
       registrationDate: "2019-06-15",
       lastInspectionDate: "2024-08-20",
       nextMaintenanceDate: "2024-11-30",
+      status: "Active",
       notes: "Popular route connecting North Western province",
     },
     {
@@ -137,34 +144,65 @@ export default function BusInformationForm() {
       registrationDate: "2022-07-12",
       lastInspectionDate: "2024-10-25",
       nextMaintenanceDate: "2025-01-25",
+      status: "Active",
       notes: "Hill country scenic route service",
     },
   ]
 
-  // Find existing bus data if editing
-  const existingBus = isEditing 
-    ? existingBuses.find(bus => bus.id === busId)
-    : null
-
+  // Initialize form data with empty values
   const [formData, setFormData] = useState({
-    busNumber: existingBus?.busNumber || "",
-    busType: existingBus?.busType || "",
-    operator: existingBus?.operator || "",
-    operatorType: existingBus?.operatorType || "",
-    seatingCapacity: existingBus?.seatingCapacity || "",
-    standingCapacity: existingBus?.standingCapacity || "",
-    chassisNo: existingBus?.chassisNo || "",
-    engineNo: existingBus?.engineNo || "",
-    fuelType: existingBus?.fuelType || "",
-    regionAssigned: existingBus?.regionAssigned || "",
-    depotName: existingBus?.depotName || "",
-    primaryRoute: existingBus?.primaryRoute || "",
-    secondaryRoute: existingBus?.secondaryRoute || "",
-    registrationDate: existingBus?.registrationDate || "",
-    lastInspectionDate: existingBus?.lastInspectionDate || "",
-    nextMaintenanceDate: existingBus?.nextMaintenanceDate || "",
-    notes: existingBus?.notes || "",
+    busNumber: "",
+    busType: "",
+    operator: "",
+    operatorType: "",
+    seatingCapacity: "",
+    standingCapacity: "",
+    chassisNo: "",
+    engineNo: "",
+    fuelType: "",
+    regionAssigned: "",
+    depotName: "",
+    primaryRoute: "",
+    secondaryRoute: "",
+    registrationDate: "",
+    lastInspectionDate: "",
+    nextMaintenanceDate: "",
+    status: "Active",
+    notes: "",
   })
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Use useEffect to populate form data when editing
+  useEffect(() => {
+    if (isEditing && busId) {
+      const existingBus = existingBuses.find(bus => bus.id === busId)
+      
+      if (existingBus) {
+        setFormData({
+          busNumber: existingBus.busNumber || "",
+          busType: existingBus.busType || "",
+          operator: existingBus.operator || "",
+          operatorType: existingBus.operatorType || "",
+          seatingCapacity: existingBus.seatingCapacity || "",
+          standingCapacity: existingBus.standingCapacity || "",
+          chassisNo: existingBus.chassisNo || "",
+          engineNo: existingBus.engineNo || "",
+          fuelType: existingBus.fuelType || "",
+          regionAssigned: existingBus.regionAssigned || "",
+          depotName: existingBus.depotName || "",
+          primaryRoute: existingBus.primaryRoute || "",
+          secondaryRoute: existingBus.secondaryRoute || "",
+          registrationDate: existingBus.registrationDate || "",
+          lastInspectionDate: existingBus.lastInspectionDate || "",
+          nextMaintenanceDate: existingBus.nextMaintenanceDate || "",
+          status: existingBus.status || "Active",
+          notes: existingBus.notes || "",
+        })
+      }
+    }
+    setIsLoading(false)
+  }, [busId, isEditing])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -191,11 +229,34 @@ export default function BusInformationForm() {
     router.push("/mot/bus-infomation")
   }
 
+  // Show loading state while fetching data
+  if (isLoading) {
+    return (
+      <Layout
+        activeItem="bus-infomation"
+        pageTitle="Loading..."
+        pageDescription="Loading bus information"
+        role="mot"
+      >
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading bus information...</p>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  // Find existing bus for display purposes
+  const existingBus = isEditing 
+    ? existingBuses.find(bus => bus.id === busId)
+    : null
 
   return (
     <Layout
       activeItem="bus-infomation"
-      pageTitle={isEditing ? "Edit Bus" : "Add New Bus"}
+      pageTitle={isEditing ? `Edit Bus - ${existingBus?.busNumber || busId}` : "Add New Bus"}
       pageDescription={isEditing ? "Update bus information" : "Register a new bus to the fleet management system"}
       role="mot"
     >
@@ -222,7 +283,6 @@ export default function BusInformationForm() {
             notes={formData.notes}
             onNotesChange={(value) => handleInputChange("notes", value)}
           />
-
 
           <div className="flex items-center justify-end gap-4">
             <button
