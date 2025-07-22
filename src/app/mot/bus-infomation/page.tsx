@@ -164,7 +164,7 @@ export default function BusInfo() {
   })
 
   const handleView = (bus: Bus) => {
-    router.push(`/mot/bus-details?id=${bus.id}`)
+    router.push(`/mot/bus-information-details?id=${bus.id}`)
   }
 
   const handleEdit = (bus: Bus) => {
