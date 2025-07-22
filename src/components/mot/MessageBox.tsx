@@ -37,8 +37,7 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
   }
 
   const handleEditMessage = (messageId: string) => {
-    console.log("Edit message:", messageId)
-    // Add edit logic or navigate to edit page
+    router.push(`/mot/edit-messages?id=${messageId}`)
   }
 
   const getTargetGroupBadge = (groups: string[]) => {
@@ -268,13 +267,17 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
                   >
                     <Eye className="w-4 h-4" />
                   </button>
-                  <button 
-                    onClick={() => handleEditMessage(message.id)}
-                    className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded"
-                    title="Edit message"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
+                  
+                  {/* Only show edit button for pending messages */}
+                  {message.status === "Pending" && (
+                    <button 
+                      onClick={() => handleEditMessage(message.id)}
+                      className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded"
+                      title="Edit message"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
 import { 
@@ -17,6 +18,9 @@ import {
   Tag,
   MessageSquare
 } from "lucide-react"
+import {
+  DeleteConfirmationModal,
+} from '@/components/mot/confirmation-modals'
 
 // BroadcastMessage interface
 interface BroadcastMessage {
@@ -148,13 +152,16 @@ const broadcastMessages: BroadcastMessage[] = [
     status: "Pending",
     createdAt: "2024-12-01 12:45",
   },
-  
 ]
 
 export default function MessageView() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const messageId = searchParams.get('id') as string
+
+  // State for delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Find the message by ID
   const message = broadcastMessages.find(m => m.id === messageId)
@@ -243,23 +250,53 @@ export default function MessageView() {
   }
 
   const handleEdit = () => {
-    console.log("Edit message:", message.id)
-    // Navigate to edit page or open edit modal
+    // Only allow editing of pending messages
+    if (message.status === "Sent") {
+      alert("Sent messages cannot be edited. Please create a new message instead.")
+      return
+    }
+    router.push(`/mot/edit-messages?id=${message.id}`)
   }
 
   const handleSend = () => {
     console.log("Send message:", message.id)
-    // Add send logic
+    // Add send logic - could open a confirmation modal
+    alert("Send functionality would be implemented here")
   }
 
   const handleCopy = () => {
     console.log("Copy message:", message.id)
-    // Add copy logic
+    // Add copy logic - could duplicate the message
+    alert("Copy functionality would be implemented here")
   }
 
   const handleDelete = () => {
-    console.log("Delete message:", message.id)
-    // Add delete logic
+    setShowDeleteModal(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true)
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      console.log("Message deleted successfully:", message.id)
+      
+      // Close modal and navigate back
+      setShowDeleteModal(false)
+      router.push('/mot/broadcast-messages')
+      
+    } catch (error) {
+      console.error("Error deleting message:", error)
+      alert("Error deleting message. Please try again.")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false)
   }
 
   return (
@@ -291,20 +328,18 @@ export default function MessageView() {
                 Send Now
               </button>
             )}
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </button>
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-            >
-              <Copy className="w-4 h-4" />
-              Copy
-            </button>
+            
+            {/* Only show Edit button for pending messages */}
+            {message.status === "Pending" && (
+              <button
+                onClick={handleEdit}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </button>
+            )}
+            
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
@@ -316,7 +351,7 @@ export default function MessageView() {
         </div>
 
         {/* Message Details Card */}
-        <div className="bg-white rounded-lg shadow border border-gray-200">
+        <div className="bg-white rounded-lg shadow border border-gray-200 border-l-4 border-l-blue-500">
           <div className="p-6">
             {/* Message Header */}
             <div className="flex items-start justify-between mb-6">
@@ -410,7 +445,7 @@ export default function MessageView() {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">Message Content</h3>
               </div>
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 border-l-4 border-l-indigo-400">
                 <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{message.body}</p>
               </div>
             </div>
@@ -418,7 +453,7 @@ export default function MessageView() {
         </div>
 
         {/* Related Actions */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow border border-gray-200 border-l-4 border-l-orange-500 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -429,7 +464,10 @@ export default function MessageView() {
               </div>
             </button>
             
-            <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleCopy}
+              className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               <Copy className="w-5 h-5 text-green-600" />
               <div className="text-left">
                 <p className="font-medium text-gray-900">Duplicate Message</p>
@@ -447,6 +485,20 @@ export default function MessageView() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        title="Delete Broadcast Message"
+        itemName={
+          message 
+            ? `"${message.title}"` 
+            : "this message"
+        }
+      />
     </Layout>
   )
 }
