@@ -6,19 +6,8 @@ import {
   DeleteConfirmationModal,
 } from '@/components/mot/confirmation-modals'
 
-// Define BroadcastMessage interface directly in this component
-interface BroadcastMessage {
-  id: string
-  title: string
-  body: string
-  targetGroups: string[]
-  priority: "High" | "Medium" | "Low"
-  category: string
-  scheduledTime: string
-  status: "Sent" | "Pending"
-  createdAt: string
-  sentAt?: string
-}
+// Import the interface from the parent page
+import { BroadcastMessage } from "@/app/mot/Sent-Messages/page"
 
 interface PendingMessagesTableProps {
   messages: BroadcastMessage[]
