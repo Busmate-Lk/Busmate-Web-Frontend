@@ -11,7 +11,7 @@ import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
 } from '@/components/mot/confirmation-modals'
-import { Plus, FileText } from "lucide-react"
+import { Plus } from "lucide-react"
 
 interface FareStructure {
   id: string
@@ -110,10 +110,6 @@ export default function Fare() {
     router.push("/mot/bus-fare-form")
   }
 
-  const handleViewChart = () => {
-    router.push("/mot/fare-chart")
-  }
-
   const handleEditFare = (fare: FareStructure) => {
     router.push(`/mot/bus-fare-form?edit=${fare.id}`)
   }
@@ -194,13 +190,6 @@ export default function Fare() {
           {/* Action Buttons */}
           <div className="flex items-center gap-3">
             <button 
-              onClick={handleViewChart}
-              className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-200"
-            >
-              <FileText className="w-4 h-4" />
-              View Fare Chart
-            </button>
-            <button 
               onClick={handleAddFare}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2 transition-colors duration-200"
             >
@@ -220,8 +209,6 @@ export default function Fare() {
 
         <FareQuickActions
           onAddFare={handleAddFare}
-          onViewChart={handleViewChart}
-          onCalculator={handleCalculator}
         />
 
         {/* Confirmation Modals */}
