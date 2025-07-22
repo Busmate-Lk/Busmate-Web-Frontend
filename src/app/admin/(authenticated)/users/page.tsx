@@ -7,7 +7,7 @@ import Link from "next/link"
 export default function UsersPage() {
   return (
     <div className="p-0">
-      <Header title="User Management" description="Manage users, permissions, and account settings across the platform" />
+      {/* <Header title="User Management" description="Manage users, permissions, and account settings across the platform" /> */}
       <div className="p-6">
         <UserStats />
 

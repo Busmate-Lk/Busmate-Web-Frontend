@@ -23,7 +23,7 @@ export function ComposeMessage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-4">
-          <Button className="shadow-md" variant="ghost" size="sm" onClick={() => router.push("/admin/notifications/sent")}>
+          <Button className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md" variant="ghost" size="sm" onClick={() => router.push("/admin/notifications/sent")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Messages
           </Button>
