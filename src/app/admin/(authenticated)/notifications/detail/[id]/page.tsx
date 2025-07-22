@@ -1,5 +1,5 @@
 import { NavigationBreadcrumb } from "@/components/admin/shared"
-import { NotificationDetail } from "@/components/admin/notifications"
+import { NotificationDetail } from "@/components/admin/notifications/notification-detail"
 
 export default function NotificationDetailPage({ params }: { params: { id: string } }) {
     const breadcrumbItems = [

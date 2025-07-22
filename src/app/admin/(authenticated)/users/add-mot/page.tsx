@@ -12,12 +12,9 @@ export default function AddMotUserPage() {
   ]
 
   return (
-    <div>
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <NavigationBreadcrumb items={breadcrumbItems} />
-      </div>
+    <div className="p-0">
+      <Header title="Add MoT User" description="Create a new Ministry of Transport user account and assign permissions" />
       <div className="p-6">
-        <Header title="Add MoT User" />
         <AddMotForm />
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { ResourceUsage } from "@/components/admin/monitoring"
+import { ResourceUsage } from "@/components/admin/monitoring/resource-usage"
 
 export default function ResourceUsagePage() {
     return (
