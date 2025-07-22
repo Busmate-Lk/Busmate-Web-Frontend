@@ -102,7 +102,7 @@ export function ComposeMessage() {
                 <div className="grid grid-cols-2 gap-6 mt-3">
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="all-users" checked={allUsers} onCheckedChange={setAllUsers} />
+                      <Checkbox id="all-users" checked={allUsers} onCheckedChange={checked => setAllUsers(checked === true)} />
                       <Label htmlFor="all-users">All Users</Label>
                     </div>
                     <div className="flex items-center space-x-2">

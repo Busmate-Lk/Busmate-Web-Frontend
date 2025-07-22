@@ -5,6 +5,8 @@ import { Tabs } from "@/components/admin/ui/tabs"
 import { usePathname, useRouter } from "next/navigation"
 import { Send, Bell } from "lucide-react"
 
+import { Button } from "@/components/admin/ui/button"
+
 export default function NotificationsLayout({
     children,
 }: {
@@ -19,9 +21,21 @@ export default function NotificationsLayout({
         router.push(`/admin/notifications/${value}`)
     }
 
+    const handleSendMessage = () => {
+        router.push("/admin/broadcast/compose")
+    }
+
     return (
         <div className="p-0">
             <Header title="Notification Center" description="Send messages, manage notifications, and track communication history" />
+
+            {/* Send New Message Button */}
+            <div className="flex justify-end px-6 mt-2">
+                <Button onClick={handleSendMessage} className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
+                    <Send className="h-4 w-4 mr-2" />
+                    Send New Message
+                </Button>
+            </div>
 
             <div className="p-6">
                 <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">

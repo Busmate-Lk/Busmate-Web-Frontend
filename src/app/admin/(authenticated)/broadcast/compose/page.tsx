@@ -5,15 +5,9 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function ComposeMessagePage() {
-  const breadcrumbItems = [
-    { label: "Dashboard", href: "/admin" },
-    { label: "Sent Notifications", href: "/admin/notifications/sent" },
-    { label: "Compose Message" },
-  ]
 
   return (
     <div className="p-6">
-      <NavigationBreadcrumb items={breadcrumbItems} />
       <Header title="Compose Message" />
       <ComposeMessage />
     </div>
