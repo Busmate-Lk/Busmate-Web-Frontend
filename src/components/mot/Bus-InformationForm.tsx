@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react"
+import { FileText, AlertCircle } from "lucide-react"
 
 interface BasicInformationFormProps {
   formData: {
@@ -11,9 +11,16 @@ interface BasicInformationFormProps {
     status: string
   }
   onInputChange: (field: string, value: string) => void
+  errors: Record<string, string>
+  showValidation: boolean
 }
 
-export default function BasicInformationForm({ formData, onInputChange }: BasicInformationFormProps) {
+export default function BasicInformationForm({ 
+  formData, 
+  onInputChange, 
+  errors, 
+  showValidation 
+}: BasicInformationFormProps) {
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "Active":
@@ -27,6 +34,27 @@ export default function BasicInformationForm({ formData, onInputChange }: BasicI
     }
   }
 
+  const getInputClassName = (fieldName: string) => {
+    const baseClass = "w-full border rounded px-3 py-2 focus:outline-none focus:ring-2"
+    const hasError = showValidation && errors[fieldName]
+    
+    if (hasError) {
+      return `${baseClass} border-red-300 focus:ring-red-500 focus:border-red-500`
+    }
+    return `${baseClass} border-gray-300 focus:ring-blue-500 focus:border-blue-500`
+  }
+
+  const ErrorMessage = ({ fieldName }: { fieldName: string }) => {
+    if (!showValidation || !errors[fieldName]) return null
+    
+    return (
+      <div className="flex items-center gap-1 mt-1">
+        <AlertCircle className="w-4 h-4 text-red-500" />
+        <span className="text-sm text-red-600">{errors[fieldName]}</span>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-200">
@@ -38,19 +66,26 @@ export default function BasicInformationForm({ formData, onInputChange }: BasicI
       <div className="p-6 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Bus Number *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Bus Number *
+            </label>
             <input
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="busNumber"
+              className={getInputClassName("busNumber")}
               placeholder="e.g., NB-1234"
               value={formData.busNumber}
               onChange={(e) => onInputChange("busNumber", e.target.value)}
               required
             />
+            <ErrorMessage fieldName="busNumber" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Bus Type *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Bus Type *
+            </label>
             <select
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="busType"
+              className={getInputClassName("busType")}
               value={formData.busType}
               onChange={(e) => onInputChange("busType", e.target.value)}
               required
@@ -62,24 +97,32 @@ export default function BasicInformationForm({ formData, onInputChange }: BasicI
               <option value="Semi-Luxury">Semi-Luxury</option>
               <option value="Sleeper">Sleeper</option>
             </select>
+            <ErrorMessage fieldName="busType" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Operator Name *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Operator Name *
+            </label>
             <input
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="operator"
+              className={getInputClassName("operator")}
               placeholder="e.g., Ceylon Transport Board"
               value={formData.operator}
               onChange={(e) => onInputChange("operator", e.target.value)}
               required
             />
+            <ErrorMessage fieldName="operator" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Operator Type *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Operator Type *
+            </label>
             <select
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="operatorType"
+              className={getInputClassName("operatorType")}
               value={formData.operatorType}
               onChange={(e) => onInputChange("operatorType", e.target.value)}
               required
@@ -88,51 +131,69 @@ export default function BasicInformationForm({ formData, onInputChange }: BasicI
               <option value="SLTB">SLTB (Sri Lanka Transport Board)</option>
               <option value="Private">Private Operator</option>
             </select>
+            <ErrorMessage fieldName="operatorType" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Seating Capacity *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Seating Capacity *
+            </label>
             <input
+              name="seatingCapacity"
               type="number"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              min="1"
+              max="100"
+              className={getInputClassName("seatingCapacity")}
               placeholder="e.g., 45"
               value={formData.seatingCapacity}
               onChange={(e) => onInputChange("seatingCapacity", e.target.value)}
               required
             />
+            <ErrorMessage fieldName="seatingCapacity" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Standing Capacity</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Standing Capacity
+            </label>
             <input
+              name="standingCapacity"
               type="number"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              min="0"
+              max="50"
+              className={getInputClassName("standingCapacity")}
               placeholder="e.g., 15"
               value={formData.standingCapacity}
               onChange={(e) => onInputChange("standingCapacity", e.target.value)}
             />
+            <ErrorMessage fieldName="standingCapacity" />
           </div>
         </div>
 
         {/* Status Field */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Bus Status *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Bus Status *
+            </label>
             <select
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="status"
+              className={getInputClassName("status")}
               value={formData.status}
               onChange={(e) => onInputChange("status", e.target.value)}
               required
             >
-              {/*<option value="">Select status</option>*/}
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
               <option value="Maintenance">Under Maintenance</option>
             </select>
+            <ErrorMessage fieldName="status" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status Preview</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Status Preview
+            </label>
             <div className="flex items-center h-10">
               {formData.status && (
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(formData.status)}`}>
