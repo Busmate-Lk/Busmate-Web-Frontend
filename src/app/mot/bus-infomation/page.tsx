@@ -7,6 +7,10 @@ import { Layout } from "@/components/shared/layout"
 import BusStatsCards from "@/components/mot/BusStatsCards"
 import BusFilters from "@/components/mot/BusFilters"
 import BusTable from "@/components/mot/BusTable"
+import {
+  DeleteConfirmationModal,
+  DeactivationConfirmationModal,
+} from '@/components/mot/confirmation-modals'
 
 export interface Bus {
   id: string
@@ -141,8 +145,14 @@ export default function BusInfo() {
   const [busTypeFilter, setBusTypeFilter] = useState("All Types")
   const [operatorTypeFilter, setOperatorTypeFilter] = useState("All Operators")
   const [statusFilter, setStatusFilter] = useState("All Statuses")
+  
+  // Modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false)
+  const [selectedBus, setSelectedBus] = useState<Bus | null>(null)
+  const [buses, setBuses] = useState<Bus[]>(sriLankanBuses)
 
-  const filteredBuses = sriLankanBuses.filter((bus) => {
+  const filteredBuses = buses.filter((bus) => {
     const matchesSearch =
       bus.busNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       bus.operator.toLowerCase().includes(searchTerm.toLowerCase())
@@ -161,6 +171,48 @@ export default function BusInfo() {
     router.push(`/mot/bus-information-form?edit=${bus.id}`)
   }
 
+  const handleDelete = (bus: Bus) => {
+    setSelectedBus(bus)
+    setShowDeleteModal(true)
+  }
+
+  const handleDeactivate = (bus: Bus) => {
+    setSelectedBus(bus)
+    setShowDeactivateModal(true)
+  }
+
+  const confirmDelete = () => {
+    if (selectedBus) {
+      setBuses(buses.filter(bus => bus.id !== selectedBus.id))
+      setShowDeleteModal(false)
+      setSelectedBus(null)
+      
+      // Optional: Show success message
+      console.log(`Bus ${selectedBus.busNumber} has been deleted successfully`)
+    }
+  }
+
+  const confirmDeactivate = () => {
+    if (selectedBus) {
+      setBuses(buses.map(bus => 
+        bus.id === selectedBus.id 
+          ? { ...bus, status: 'Inactive' }
+          : bus
+      ))
+      setShowDeactivateModal(false)
+      setSelectedBus(null)
+      
+      // Optional: Show success message
+      console.log(`Bus ${selectedBus.busNumber} has been deactivated successfully`)
+    }
+  }
+
+  const cancelModal = () => {
+    setShowDeleteModal(false)
+    setShowDeactivateModal(false)
+    setSelectedBus(null)
+  }
+
   return (
     <Layout
       activeItem="bus-infomation"
@@ -168,10 +220,7 @@ export default function BusInfo() {
       pageDescription="Manage and monitor your bus fleet operations"
       role="mot"
     >
-
-   
-   
-      <div className="p-6">
+      <div className="space-y-6">
         <BusStatsCards />
         
         <div className="flex items-center justify-between mb-5 gap-6">
@@ -188,16 +237,40 @@ export default function BusInfo() {
             />
           </div>
           <button 
-          onClick={() => router.push("/mot/bus-information-form")}
-          className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded whitespace-nowrap">
+            onClick={() => router.push("/mot/bus-information-form")}
+            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded whitespace-nowrap"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add New Bus
           </button>
         </div>
+        
         <BusTable
           buses={filteredBuses}
           onView={handleView}
           onEdit={handleEdit}
+          onDelete={handleDelete}
+          onDeactivate={handleDeactivate}
+        />
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={cancelModal}
+          onConfirm={confirmDelete}
+          title="Delete Bus"
+          itemName={selectedBus ? `Bus ${selectedBus.busNumber}` : ''}
+          isLoading={false}
+        />
+
+        {/* Deactivation Confirmation Modal */}
+        <DeactivationConfirmationModal
+          isOpen={showDeactivateModal}
+          onClose={cancelModal}
+          onConfirm={confirmDeactivate}
+          title="Deactivate Bus"
+          itemName={selectedBus ? `Bus ${selectedBus.busNumber}` : ''}
+          isLoading={false}
         />
       </div>
     </Layout>

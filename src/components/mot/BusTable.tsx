@@ -1,4 +1,4 @@
-import { Eye, Edit, Trash2 } from "lucide-react"
+import { Eye, Edit, Trash2, Ban } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { Bus } from "@/app/mot/bus-infomation/page"
 
@@ -6,12 +6,17 @@ export default function BusTable({
   buses,
   onView,
   onEdit,
+  onDelete,
+  onDeactivate,
 }: {
   buses: Bus[]
   onView: (bus: Bus) => void
   onEdit: (bus: Bus) => void
+  onDelete: (bus: Bus) => void
+  onDeactivate: (bus: Bus) => void
 }) {
   const router = useRouter();
+  
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Active":
@@ -65,7 +70,6 @@ export default function BusTable({
   }
 
   return (
-    
     <div className="bg-white rounded-lg shadow">
       <div className="px-6 py-4">
         <h3 className="text-lg font-semibold text-gray-900">Bus Fleet Directory</h3>
@@ -85,31 +89,50 @@ export default function BusTable({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {buses.map((bus) => (
-              <tr key={bus.id}>
+              <tr key={bus.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 font-medium text-gray-900">{bus.busNumber}</td>
-                <td className="px-6 py-4">{bus.busType}</td>
-                <td className="px-6 py-4">{bus.operator}</td>
+                <td className="px-6 py-4 text-gray-600">{bus.busType}</td>
+                <td className="px-6 py-4 text-gray-600">{bus.operator}</td>
                 <td className="px-6 py-4">{getOperatorTypeBadge(bus.operatorType)}</td>
-                <td className="px-6 py-4">{bus.seatingCapacity}</td>
+                <td className="px-6 py-4 text-gray-600">{bus.seatingCapacity}</td>
+                <td className="px-6 py-4">{getStatusBadge(bus.status)}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    bus.status === 'Active' ? 'bg-green-100 text-green-800' :
-                    bus.status === 'Maintenance' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {bus.status}
-                  </span>
-                </td>
-
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <button onClick={() => router.push(`/mot/bus-information-details?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
+                  <div className="flex items-center gap-2">
+                    {/* View Button */}
+                    <button 
+                      onClick={() => onView(bus)} 
+                      className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                      title="View details"
+                    >
                       <Eye className="w-4 h-4" />
                     </button>
-                    <button onClick={() => router.push(`/mot/bus-information-form?id=${bus.id}`)} className="text-gray-600 hover:text-gray-900">
+                    
+                    {/* Edit Button */}
+                    <button 
+                      onClick={() => onEdit(bus)} 
+                      className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
+                      title="Edit bus"
+                    >
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="text-red-600 hover:text-red-700">
+                    
+                    {/* Deactivate Button - Only show for Active buses */}
+                    {bus.status === "Active" && (
+                      <button 
+                        onClick={() => onDeactivate(bus)} 
+                        className="p-1 text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded transition-colors"
+                        title="Deactivate bus"
+                      >
+                        <Ban className="w-4 h-4" />
+                      </button>
+                    )}
+                    
+                    {/* Delete Button */}
+                    <button 
+                      onClick={() => onDelete(bus)} 
+                      className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                      title="Delete bus"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -119,17 +142,29 @@ export default function BusTable({
           </tbody>
         </table>
       </div>
+
+      {/* Empty state */}
+      {buses.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No buses found matching your criteria.</p>
+        </div>
+      )}
+      
       {/* Pagination */}
       <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
         <p className="text-sm text-gray-600">
           Showing {buses.length} results
         </p>
         <div className="flex items-center gap-2">
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">Previous</button>
+          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">
+            Previous
+          </button>
           <button className="px-3 py-1 border rounded bg-blue-600 text-white">1</button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">2</button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">3</button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">Next</button>
+          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">2</button>
+          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">3</button>
+          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">
+            Next
+          </button>
         </div>
       </div>
     </div>
