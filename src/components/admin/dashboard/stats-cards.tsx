@@ -4,7 +4,7 @@ import { Users, Activity, AlertTriangle, Bus, TrendingUp } from "lucide-react"
 const stats = [
   {
     title: "Total Users",
-    value: "12,847",
+    value: "1,920,847",
     change: "+12.5%",
     changeType: "positive",
     icon: Users,
@@ -28,7 +28,7 @@ const stats = [
   },
   {
     title: "Total Buses",
-    value: "342",
+    value: "15,621",
     change: "+5 new",
     changeType: "positive",
     icon: Bus,
@@ -36,7 +36,7 @@ const stats = [
   },
   {
     title: "Transactions",
-    value: "Rs 2.4M",
+    value: "Rs 1.4M",
     change: "Today",
     changeType: "neutral",
     icon: TrendingUp,
