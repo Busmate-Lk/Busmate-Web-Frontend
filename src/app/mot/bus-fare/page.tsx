@@ -119,7 +119,7 @@ export default function Fare() {
   }
 
   const handleViewFare = (fare: FareStructure) => {
-    router.push(`/mot/fare-chart?fareId=${fare.id}`)
+    router.push(`/mot/bus-fare-details?fareId=${fare.id}`)
   }
 
   const handleDeleteFare = (fare: FareStructure) => {
