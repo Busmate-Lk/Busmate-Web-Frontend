@@ -7,6 +7,10 @@ import FareStatistics from "@/components/mot/FareStatistics"
 import FareFilters from "@/components/mot/FareFilters"
 import FareTable from "@/components/mot/FareTable"
 import FareQuickActions from "@/components/mot/FareQuickActions"
+import {
+  DeleteConfirmationModal,
+  DeactivationConfirmationModal,
+} from '@/components/mot/confirmation-modals'
 import { Plus, FileText } from "lucide-react"
 
 interface FareStructure {
@@ -84,8 +88,14 @@ export default function Fare() {
   const [searchTerm, setSearchTerm] = useState("")
   const [busTypeFilter, setBusTypeFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
+  
+  // Modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false)
+  const [selectedFare, setSelectedFare] = useState<FareStructure | null>(null)
+  const [fares, setFares] = useState<FareStructure[]>(fareStructures)
 
-  const filteredFares = fareStructures.filter((fare) => {
+  const filteredFares = fares.filter((fare) => {
     const matchesSearch =
       fare.route?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fare.operator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,8 +123,37 @@ export default function Fare() {
   }
 
   const handleDeleteFare = (fare: FareStructure) => {
-    console.log("Delete fare:", fare.id)
-    // Add your delete logic here
+    setSelectedFare(fare)
+    setShowDeleteModal(true)
+  }
+
+  const handleDeactivateFare = (fare: FareStructure) => {
+    setSelectedFare(fare)
+    setShowDeactivateModal(true)
+  }
+
+  const confirmDelete = () => {
+    if (selectedFare) {
+      setFares(prevFares => prevFares.filter(fare => fare.id !== selectedFare.id))
+      console.log("Deleted fare:", selectedFare.id)
+    }
+    setShowDeleteModal(false)
+    setSelectedFare(null)
+  }
+
+  const confirmDeactivate = () => {
+    if (selectedFare) {
+      setFares(prevFares => 
+        prevFares.map(fare => 
+          fare.id === selectedFare.id 
+            ? { ...fare, status: "Inactive" }
+            : fare
+        )
+      )
+      console.log("Deactivated fare:", selectedFare.id)
+    }
+    setShowDeactivateModal(false)
+    setSelectedFare(null)
   }
 
   const handleCalculator = () => {
@@ -135,7 +174,7 @@ export default function Fare() {
     >
       <div className="space-y-6">
         <FareStatistics 
-          fareStructures={fareStructures}
+          fareStructures={fares}
         />
 
         {/* Filters and Action Buttons in the same line */}
@@ -176,12 +215,32 @@ export default function Fare() {
           onView={handleViewFare}
           onEdit={handleEditFare}
           onDelete={handleDeleteFare}
+          onDeactivate={handleDeactivateFare}
         />
 
         <FareQuickActions
           onAddFare={handleAddFare}
           onViewChart={handleViewChart}
           onCalculator={handleCalculator}
+        />
+
+        {/* Confirmation Modals */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          itemName={selectedFare ? `fare structure ${selectedFare.id} (${selectedFare.route})` : ""}
+          title="Delete Fare Structure"
+          isLoading={false}
+        />
+
+        <DeactivationConfirmationModal
+          isOpen={showDeactivateModal}
+          onClose={() => setShowDeactivateModal(false)}
+          onConfirm={confirmDeactivate}
+          itemName={selectedFare ? `fare structure ${selectedFare.id} (${selectedFare.route})` : ""}
+          title="Deactivate Fare Structure"
+          isLoading={false}
         />
       </div>
     </Layout>
