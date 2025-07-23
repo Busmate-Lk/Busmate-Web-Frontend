@@ -46,28 +46,28 @@ const stats = [
 
 export function UserStats() {
   return (
-    <div className="flex flex-row gap-4 mb-6 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {stats.map((stat) => (
         <Card
           key={stat.title}
-          className={`shadow-lg bg-gradient-to-br from-white to-gray-50 border-l-4 flex-1 p-0 ${stat.color === "blue"
-            ? "border-l-blue-500"
+          className={`shadow-sm border-l-4 ${stat.color === "blue"
+            ? "border-blue-500"
             : stat.color === "green"
-              ? "border-l-green-500"
+              ? "border-green-500"
               : stat.color === "yellow"
-                ? "border-l-yellow-500"
+                ? "border-yellow-500"
                 : stat.color === "purple"
-                  ? "border-l-purple-500"
-                  : "border-l-teal-500"
-            }`}
+                  ? "border-purple-500"
+                  : "border-teal-500"
+            } bg-white`}
         >
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-gray-600">{stat.title}</p>
-                <p className="text-xl font-bold">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                <p className="text-2xl font-bold">{stat.value}</p>
                 <p
-                  className={`text-xs ${stat.changeType === "positive"
+                  className={`text-sm ${stat.changeType === "positive"
                     ? "text-green-600"
                     : stat.changeType === "negative"
                       ? "text-red-600"
@@ -78,7 +78,7 @@ export function UserStats() {
                 </p>
               </div>
               <div
-                className={`p-2 rounded-full ${stat.color === "blue"
+                className={`p-3 rounded-full shadow-sm ${stat.color === "blue"
                   ? "bg-blue-100 text-blue-600"
                   : stat.color === "green"
                     ? "bg-green-100 text-green-600"
@@ -89,12 +89,12 @@ export function UserStats() {
                         : "bg-teal-100 text-teal-600"
                   }`}
               >
-                <stat.icon className="h-5 w-5" />
+                <stat.icon className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
       ))}
     </div>
-  );
+  )
 }
