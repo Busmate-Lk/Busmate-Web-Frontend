@@ -11,10 +11,11 @@ import Link from "next/link"
 interface BusData {
   id: string
   busNumber: string
-  model: string
-  capacity: number
+  busName: string
   route: string
   driver: string
+  conductor: string
+  conductorPhone: string
   status: "Active" | "Maintenance" | "Inactive"
 }
 
@@ -24,58 +25,73 @@ export default function FleetManagement() {
   const busesData: BusData[] = [
     {
       id: "1",
-      busNumber: "BUS-001",
-      model: "Mercedes Sprinter",
-      capacity: 45,
-      route: "Route A1",
-      driver: "John Smith",
+      busNumber: "ND 4536",
+      busName: "Mandakini Express",
+      route: "MATARA-GALLE",
+      driver: "Kasun Perera",
+      conductor: "Nuwan Silva",
+      conductorPhone: "+94 77 234 5678",
       status: "Active",
-     
     },
     {
       id: "2",
-      busNumber: "BUS-002",
-      model: "Volvo B9R",
-      capacity: 52,
-      route: "Route B2",
-      driver: "Mike Johnson",
-      status: "Maintenance",
+      busNumber: "ND 7892",
+      busName: "Mandakini Super",
+      route: "MATARA-COLOMBO",
+      driver: "Chaminda Fernando",
+      conductor: "Roshan Jayawardena",
+      conductorPhone: "+94 77 456 7890",
+      status: "Active",
     },
     {
       id: "3",
-      busNumber: "BUS-003",
-      model: "Scania K410",
-      capacity: 48,
-      route: "Route C3",
-      driver: "Sarah Wilson",
+      busNumber: "ND 3421",
+      busName: "Mandakini Classic",
+      route: "MATARA-TANGALLE",
+      driver: "Pradeep Kumara",
+      conductor: "Mahinda Rathnayake",
+      conductorPhone: "+94 77 678 9012",
       status: "Active",
     },
     {
       id: "4",
-      busNumber: "BUS-004",
-      model: "MAN Lion's City",
-      capacity: 55,
-      route: "Route D4",
-      driver: "David Brown",
+      busNumber: "ND 8765",
+      busName: "Mandakini Deluxe",
+      route: "MATARA-HAMBANTOTA",
+      driver: "Dinesh Bandara",
+      conductor: "Sampath Wijesinghe",
+      conductorPhone: "+94 77 890 1234",
       status: "Active",
     },
     {
       id: "5",
-      busNumber: "BUS-005",
-      model: "Iveco Crossway",
-      capacity: 42,
-      route: "Route E5",
-      driver: "Lisa Davis",
+      busNumber: "ND 5234",
+      busName: "Mandakini Premium",
+      route: "MATARA-AKURESSA",
+      driver: "Thilaka Dissanayake",
+      conductor: "Ruwan Gunawardena",
+      conductorPhone: "+94 77 012 3456",
       status: "Maintenance",
     },
     {
       id: "6",
-      busNumber: "BUS-006",
-      model: "Setra S516",
-      capacity: 50,
-      route: "Route F6",
-      driver: "Tom Anderson",
+      busNumber: "ND 9876",
+      busName: "Mandakini Royal",
+      route: "MATARA-WELIGAMA",
+      driver: "Sunil Rajapaksha",
+      conductor: "Chandana Senanayake",
+      conductorPhone: "+94 77 234 5678",
       status: "Active",
+    },
+    {
+      id: "7",
+      busNumber: "ND 2468",
+      busName: "Mandakini Highway",
+      route: "MATARA-KATARAGAMA",
+      driver: "Upul Mendis",
+      conductor: "Gamini Wickramasinghe",
+      conductorPhone: "+94 77 456 7890",
+      status: "Maintenance",
     },
   ]
 
@@ -84,9 +100,9 @@ export default function FleetManagement() {
     return busesData.filter((bus) => bus.status.toLowerCase() === filter.toLowerCase())
   }
 
-  const handleAddBus = () => {
-    console.log("Add new bus")
-  }
+  // const handleAddBus = () => {
+  //   console.log("Add new bus")
+  // }
 
   const tabs = [
     {
@@ -99,10 +115,11 @@ export default function FleetManagement() {
             <BusCard
               key={bus.id}
               busNumber={bus.busNumber}
-              model={bus.model}
-              capacity={bus.capacity}
+              busName={bus.busName}
               route={bus.route}
               driver={bus.driver}
+              conductor={bus.conductor}
+              conductorPhone={bus.conductorPhone}
               status={bus.status}
             />
           ))}
@@ -119,10 +136,11 @@ export default function FleetManagement() {
             <BusCard
               key={bus.id}
               busNumber={bus.busNumber}
-              model={bus.model}
-              capacity={bus.capacity}
+              busName={bus.busName}
               route={bus.route}
               driver={bus.driver}
+              conductor={bus.conductor}
+              conductorPhone={bus.conductorPhone}
               status={bus.status}
             />
           ))}
@@ -138,10 +156,11 @@ export default function FleetManagement() {
             <BusCard
               key={bus.id}
               busNumber={bus.busNumber}
-              model={bus.model}
-              capacity={bus.capacity}
+              busName={bus.busName}
               route={bus.route}
               driver={bus.driver}
+              conductor={bus.conductor}
+              conductorPhone={bus.conductorPhone}
               status={bus.status}
             />
           ))}
@@ -157,10 +176,11 @@ export default function FleetManagement() {
             <BusCard
               key={bus.id}
               busNumber={bus.busNumber}
-              model={bus.model}
-              capacity={bus.capacity}
+              busName={bus.busName}
               route={bus.route}
               driver={bus.driver}
+              conductor={bus.conductor}
+              conductorPhone={bus.conductorPhone}
               status={bus.status}
             />
           ))}
@@ -174,15 +194,15 @@ export default function FleetManagement() {
       {/* <Sidebar activeItem="tracking" /> */}
 
       <div className="flex-1">
-        <Header />
+        <Header 
+          pageTitle="Bus Tracking" 
+          pageDescription="Real-time tracking and monitoring of your fleet vehicles"
+        />
 
         <div className="p-6">
           <PageHeader
             title="Fleet Management"
-            actionButton={{
-              label: "Add Bus",
-              onClick: handleAddBus,
-            }}
+           
           />
 
           <Tabs tabs={tabs} defaultValue="all" onValueChange={setActiveTab} />

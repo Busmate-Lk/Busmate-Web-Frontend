@@ -4,7 +4,7 @@
     },
     "github.copilot.chat.scopeSelection": true,
     "chat.experimental.implicitContext": true,
-    "chat.experimental.detectParticipant.enabled": true,
     "github.copilot.chat.terminalChatLocation": "chatView",
-    "github.copilot.chat.editor.temporalContext.enabled": true
+    "github.copilot.chat.editor.temporalContext.enabled": true,
+    "chat.detectParticipant.enabled": true
 }
