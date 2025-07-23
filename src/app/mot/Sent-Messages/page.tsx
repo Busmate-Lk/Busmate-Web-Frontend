@@ -1,10 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
 import FilterBar from "@/components/mot/FilterBar"
 import MessageTabs from "@/components/mot/MessageTabs"
 import SentMessagesTable from "@/components/mot/SentMessagesTable"
+import { usePagination, Pagination } from '@/components/mot/pagination'
 
 // Data directly in the page
 export interface BroadcastMessage {
@@ -72,14 +75,72 @@ const broadcastMessages: BroadcastMessage[] = [
 ]
 
 export default function SentMessages() {
+  const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState("")
   const [groupFilter, setGroupFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [dateFilter, setDateFilter] = useState("")
 
-  const sentMessages = broadcastMessages.filter((message) => message.status === "Sent")
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    return [
+      {
+        label: "Broadcast Messages",
+        href: "/mot/broadcast-messages",
+        current: false
+      },
+      {
+        label: "Sent Messages",
+        href: null,
+        current: true
+      }
+    ]
+  }
+
+  // Filter messages using useMemo for better performance
+  const filteredMessages = useMemo(() => {
+    return broadcastMessages.filter((message) => {
+      // Only show sent messages
+      if (message.status !== "Sent") return false;
+
+      // Search filter
+      const matchesSearch = !searchTerm || searchTerm.trim() === '' ||
+        message.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.body.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.id.toLowerCase().includes(searchTerm.toLowerCase())
+
+      // Group filter
+      const matchesGroup = !groupFilter || groupFilter === '' ||
+        message.targetGroups.includes(groupFilter)
+
+      // Status/Priority filter (repurposed for priority)
+      const matchesStatus = !statusFilter || statusFilter === '' ||
+        (statusFilter === "high" && message.priority === "High") ||
+        (statusFilter === "medium" && message.priority === "Medium") ||
+        (statusFilter === "low" && message.priority === "Low")
+
+      // Date filter (check sent date)
+      const matchesDate = !dateFilter || dateFilter === '' ||
+        (message.sentAt && message.sentAt.startsWith(dateFilter))
+
+      return matchesSearch && matchesGroup && matchesStatus && matchesDate
+    })
+  }, [broadcastMessages, searchTerm, groupFilter, statusFilter, dateFilter])
+
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedMessages,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredMessages, 10) // 10 items per page by default
 
   const handleView = (message: BroadcastMessage) => {
     console.log("Viewing message:", message.id)
+    router.push(`/mot/broadcast-message-view?id=${message.id}`)
   }
 
   const handleDelete = (message: BroadcastMessage) => {
@@ -91,18 +152,20 @@ export default function SentMessages() {
     {
       id: "sent",
       label: "Sent Messages",
-      count: sentMessages.length,
+      count: filteredMessages.length,
       active: true,
-      onClick: () => {}
+      onClick: () => { }
     }
   ]
 
   const statusOptions = [
-    { value: "", label: "All" },
+    { value: "", label: "All Priorities" },
     { value: "high", label: "High Priority" },
     { value: "medium", label: "Medium Priority" },
     { value: "low", label: "Low Priority" }
   ]
+
+  const breadcrumbs = getBreadcrumbs()
 
   return (
     <Layout
@@ -112,7 +175,42 @@ export default function SentMessages() {
       role="mot"
     >
       <div className="space-y-6">
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
+
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+
+        {/* Message Count Summary */}
+        <div className="flex items-center justify-between">
+
+        </div>
+
         <FilterBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
           groupFilter={groupFilter}
           setGroupFilter={setGroupFilter}
           statusFilter={statusFilter}
@@ -121,20 +219,27 @@ export default function SentMessages() {
           setDateFilter={setDateFilter}
           statusOptions={statusOptions}
           dateLabel="Sent Date"
+          searchPlaceholder="Search by title, content, or message ID..."
         />
 
         <MessageTabs tabs={tabs} />
 
-        <SentMessagesTable 
-          messages={sentMessages}
+        <SentMessagesTable
+          messages={paginatedMessages}
           onView={handleView}
           onDelete={handleDelete}
         />
 
-        {/* Message count display */}
-        <div className="text-sm text-gray-600">
-          Showing {sentMessages.length} sent messages
-        </div>
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
       </div>
     </Layout>
   )

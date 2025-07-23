@@ -1,12 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from 'next/navigation'
 import { Plus } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
 import BusStatsCards from "@/components/mot/BusStatsCards"
 import BusFilters from "@/components/mot/BusFilters"
 import BusTable from "@/components/mot/BusTable"
+import { usePagination, Pagination } from '@/components/mot/pagination'
+import {
+  DeleteConfirmationModal,
+  DeactivationConfirmationModal,
+} from '@/components/mot/confirmation-modals'
 
 export interface Bus {
   id: string
@@ -138,40 +143,109 @@ const sriLankanBuses: Bus[] = [
 export default function BusInfo() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
-  const [busTypeFilter, setBusTypeFilter] = useState("All Types")
-  const [operatorTypeFilter, setOperatorTypeFilter] = useState("All Operators")
-  const [statusFilter, setStatusFilter] = useState("All Statuses")
+  const [busTypeFilter, setBusTypeFilter] = useState("")
+  const [operatorTypeFilter, setOperatorTypeFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState("")
+  
+  // Modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false)
+  const [selectedBus, setSelectedBus] = useState<Bus | null>(null)
+  const [buses, setBuses] = useState<Bus[]>(sriLankanBuses)
 
-  const filteredBuses = sriLankanBuses.filter((bus) => {
-    const matchesSearch =
-      bus.busNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bus.operator.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesBusType = busTypeFilter === "All Types" || bus.busType.toLowerCase() === busTypeFilter.toLowerCase()
-    const matchesOperatorType =
-      operatorTypeFilter === "All Operators" || bus.operatorType.toLowerCase() === operatorTypeFilter.toLowerCase()
-    const matchesStatus = statusFilter === "All Statuses" || bus.status.toLowerCase() === statusFilter.toLowerCase()
-    return matchesSearch && matchesBusType && matchesOperatorType && matchesStatus
-  })
+  // Fixed filtering logic using useMemo for better performance
+  const filteredBuses = useMemo(() => {
+    return buses.filter((bus) => {
+      // Search filter - check if search term is in bus number or operator
+      const matchesSearch = !searchTerm || 
+        bus.busNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bus.operator.toLowerCase().includes(searchTerm.toLowerCase())
+
+      // Bus type filter - only apply if busTypeFilter is not empty
+      const matchesBusType = !busTypeFilter || bus.busType === busTypeFilter
+
+      // Operator type filter - only apply if operatorTypeFilter is not empty
+      const matchesOperatorType = !operatorTypeFilter || bus.operatorType === operatorTypeFilter
+
+      // Status filter - only apply if statusFilter is not empty
+      const matchesStatus = !statusFilter || bus.status === statusFilter
+
+      return matchesSearch && matchesBusType && matchesOperatorType && matchesStatus
+    })
+  }, [buses, searchTerm, busTypeFilter, operatorTypeFilter, statusFilter])
+
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedBuses,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredBuses, 10) // 10 items per page by default
 
   const handleView = (bus: Bus) => {
-    router.push(`/mot/bus-details?id=${bus.id}`)
+    router.push(`/mot/bus-information-details?id=${bus.id}`)
   }
 
   const handleEdit = (bus: Bus) => {
     router.push(`/mot/bus-information-form?edit=${bus.id}`)
   }
 
+  const handleDelete = (bus: Bus) => {
+    setSelectedBus(bus)
+    setShowDeleteModal(true)
+  }
+
+  const handleDeactivate = (bus: Bus) => {
+    setSelectedBus(bus)
+    setShowDeactivateModal(true)
+  }
+
+  const confirmDelete = () => {
+    if (selectedBus) {
+      setBuses(buses.filter(bus => bus.id !== selectedBus.id))
+      setShowDeleteModal(false)
+      setSelectedBus(null)
+      
+      // Reset to first page if current page has no items after deletion
+      if (paginatedBuses.length === 1 && currentPage > 1) {
+        handlePageChange(1)
+      }
+      
+      console.log(`Bus ${selectedBus.busNumber} has been deleted successfully`)
+    }
+  }
+
+  const confirmDeactivate = () => {
+    if (selectedBus) {
+      setBuses(buses.map(bus => 
+        bus.id === selectedBus.id 
+          ? { ...bus, status: 'Inactive' }
+          : bus
+      ))
+      setShowDeactivateModal(false)
+      setSelectedBus(null)
+      
+      console.log(`Bus ${selectedBus.busNumber} has been deactivated successfully`)
+    }
+  }
+
+  const cancelModal = () => {
+    setShowDeleteModal(false)
+    setShowDeactivateModal(false)
+    setSelectedBus(null)
+  }
+
   return (
     <Layout
-      activeItem="bus-infomation"
+      activeItem="bus-information"
       pageTitle="Bus Fleet Management"
       pageDescription="Manage and monitor your bus fleet operations"
       role="mot"
     >
-
-   
-   
-      <div className="p-6">
+      <div className="space-y-6">
         <BusStatsCards />
         
         <div className="flex items-center justify-between mb-5 gap-6">
@@ -188,16 +262,51 @@ export default function BusInfo() {
             />
           </div>
           <button 
-          onClick={() => router.push("/mot/bus-information-form")}
-          className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded whitespace-nowrap">
+            onClick={() => router.push("/mot/bus-information-form")}
+            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded whitespace-nowrap"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add New Bus
           </button>
         </div>
+        
         <BusTable
-          buses={filteredBuses}
+          buses={paginatedBuses}
           onView={handleView}
           onEdit={handleEdit}
+          onDelete={handleDelete}
+          onDeactivate={handleDeactivate}
+        />
+
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={cancelModal}
+          onConfirm={confirmDelete}
+          title="Delete Bus"
+          itemName={selectedBus ? `Bus ${selectedBus.busNumber}` : ''}
+          isLoading={false}
+        />
+
+        {/* Deactivation Confirmation Modal */}
+        <DeactivationConfirmationModal
+          isOpen={showDeactivateModal}
+          onClose={cancelModal}
+          onConfirm={confirmDeactivate}
+          title="Deactivate Bus"
+          itemName={selectedBus ? `Bus ${selectedBus.busNumber}` : ''}
+          isLoading={false}
         />
       </div>
     </Layout>

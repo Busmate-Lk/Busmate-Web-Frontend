@@ -1,13 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
 import FareStatistics from "@/components/mot/FareStatistics"
 import FareFilters from "@/components/mot/FareFilters"
 import FareTable from "@/components/mot/FareTable"
 import FareQuickActions from "@/components/mot/FareQuickActions"
-import { Plus, FileText } from "lucide-react"
+import { usePagination, Pagination } from '@/components/mot/pagination'
+import {
+  DeleteConfirmationModal,
+  DeactivationConfirmationModal,
+} from '@/components/mot/confirmation-modals'
+import { Plus } from "lucide-react"
 
 interface FareStructure {
   id: string
@@ -82,26 +87,49 @@ const fareStructures: FareStructure[] = [
 export default function Fare() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
-  const [busTypeFilter, setBusTypeFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [busTypeFilter, setBusTypeFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState("")
+  
+  // Modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false)
+  const [selectedFare, setSelectedFare] = useState<FareStructure | null>(null)
+  const [fares, setFares] = useState<FareStructure[]>(fareStructures)
 
-  const filteredFares = fareStructures.filter((fare) => {
-    const matchesSearch =
-      fare.route?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fare.operator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fare.id.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesBusType = busTypeFilter === "all" || fare.busType.toLowerCase() === busTypeFilter.toLowerCase()
-    const matchesStatus = statusFilter === "all" || fare.status.toLowerCase() === statusFilter.toLowerCase()
+  // Fixed filtering logic using useMemo for better performance
+  const filteredFares = useMemo(() => {
+    return fares.filter((fare) => {
+      // Search filter - only apply if searchTerm has content
+      const matchesSearch = !searchTerm || searchTerm.trim() === '' ||
+        fare.route?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fare.operator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fare.id.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesSearch && matchesBusType && matchesStatus
-  })
+      // Bus type filter - only apply if busTypeFilter is not empty
+      const matchesBusType = !busTypeFilter || busTypeFilter === '' || 
+        fare.busType === busTypeFilter
+
+      // Status filter - only apply if statusFilter is not empty  
+      const matchesStatus = !statusFilter || statusFilter === '' || 
+        fare.status === statusFilter
+
+      return matchesSearch && matchesBusType && matchesStatus
+    })
+  }, [fares, searchTerm, busTypeFilter, statusFilter])
+
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedFares,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredFares, 10) // 10 items per page by default
 
   const handleAddFare = () => {
     router.push("/mot/bus-fare-form")
-  }
-
-  const handleViewChart = () => {
-    router.push("/mot/fare-chart")
   }
 
   const handleEditFare = (fare: FareStructure) => {
@@ -109,21 +137,47 @@ export default function Fare() {
   }
 
   const handleViewFare = (fare: FareStructure) => {
-    router.push(`/mot/fare-chart?fareId=${fare.id}`)
+    router.push(`/mot/bus-fare-details?fareId=${fare.id}`)
   }
 
   const handleDeleteFare = (fare: FareStructure) => {
-    console.log("Delete fare:", fare.id)
-    // Add your delete logic here
+    setSelectedFare(fare)
+    setShowDeleteModal(true)
   }
 
-  const handleCalculator = () => {
-    console.log("Open fare calculator")
-    // Add calculator logic here
+  const handleDeactivateFare = (fare: FareStructure) => {
+    setSelectedFare(fare)
+    setShowDeactivateModal(true)
   }
 
-  const handleApplyFilters = () => {
-    console.log("Apply filters")
+  const confirmDelete = () => {
+    if (selectedFare) {
+      setFares(prevFares => prevFares.filter(fare => fare.id !== selectedFare.id))
+      
+      // Reset to first page if current page becomes empty after deletion
+      if (paginatedFares.length === 1 && currentPage > 1) {
+        handlePageChange(1)
+      }
+      
+      console.log("Deleted fare:", selectedFare.id)
+    }
+    setShowDeleteModal(false)
+    setSelectedFare(null)
+  }
+
+  const confirmDeactivate = () => {
+    if (selectedFare) {
+      setFares(prevFares => 
+        prevFares.map(fare => 
+          fare.id === selectedFare.id 
+            ? { ...fare, status: "Inactive" }
+            : fare
+        )
+      )
+      console.log("Deactivated fare:", selectedFare.id)
+    }
+    setShowDeactivateModal(false)
+    setSelectedFare(null)
   }
 
   return (
@@ -135,53 +189,64 @@ export default function Fare() {
     >
       <div className="space-y-6">
         <FareStatistics 
-          fareStructures={fareStructures}
+          fareStructures={fares}
         />
 
-        {/* Filters and Action Buttons in the same line */}
+        {/* Filters and Action Buttons */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div className="flex-1">
             <FareFilters
               searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
               busTypeFilter={busTypeFilter}
+              setBusTypeFilter={setBusTypeFilter}
               statusFilter={statusFilter}
-              onSearchChange={setSearchTerm}
-              onBusTypeChange={setBusTypeFilter}
-              onStatusChange={setStatusFilter}
-              onApplyFilters={handleApplyFilters}
+              setStatusFilter={setStatusFilter}
+              onAddNewFare={handleAddFare}
             />
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={handleViewChart}
-              className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-200"
-            >
-              <FileText className="w-4 h-4" />
-              View Fare Chart
-            </button>
-            <button 
-              onClick={handleAddFare}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2 transition-colors duration-200"
-            >
-              <Plus className="w-4 h-4" />
-              Add New Fare
-            </button>
           </div>
         </div>
 
         <FareTable
-          fares={filteredFares}
+          fares={paginatedFares}
           onView={handleViewFare}
           onEdit={handleEditFare}
           onDelete={handleDeleteFare}
+          onDeactivate={handleDeactivateFare}
+        />
+
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
         />
 
         <FareQuickActions
           onAddFare={handleAddFare}
-          onViewChart={handleViewChart}
-          onCalculator={handleCalculator}
+        />
+
+        {/* Confirmation Modals */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          itemName={selectedFare ? `fare structure ${selectedFare.id} (${selectedFare.route})` : ""}
+          title="Delete Fare Structure"
+          isLoading={false}
+        />
+
+        <DeactivationConfirmationModal
+          isOpen={showDeactivateModal}
+          onClose={() => setShowDeactivateModal(false)}
+          onConfirm={confirmDeactivate}
+          itemName={selectedFare ? `fare structure ${selectedFare.id} (${selectedFare.route})` : ""}
+          title="Deactivate Fare Structure"
+          isLoading={false}
         />
       </div>
     </Layout>

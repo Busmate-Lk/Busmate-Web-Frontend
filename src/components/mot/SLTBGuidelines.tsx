@@ -20,30 +20,23 @@ export default function SLTBGuidelines() {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-600" />
-              <p className="text-gray-700">Base fare: Rs. 10-30 range</p>
+              <p className="text-gray-700">Base fare: Rs. 30-50 range</p>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-600" />
               <p className="text-gray-700">Per km: Rs. 2.50-4.00 range</p>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-600" />
-              <p className="text-gray-700">Student discount: 50% mandatory</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-600" />
-              <p className="text-gray-700">Senior discount: 25% recommended</p>
-            </div>
+            
           </div>
 
           <div className="pt-3 border-t">
             <div className="flex items-center gap-2 text-blue-600">
               <Phone className="w-4 h-4" />
-              <p className="text-sm">Transport Hotline: 1919</p>
+              <p className="text-sm">Transport Hotline: 1958</p>
             </div>
             <div className="flex items-center gap-2 text-blue-600 mt-1">
               <MapPin className="w-4 h-4" />
-              <p className="text-sm">Ministry of Transport, Colombo 01</p>
+              <p className="text-sm">National Transport Commission, Colombo 00500</p>
             </div>
           </div>
         </div>
