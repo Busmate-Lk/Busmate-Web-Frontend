@@ -1,3 +1,5 @@
+import { AlertCircle } from "lucide-react"
+
 interface FormData {
   busType: string
   facilityType: string
@@ -9,13 +11,31 @@ interface BasicInformationFormProps {
   formData: FormData
   sriLankanRoutes: string[]
   onInputChange: (field: string, value: string) => void
+  validationErrors?: { [key: string]: string }
+  showValidation?: boolean
 }
 
 export default function BasicInformationForm({ 
   formData, 
   sriLankanRoutes, 
-  onInputChange 
+  onInputChange,
+  validationErrors = {},
+  showValidation = false
 }: BasicInformationFormProps) {
+  
+  const getFieldError = (field: string) => {
+    return showValidation ? validationErrors[field] : ''
+  }
+
+  const getFieldClasses = (field: string) => {
+    const hasError = showValidation && validationErrors[field]
+    return `w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 ${
+      hasError 
+        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+        : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+    }`
+  }
+
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200 border-l-4 border-l-blue-500">
       <div className="p-6">
@@ -27,12 +47,14 @@ export default function BasicInformationForm({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Bus Type *</label>
+          <div data-field="busType">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Bus Type <span className="text-red-500">*</span>
+            </label>
             <select
               value={formData.busType}
               onChange={(e) => onInputChange("busType", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={getFieldClasses('busType')}
             >
               <option value="">Select bus type</option>
               <option value="AC">AC Bus</option>
@@ -41,14 +63,22 @@ export default function BasicInformationForm({
               <option value="Luxury">Luxury</option>
               <option value="Express">Express Service</option>
             </select>
+            {getFieldError('busType') && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="w-4 h-4" />
+                {getFieldError('busType')}
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Facility Type *</label>
+          <div data-field="facilityType">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Facility Type <span className="text-red-500">*</span>
+            </label>
             <select
               value={formData.facilityType}
               onChange={(e) => onInputChange("facilityType", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={getFieldClasses('facilityType')}
             >
               <option value="">Select facility</option>
               <option value="Normal">Normal Service</option>
@@ -57,14 +87,22 @@ export default function BasicInformationForm({
               <option value="Express">Express Service</option>
               <option value="Intercity">Intercity Express</option>
             </select>
+            {getFieldError('facilityType') && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="w-4 h-4" />
+                {getFieldError('facilityType')}
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Route *</label>
+          <div data-field="route">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Route <span className="text-red-500">*</span>
+            </label>
             <select
               value={formData.route}
               onChange={(e) => onInputChange("route", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={getFieldClasses('route')}
             >
               <option value="">Select route</option>
               {sriLankanRoutes.map((route) => (
@@ -73,14 +111,22 @@ export default function BasicInformationForm({
                 </option>
               ))}
             </select>
+            {getFieldError('route') && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="w-4 h-4" />
+                {getFieldError('route')}
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Province *</label>
+          <div data-field="province">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Province <span className="text-red-500">*</span>
+            </label>
             <select
               value={formData.province}
               onChange={(e) => onInputChange("province", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={getFieldClasses('province')}
             >
               <option value="">Select province</option>
               <option value="Western">Western Province</option>
@@ -93,6 +139,12 @@ export default function BasicInformationForm({
               <option value="Uva">Uva Province</option>
               <option value="Sabaragamuwa">Sabaragamuwa Province</option>
             </select>
+            {getFieldError('province') && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="w-4 h-4" />
+                {getFieldError('province')}
+              </div>
+            )}
           </div>
         </div>
       </div>
