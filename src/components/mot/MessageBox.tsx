@@ -274,24 +274,10 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
             ))}
           </div>
 
-          <div className="mt-4 pt-4 border-t">
-            <div className="flex items-center justify-between gap-2">
-              <button 
-                onClick={handleSentMessagesClick}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100"
-              >
-                View All Sent Messages
-              </button>
-              <button 
-                onClick={handlePendingMessagesClick}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100"
-              >
-                View Pending Messages
-              </button>
+          
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    
   )
 }
