@@ -84,7 +84,7 @@ export default function BusFareDetails() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const fareId = searchParams.get("fareId")
-  
+
   const [fareData, setFareData] = useState<FareStructure | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -238,7 +238,7 @@ export default function BusFareDetails() {
   return (
     <Layout
       activeItem="bus-fare"
-      pageTitle={`Fare Details - ${fareData.id}`}
+      pageTitle={"Fare Details"}
       pageDescription={`Detailed information for ${fareData.route} fare structure`}
       role="mot"
     >
@@ -252,7 +252,7 @@ export default function BusFareDetails() {
                   {index > 0 && (
                     <span className="text-gray-400 mx-2">/</span>
                   )}
-                  
+
                   {breadcrumb.current ? (
                     <span className="text-sm font-medium text-gray-900">
                       {breadcrumb.label}
@@ -275,7 +275,7 @@ export default function BusFareDetails() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex items-center gap-3">
             <button
@@ -285,7 +285,7 @@ export default function BusFareDetails() {
               <Edit className="w-4 h-4" />
               Edit Fare
             </button>
-            
+
             {fareData.status === "Active" && (
               <button
                 onClick={handleDeactivate}
@@ -295,7 +295,7 @@ export default function BusFareDetails() {
                 Deactivate
               </button>
             )}
-            
+
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded hover:bg-red-50 transition-colors duration-200"
@@ -352,7 +352,7 @@ export default function BusFareDetails() {
                     <p className="text-2xl font-bold text-green-600">Rs. {fareData.perKmRate.toFixed(2)}</p>
                   </div>
                 </div>
-                
+
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Facility Type</label>
                   <p className="text-lg text-gray-900">{fareData.facilityType}</p>
@@ -486,10 +486,10 @@ export default function BusFareDetails() {
                 )}
               </div>
             </div>
-             
-            </div>
+
           </div>
-     
+        </div>
+
 
         {/* Confirmation Modals */}
         <DeleteConfirmationModal

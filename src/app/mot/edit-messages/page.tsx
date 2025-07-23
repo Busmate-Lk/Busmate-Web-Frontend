@@ -79,74 +79,74 @@ const broadcastMessages: BroadcastMessage[] = [
     sentAt: "2024-12-01 12:00",
   },
   {
-        id: "BM006",
-        title: "Emergency Contact System Activation",
-        body: "New emergency contact system is now active. In case of accidents or breakdowns, drivers can call 1919 for immediate assistance. GPS tracking will help locate vehicles quickly. All buses must have emergency contact stickers displayed.",
-        targetGroups: ["Drivers", "Conductors", "Bus Operators"],
-        priority: "High",
-        category: "Emergency",
-        scheduledTime: "2024-12-02 08:00",
-        status: "Pending",
-        createdAt: "2024-12-01 15:20",
-    },
-    {
-        id: "BM007",
-        title: "Holiday Schedule Changes - Christmas & New Year 2024",
-        body: "Special holiday schedules will be in effect from December 24th to January 2nd. Increased frequency on popular routes to Kandy, Galle, and Anuradhapura. Night services extended until 11:00 PM. Check with your depot for specific route changes.",
-        targetGroups: ["All Users"],
-        priority: "Medium",
-        category: "General",
-        scheduledTime: "2024-12-01 16:00",
-        status: "Sent",
-        createdAt: "2024-11-29 13:45",
-        sentAt: "2024-12-01 16:00",
-    },
-    {
-        id: "BM008",
-        title: "Digital Ticketing System Rollout - Phase 2",
-        body: "Phase 2 of digital ticketing system launches in Colombo, Kandy, and Galle from January 2025. QR code payments and mobile apps will be available. Training sessions for conductors scheduled for December 15-20. Contact IT support for device installation.",
-        targetGroups: ["Conductors", "Bus Operators"],
-        priority: "Medium",
-        category: "Technology",
-        scheduledTime: "2024-12-05 11:00",
-        status: "Pending",
-        createdAt: "2024-12-01 08:15",
-    },
-    {
-        id: "BM009",
-        title: "Weather Alert - Heavy Rains Expected in Southern Province",
-        body: "Meteorological Department warns of heavy rainfall in Southern Province from December 3-5. Routes to Galle, Matara, and Hambantota may experience delays. Drivers are advised to exercise caution and reduce speed on wet roads.",
-        targetGroups: ["Drivers", "Bus Operators", "Passengers"],
-        priority: "High",
-        category: "Emergency",
-        scheduledTime: "2024-12-03 06:00",
-        status: "Pending",
-        createdAt: "2024-12-02 18:30",
-    },
-    {
-        id: "BM010",
-        title: "New Bus Terminal Opening - Maharagama",
-        body: "The new Maharagama Bus Terminal will commence operations from December 15th, 2024. All routes currently terminating at Maharagama Junction will be redirected to the new terminal. Updated route maps and schedules are available at regional offices.",
-        targetGroups: ["Bus Operators", "Drivers", "Passengers"],
-        priority: "Medium",
-        category: "Route Update",
-        scheduledTime: "2024-12-10 09:00",
-        status: "Pending",
-        createdAt: "2024-12-01 12:45",
-    },
+    id: "BM006",
+    title: "Emergency Contact System Activation",
+    body: "New emergency contact system is now active. In case of accidents or breakdowns, drivers can call 1919 for immediate assistance. GPS tracking will help locate vehicles quickly. All buses must have emergency contact stickers displayed.",
+    targetGroups: ["Drivers", "Conductors", "Bus Operators"],
+    priority: "High",
+    category: "Emergency",
+    scheduledTime: "2024-12-02 08:00",
+    status: "Pending",
+    createdAt: "2024-12-01 15:20",
+  },
+  {
+    id: "BM007",
+    title: "Holiday Schedule Changes - Christmas & New Year 2024",
+    body: "Special holiday schedules will be in effect from December 24th to January 2nd. Increased frequency on popular routes to Kandy, Galle, and Anuradhapura. Night services extended until 11:00 PM. Check with your depot for specific route changes.",
+    targetGroups: ["All Users"],
+    priority: "Medium",
+    category: "General",
+    scheduledTime: "2024-12-01 16:00",
+    status: "Sent",
+    createdAt: "2024-11-29 13:45",
+    sentAt: "2024-12-01 16:00",
+  },
+  {
+    id: "BM008",
+    title: "Digital Ticketing System Rollout - Phase 2",
+    body: "Phase 2 of digital ticketing system launches in Colombo, Kandy, and Galle from January 2025. QR code payments and mobile apps will be available. Training sessions for conductors scheduled for December 15-20. Contact IT support for device installation.",
+    targetGroups: ["Conductors", "Bus Operators"],
+    priority: "Medium",
+    category: "Technology",
+    scheduledTime: "2024-12-05 11:00",
+    status: "Pending",
+    createdAt: "2024-12-01 08:15",
+  },
+  {
+    id: "BM009",
+    title: "Weather Alert - Heavy Rains Expected in Southern Province",
+    body: "Meteorological Department warns of heavy rainfall in Southern Province from December 3-5. Routes to Galle, Matara, and Hambantota may experience delays. Drivers are advised to exercise caution and reduce speed on wet roads.",
+    targetGroups: ["Drivers", "Bus Operators", "Passengers"],
+    priority: "High",
+    category: "Emergency",
+    scheduledTime: "2024-12-03 06:00",
+    status: "Pending",
+    createdAt: "2024-12-02 18:30",
+  },
+  {
+    id: "BM010",
+    title: "New Bus Terminal Opening - Maharagama",
+    body: "The new Maharagama Bus Terminal will commence operations from December 15th, 2024. All routes currently terminating at Maharagama Junction will be redirected to the new terminal. Updated route maps and schedules are available at regional offices.",
+    targetGroups: ["Bus Operators", "Drivers", "Passengers"],
+    priority: "Medium",
+    category: "Route Update",
+    scheduledTime: "2024-12-10 09:00",
+    status: "Pending",
+    createdAt: "2024-12-01 12:45",
+  },
 ]
 
 export default function EditMessages() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const messageId = searchParams.get("id")
-  
+
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [showValidation, setShowValidation] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     title: "",
     body: "",
@@ -158,6 +158,22 @@ export default function EditMessages() {
   })
 
   const [originalMessage, setOriginalMessage] = useState<BroadcastMessage | null>(null)
+
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    return [
+      {
+        label: "Broadcast Messages",
+        href: "/mot/broadcast-messages",
+        current: false
+      },
+      {
+        label: originalMessage ? `Edit ${originalMessage.id}` : "Edit Message",
+        href: null,
+        current: true
+      }
+    ]
+  }
 
   const targetGroupOptions = [
     "All Users",
@@ -171,7 +187,7 @@ export default function EditMessages() {
   const priorityOptions: ("High" | "Medium" | "Low")[] = ["High", "Medium", "Low"]
   const categoryOptions = [
     "Emergency",
-    "Route Update", 
+    "Route Update",
     "Policy",
     "Maintenance",
     "Training",
@@ -191,11 +207,11 @@ export default function EditMessages() {
         }
 
         setOriginalMessage(message)
-        
+
         // Convert scheduled time to datetime-local format
         const scheduledDate = new Date(message.scheduledTime)
         const formattedScheduledTime = scheduledDate.toISOString().slice(0, 16)
-        
+
         setFormData({
           title: message.title,
           body: message.body,
@@ -288,7 +304,7 @@ export default function EditMessages() {
 
   const handleSave = async (sendNow = false) => {
     setShowValidation(true)
-    
+
     if (!validateForm()) {
       const firstErrorField = Object.keys(errors)[0]
       const errorElement = document.querySelector(`[name="${firstErrorField}"]`)
@@ -299,17 +315,17 @@ export default function EditMessages() {
     }
 
     setIsSaving(true)
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       const action = sendNow ? "sent" : "updated"
       console.log(`Message ${action}:`, { messageId, formData })
-      
+
       // Show success message
       alert(`Message ${action} successfully!`)
-      
+
       router.push("/mot/broadcast-messages")
     } catch (error) {
       console.error("Error saving message:", error)
@@ -328,7 +344,7 @@ export default function EditMessages() {
   const getInputClassName = (fieldName: string) => {
     const baseClass = "w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
     const hasError = showValidation && errors[fieldName]
-    
+
     if (hasError) {
       return `${baseClass} border-red-300 focus:ring-red-500 focus:border-red-500`
     }
@@ -337,7 +353,7 @@ export default function EditMessages() {
 
   const ErrorMessage = ({ fieldName }: { fieldName: string }) => {
     if (!showValidation || !errors[fieldName]) return null
-    
+
     return (
       <div className="flex items-center gap-1 mt-1">
         <AlertCircle className="w-4 h-4 text-red-500" />
@@ -360,7 +376,7 @@ export default function EditMessages() {
   if (isLoading) {
     return (
       <Layout
-        activeItem="broadcast-messages"
+        activeItem="broadcast"
         pageTitle="Loading..."
         pageDescription="Loading message details"
         role="mot"
@@ -378,7 +394,7 @@ export default function EditMessages() {
   if (!originalMessage) {
     return (
       <Layout
-        activeItem="broadcast-messages"
+        activeItem="broadcast"
         pageTitle="Message Not Found"
         pageDescription="The requested message could not be found"
         role="mot"
@@ -401,33 +417,62 @@ export default function EditMessages() {
   }
 
   const hasErrors = Object.keys(errors).length > 0
+  const breadcrumbs = getBreadcrumbs()
 
   return (
     <Layout
-      activeItem="broadcast-messages"
-      pageTitle={`Edit Message - ${originalMessage.id}`}
+      activeItem="broadcast"
+      pageTitle={"Edit Broadcast Message"}
       pageDescription="Edit broadcast message details and scheduling"
       role="mot"
     >
       <div className="space-y-6">
-        {/* Back Navigation */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleCancel}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Broadcast Messages</span>
-          </button>
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
 
-          {/* Preview Toggle */}
-          <button
-            onClick={() => setShowPreview(!showPreview)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-          >
-            <Eye className="w-4 h-4" />
-            {showPreview ? "Hide Preview" : "Show Preview"}
-          </button>
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+
+        {/* Edit Mode Indicator */}
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+
+
+          </div>
+          <div className="ml-auto text-xs text-blue-700 flex items-center gap-4">
+
+            <button
+              onClick={() => setShowPreview(!showPreview)}
+              className="flex items-center gap-1 px-2 py-1 bg-blue-100 hover:bg-blue-200 rounded text-blue-800 transition-colors"
+            >
+              <Eye className="w-3 h-3" />
+              {showPreview ? "Hide Preview" : "Show Preview"}
+            </button>
+          </div>
+
         </div>
 
         {/* Validation Summary */}
@@ -583,7 +628,7 @@ export default function EditMessages() {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Scheduling Options
                   </label>
-                  
+
                   <div className="space-y-3">
                     <label className="flex items-center">
                       <input
@@ -622,7 +667,7 @@ export default function EditMessages() {
                   >
                     Cancel
                   </button>
-                  
+
                   <button
                     onClick={() => handleSave(false)}
                     disabled={isSaving}
@@ -634,7 +679,7 @@ export default function EditMessages() {
                     <Save className="w-4 h-4" />
                     Save Changes
                   </button>
-                  
+
                   <button
                     onClick={() => handleSave(true)}
                     disabled={isSaving}

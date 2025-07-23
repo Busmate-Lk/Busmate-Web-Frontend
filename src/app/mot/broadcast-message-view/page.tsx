@@ -3,15 +3,15 @@
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  Users, 
-  AlertTriangle, 
-  CheckCircle, 
-  Edit, 
-  Send, 
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Users,
+  AlertTriangle,
+  CheckCircle,
+  Edit,
+  Send,
   Copy,
   Trash2,
   Eye,
@@ -166,6 +166,22 @@ export default function MessageView() {
   // Find the message by ID
   const message = broadcastMessages.find(m => m.id === messageId)
 
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    return [
+      {
+        label: "Broadcast Messages",
+        href: "/mot/broadcast-messages",
+        current: false
+      },
+      {
+        label: message ? `${message.id} Details` : "Message Details",
+        href: null,
+        current: true
+      }
+    ]
+  }
+
   if (!message) {
     return (
       <Layout
@@ -196,7 +212,7 @@ export default function MessageView() {
       Medium: "bg-yellow-100 text-yellow-800 border-yellow-200",
       Low: "bg-green-100 text-green-800 border-green-200"
     }
-    
+
     const icons = {
       High: <AlertTriangle className="w-3 h-3" />,
       Medium: <Clock className="w-3 h-3" />,
@@ -239,7 +255,7 @@ export default function MessageView() {
 
   const getTargetGroupBadges = (groups: string[]) => {
     return groups.map((group, index) => (
-      <span 
+      <span
         key={index}
         className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200"
       >
@@ -276,17 +292,17 @@ export default function MessageView() {
 
   const handleConfirmDelete = async () => {
     setIsDeleting(true)
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
+
       console.log("Message deleted successfully:", message.id)
-      
+
       // Close modal and navigate back
       setShowDeleteModal(false)
       router.push('/mot/broadcast-messages')
-      
+
     } catch (error) {
       console.error("Error deleting message:", error)
       alert("Error deleting message. Please try again.")
@@ -299,23 +315,48 @@ export default function MessageView() {
     setShowDeleteModal(false)
   }
 
+  const breadcrumbs = getBreadcrumbs()
+
   return (
     <Layout
       activeItem="broadcast"
-      pageTitle={`Message - ${message.id}`}
+      pageTitle={"View Broadcast Message"}
       pageDescription="View broadcast message details"
       role="mot"
     >
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header with Back Button */}
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
+
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+
+        {/* Status and Action Buttons */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.push('/mot/broadcast-messages')}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Messages
-          </button>
+          <div className="flex items-center gap-3">
+          </div>
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3">
@@ -328,7 +369,7 @@ export default function MessageView() {
                 Send Now
               </button>
             )}
-            
+
             {/* Only show Edit button for pending messages */}
             {message.status === "Pending" && (
               <button
@@ -339,7 +380,7 @@ export default function MessageView() {
                 Edit
               </button>
             )}
-            
+
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
@@ -463,8 +504,8 @@ export default function MessageView() {
                 <p className="text-sm text-gray-600">See delivery stats</p>
               </div>
             </button>
-            
-            <button 
+
+            <button
               onClick={handleCopy}
               className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
@@ -474,7 +515,7 @@ export default function MessageView() {
                 <p className="text-sm text-gray-600">Create a copy</p>
               </div>
             </button>
-            
+
             <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
               <MessageSquare className="w-5 h-5 text-purple-600" />
               <div className="text-left">
@@ -494,11 +535,12 @@ export default function MessageView() {
         isLoading={isDeleting}
         title="Delete Broadcast Message"
         itemName={
-          message 
-            ? `"${message.title}"` 
+          message
+            ? `"${message.title}"`
             : "this message"
         }
       />
     </Layout>
   )
 }
+

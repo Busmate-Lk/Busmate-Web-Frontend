@@ -110,11 +110,11 @@ export default function SentMessages() {
         message.id.toLowerCase().includes(searchTerm.toLowerCase())
 
       // Group filter
-      const matchesGroup = !groupFilter || groupFilter === '' || 
+      const matchesGroup = !groupFilter || groupFilter === '' ||
         message.targetGroups.includes(groupFilter)
 
       // Status/Priority filter (repurposed for priority)
-      const matchesStatus = !statusFilter || statusFilter === '' || 
+      const matchesStatus = !statusFilter || statusFilter === '' ||
         (statusFilter === "high" && message.priority === "High") ||
         (statusFilter === "medium" && message.priority === "Medium") ||
         (statusFilter === "low" && message.priority === "Low")
@@ -154,7 +154,7 @@ export default function SentMessages() {
       label: "Sent Messages",
       count: filteredMessages.length,
       active: true,
-      onClick: () => {}
+      onClick: () => { }
     }
   ]
 
@@ -184,7 +184,7 @@ export default function SentMessages() {
                   {index > 0 && (
                     <span className="text-gray-400 mx-2">/</span>
                   )}
-                  
+
                   {breadcrumb.current ? (
                     <span className="text-sm font-medium text-gray-900">
                       {breadcrumb.label}
@@ -205,7 +205,7 @@ export default function SentMessages() {
 
         {/* Message Count Summary */}
         <div className="flex items-center justify-between">
-         
+
         </div>
 
         <FilterBar
@@ -224,7 +224,7 @@ export default function SentMessages() {
 
         <MessageTabs tabs={tabs} />
 
-        <SentMessagesTable 
+        <SentMessagesTable
           messages={paginatedMessages}
           onView={handleView}
           onDelete={handleDelete}
