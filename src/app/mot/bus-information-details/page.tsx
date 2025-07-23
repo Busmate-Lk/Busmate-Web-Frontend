@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ChevronRight, Home } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
 import BusHeaderInfo from "@/components/mot/BusHeaderInfo"
 import BusPhotoDisplay from "@/components/mot/BusPhotoDisplay"
@@ -31,26 +31,26 @@ interface Bus {
 
 // Sample bus data - replace with real data fetching
 const sampleBus: Bus[] = [
-    {
-  id: "1",
-  busNumber: "NB-1234",
-  busType: "AC",
-  operator: "Ceylon Transport Board",
-  operatorType: "SLTB",
-  seatingCapacity: 45,
-  standingCapacity: 15,
-  status: "Active",
-  chassisNo: "CH789456123",
-  engineNo: "EN987654321",
-  fuelType: "Diesel",
-  regionAssigned: "Western Province",
-  depotName: "Colombo Central Depot",
-  registrationDate: "2022-03-15",
-  lastInspectionDate: "2024-11-20",
-  nextMaintenanceDate: "2025-01-15",
-  photo: "/placeholder.svg?height=300&width=400",
-},
-{
+  {
+    id: "1",
+    busNumber: "NB-1234",
+    busType: "AC",
+    operator: "Ceylon Transport Board",
+    operatorType: "SLTB",
+    seatingCapacity: 45,
+    standingCapacity: 15,
+    status: "Active",
+    chassisNo: "CH789456123",
+    engineNo: "EN987654321",
+    fuelType: "Diesel",
+    regionAssigned: "Western Province",
+    depotName: "Colombo Central Depot",
+    registrationDate: "2022-03-15",
+    lastInspectionDate: "2024-11-20",
+    nextMaintenanceDate: "2025-01-15",
+    photo: "/placeholder.svg?height=300&width=400",
+  },
+  {
     id: "2",
     busNumber: "PV-5678",
     busType: "Non-AC",
@@ -104,7 +104,7 @@ const sampleBus: Bus[] = [
     nextMaintenanceDate: "2025-03-10",
     photo: "/placeholder.svg?height=300&width=400",
   },
-   {
+  {
     id: "5",
     busNumber: "WP-7890",
     busType: "AC",
@@ -135,21 +135,36 @@ const sampleBus: Bus[] = [
     fuelType: "Diesel",
     regionAssigned: "Uva Province",
     depotName: "Badulla Depot",
-     registrationDate: "2022-07-12",
+    registrationDate: "2022-07-12",
     lastInspectionDate: "2024-10-25",
     nextMaintenanceDate: "2025-01-25",
     photo: "/placeholder.svg?height=300&width=400",
   },
 ]
 
-
 export default function ViewBus() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const busId = searchParams.get("id")
-  
+
   // In real app, fetch bus data based on busId
   const bus = sampleBus.find(b => b.id === busId)
+
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    return [
+      {
+        label: "Bus Information",
+        href: "/mot/bus-infomation",
+        current: false
+      },
+      {
+        label: bus ? `${bus.busNumber} Details` : "Bus Details",
+        href: null,
+        current: true
+      }
+    ]
+  }
 
   if (!bus) {
     return (
@@ -202,41 +217,66 @@ export default function ViewBus() {
     console.log("Download document:", document)
   }
 
+  const breadcrumbs = getBreadcrumbs()
+
   return (
-   <Layout
+    <Layout
       activeItem="bus-infomation"
       pageTitle="Bus Information Details"
       pageDescription="View detailed information about bus fleet"
       role="mot"
-    ><div className="space-y-6">
-        {/* Back Button */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/mot/bus-infomation")}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Bus Information Management
-          </button>
-        </div> <BusHeaderInfo bus={bus} />
+    >
+      <div className="space-y-6">
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
+
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+
+
+        <BusHeaderInfo bus={bus} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BusPhotoDisplay 
+          <BusPhotoDisplay
             photo={bus.photo}
             onViewFullSize={handleViewFullSize}
             onChangePhoto={handleChangePhoto}
           />
           <BusDetailedInfo bus={bus} />
-        </div><BusDocuments 
+        </div>
+
+        <BusDocuments
           onViewDocument={handleViewDocument}
           onDownloadDocument={handleDownloadDocument}
         />
 
-        <BusActionButtons 
+        <BusActionButtons
           onEdit={handleEdit}
           onMarkMaintenance={handleMarkMaintenance}
         />
       </div>
-      </Layout>
+    </Layout>
   )
 }

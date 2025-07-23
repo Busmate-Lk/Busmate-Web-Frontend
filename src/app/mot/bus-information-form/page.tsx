@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, AlertCircle, CheckCircle } from "lucide-react"
+import { ArrowLeft, AlertCircle, CheckCircle, ChevronRight, Home } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
 import BasicInformationForm from "@/components/mot/Bus-InformationForm"
@@ -14,7 +14,7 @@ import AdditionalNotesForm from "@/components/mot/AdditionalNotesForm"
 export default function BusInformationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   const busId = searchParams.get("edit")
   const isEditing = !!busId
 
@@ -46,122 +46,6 @@ export default function BusInformationForm() {
   })
 
   const [isLoading, setIsLoading] = useState(true)
-
-  // Validation rules
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    // Basic Information validation
-    if (!formData.busNumber.trim()) {
-      newErrors.busNumber = "Bus number is required"
-    } else if (!/^[A-Z]{2,3}-\d{4}$/.test(formData.busNumber.trim())) {
-      newErrors.busNumber = "Bus number must be in format XX-1234 or XXX-1234"
-    }
-
-    if (!formData.busType) {
-      newErrors.busType = "Bus type is required"
-    }
-
-    if (!formData.operator.trim()) {
-      newErrors.operator = "Operator name is required"
-    } else if (formData.operator.trim().length < 3) {
-      newErrors.operator = "Operator name must be at least 3 characters"
-    }
-
-    if (!formData.operatorType) {
-      newErrors.operatorType = "Operator type is required"
-    }
-
-    if (!formData.seatingCapacity) {
-      newErrors.seatingCapacity = "Seating capacity is required"
-    } else if (parseInt(formData.seatingCapacity) < 1 || parseInt(formData.seatingCapacity) > 100) {
-      newErrors.seatingCapacity = "Seating capacity must be between 1 and 100"
-    }
-
-    if (formData.standingCapacity && (parseInt(formData.standingCapacity) < 0 || parseInt(formData.standingCapacity) > 50)) {
-      newErrors.standingCapacity = "Standing capacity must be between 0 and 50"
-    }
-
-    if (!formData.status) {
-      newErrors.status = "Bus status is required"
-    }
-
-    // Technical Specifications validation
-    if (!formData.chassisNo.trim()) {
-      newErrors.chassisNo = "Chassis number is required"
-    } else if (!/^[A-Z]{2}\d{9}$/.test(formData.chassisNo.trim())) {
-      newErrors.chassisNo = "Chassis number must be in format XX123456789"
-    }
-
-    if (!formData.engineNo.trim()) {
-      newErrors.engineNo = "Engine number is required"
-    } else if (!/^[A-Z]{2}\d{9}$/.test(formData.engineNo.trim())) {
-      newErrors.engineNo = "Engine number must be in format XX123456789"
-    }
-
-    if (!formData.fuelType) {
-      newErrors.fuelType = "Fuel type is required"
-    }
-
-    // Location Assignment validation
-    if (!formData.regionAssigned) {
-      newErrors.regionAssigned = "Region assignment is required"
-    }
-
-    if (!formData.depotName.trim()) {
-      newErrors.depotName = "Depot name is required"
-    } else if (formData.depotName.trim().length < 3) {
-      newErrors.depotName = "Depot name must be at least 3 characters"
-    }
-
-    // Important Dates validation
-    if (!formData.registrationDate) {
-      newErrors.registrationDate = "Registration date is required"
-    } else {
-      const regDate = new Date(formData.registrationDate)
-      const today = new Date()
-      const minDate = new Date('1990-01-01')
-      
-      if (regDate > today) {
-        newErrors.registrationDate = "Registration date cannot be in the future"
-      } else if (regDate < minDate) {
-        newErrors.registrationDate = "Registration date cannot be before 1990"
-      }
-    }
-
-    if (formData.lastInspectionDate) {
-      const inspectionDate = new Date(formData.lastInspectionDate)
-      const regDate = new Date(formData.registrationDate)
-      const today = new Date()
-      
-      if (inspectionDate > today) {
-        newErrors.lastInspectionDate = "Last inspection date cannot be in the future"
-      } else if (formData.registrationDate && inspectionDate < regDate) {
-        newErrors.lastInspectionDate = "Last inspection date cannot be before registration date"
-      }
-    }
-
-    if (formData.nextMaintenanceDate) {
-      const maintenanceDate = new Date(formData.nextMaintenanceDate)
-      const today = new Date()
-      const maxDate = new Date()
-      maxDate.setFullYear(today.getFullYear() + 2)
-      
-      if (maintenanceDate < today) {
-        newErrors.nextMaintenanceDate = "Next maintenance date should be in the future"
-      } else if (maintenanceDate > maxDate) {
-        newErrors.nextMaintenanceDate = "Next maintenance date cannot be more than 2 years from now"
-      }
-    }
-
-    // Notes validation (optional but with length limit)
-    if (formData.notes && formData.notes.length > 500) {
-      newErrors.notes = "Notes cannot exceed 500 characters"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
 
   // Sample bus data for editing
   const existingBuses = [
@@ -293,11 +177,149 @@ export default function BusInformationForm() {
     },
   ]
 
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    const existingBus = isEditing
+      ? existingBuses.find(bus => bus.id === busId)
+      : null
+
+    return [
+      {
+        label: "Bus Information",
+        href: "/mot/bus-infomation",
+        current: false
+      },
+      {
+        label: isEditing
+          ? `Edit ${existingBus?.busNumber || busId}`
+          : "Add New Bus",
+        href: null,
+        current: true
+      }
+    ]
+  }
+
+  // Validation rules (keeping your existing validation logic)
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    // Basic Information validation
+    if (!formData.busNumber.trim()) {
+      newErrors.busNumber = "Bus number is required"
+    } else if (!/^[A-Z]{2,3}-\d{4}$/.test(formData.busNumber.trim())) {
+      newErrors.busNumber = "Bus number must be in format XX-1234 or XXX-1234"
+    }
+
+    if (!formData.busType) {
+      newErrors.busType = "Bus type is required"
+    }
+
+    if (!formData.operator.trim()) {
+      newErrors.operator = "Operator name is required"
+    } else if (formData.operator.trim().length < 3) {
+      newErrors.operator = "Operator name must be at least 3 characters"
+    }
+
+    if (!formData.operatorType) {
+      newErrors.operatorType = "Operator type is required"
+    }
+
+    if (!formData.seatingCapacity) {
+      newErrors.seatingCapacity = "Seating capacity is required"
+    } else if (parseInt(formData.seatingCapacity) < 1 || parseInt(formData.seatingCapacity) > 100) {
+      newErrors.seatingCapacity = "Seating capacity must be between 1 and 100"
+    }
+
+    if (formData.standingCapacity && (parseInt(formData.standingCapacity) < 0 || parseInt(formData.standingCapacity) > 50)) {
+      newErrors.standingCapacity = "Standing capacity must be between 0 and 50"
+    }
+
+    if (!formData.status) {
+      newErrors.status = "Bus status is required"
+    }
+
+    // Technical Specifications validation
+    if (!formData.chassisNo.trim()) {
+      newErrors.chassisNo = "Chassis number is required"
+    } else if (!/^[A-Z]{2}\d{9}$/.test(formData.chassisNo.trim())) {
+      newErrors.chassisNo = "Chassis number must be in format XX123456789"
+    }
+
+    if (!formData.engineNo.trim()) {
+      newErrors.engineNo = "Engine number is required"
+    } else if (!/^[A-Z]{2}\d{9}$/.test(formData.engineNo.trim())) {
+      newErrors.engineNo = "Engine number must be in format XX123456789"
+    }
+
+    if (!formData.fuelType) {
+      newErrors.fuelType = "Fuel type is required"
+    }
+
+    // Location Assignment validation
+    if (!formData.regionAssigned) {
+      newErrors.regionAssigned = "Region assignment is required"
+    }
+
+    if (!formData.depotName.trim()) {
+      newErrors.depotName = "Depot name is required"
+    } else if (formData.depotName.trim().length < 3) {
+      newErrors.depotName = "Depot name must be at least 3 characters"
+    }
+
+    // Important Dates validation
+    if (!formData.registrationDate) {
+      newErrors.registrationDate = "Registration date is required"
+    } else {
+      const regDate = new Date(formData.registrationDate)
+      const today = new Date()
+      const minDate = new Date('1990-01-01')
+
+      if (regDate > today) {
+        newErrors.registrationDate = "Registration date cannot be in the future"
+      } else if (regDate < minDate) {
+        newErrors.registrationDate = "Registration date cannot be before 1990"
+      }
+    }
+
+    if (formData.lastInspectionDate) {
+      const inspectionDate = new Date(formData.lastInspectionDate)
+      const regDate = new Date(formData.registrationDate)
+      const today = new Date()
+
+      if (inspectionDate > today) {
+        newErrors.lastInspectionDate = "Last inspection date cannot be in the future"
+      } else if (formData.registrationDate && inspectionDate < regDate) {
+        newErrors.lastInspectionDate = "Last inspection date cannot be before registration date"
+      }
+    }
+
+    if (formData.nextMaintenanceDate) {
+      const maintenanceDate = new Date(formData.nextMaintenanceDate)
+      const today = new Date()
+      const maxDate = new Date()
+      maxDate.setFullYear(today.getFullYear() + 2)
+
+      if (maintenanceDate < today) {
+        newErrors.nextMaintenanceDate = "Next maintenance date should be in the future"
+      } else if (maintenanceDate > maxDate) {
+        newErrors.nextMaintenanceDate = "Next maintenance date cannot be more than 2 years from now"
+      }
+    }
+
+    // Notes validation (optional but with length limit)
+    if (formData.notes && formData.notes.length > 500) {
+      newErrors.notes = "Notes cannot exceed 500 characters"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   // Use useEffect to populate form data when editing
   useEffect(() => {
     if (isEditing && busId) {
       const existingBus = existingBuses.find(bus => bus.id === busId)
-      
+
       if (existingBus) {
         setFormData({
           busNumber: existingBus.busNumber || "",
@@ -342,7 +364,7 @@ export default function BusInformationForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setShowValidation(true)
-    
+
     if (!validateForm()) {
       // Scroll to first error
       const firstErrorField = Object.keys(errors)[0]
@@ -354,17 +376,17 @@ export default function BusInformationForm() {
     }
 
     setIsSubmitting(true)
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       if (isEditing) {
         console.log("Bus updated:", { id: busId, formData })
       } else {
         console.log("Bus created:", formData)
       }
-      
+
       router.push("/mot/bus-infomation")
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -397,31 +419,50 @@ export default function BusInformationForm() {
     )
   }
 
-  const existingBus = isEditing 
+  const existingBus = isEditing
     ? existingBuses.find(bus => bus.id === busId)
     : null
 
   const hasErrors = Object.keys(errors).length > 0
+  const breadcrumbs = getBreadcrumbs()
 
   return (
     <Layout
       activeItem="bus-infomation"
-      pageTitle={isEditing ? `Edit Bus - ${existingBus?.busNumber || busId}` : "Add New Bus"}
+      pageTitle={isEditing ? "Edit Bus Information" : "Add New Bus"}
       pageDescription={isEditing ? "Update bus information" : "Register a new bus to the fleet management system"}
       role="mot"
     >
       <div className="space-y-6">
-        {/* Back Link */}
-        <div className="flex items-center">
-          <button
-            type="button"
-            onClick={() => router.push("/mot/bus-infomation")}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Bus Information</span>
-          </button>
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
+
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
         </div>
+
+      
 
         {/* Validation Summary */}
         {showValidation && hasErrors && (
@@ -459,26 +500,26 @@ export default function BusInformationForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <BasicInformationForm 
-            formData={formData} 
+          <BasicInformationForm
+            formData={formData}
             onInputChange={handleInputChange}
             errors={errors}
             showValidation={showValidation}
           />
-          <TechnicalSpecsForm 
-            formData={formData} 
+          <TechnicalSpecsForm
+            formData={formData}
             onInputChange={handleInputChange}
             errors={errors}
             showValidation={showValidation}
           />
-          <LocationAssignmentForm 
-            formData={formData} 
+          <LocationAssignmentForm
+            formData={formData}
             onInputChange={handleInputChange}
             errors={errors}
             showValidation={showValidation}
           />
-          <ImportantDatesForm 
-            formData={formData} 
+          <ImportantDatesForm
+            formData={formData}
             onInputChange={handleInputChange}
             errors={errors}
             showValidation={showValidation}
@@ -491,28 +532,39 @@ export default function BusInformationForm() {
             showValidation={showValidation}
           />
 
-          <div className="flex items-center justify-end gap-4">
-            <button
-              type="button"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-              className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isSubmitting && (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              )}
-              {isSubmitting 
-                ? (isEditing ? "Updating..." : "Creating...")
-                : (isEditing ? "Update Bus" : "Add Bus")
-              }
-            </button>
+          {/* Action Buttons */}
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                {isEditing
+                  ? "Changes will be saved immediately upon submission."
+                  : "Bus will be added to the fleet management system."
+                }
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                >
+                  {isSubmitting && (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  )}
+                  {isSubmitting
+                    ? (isEditing ? "Updating..." : "Creating...")
+                    : (isEditing ? "Update Bus" : "Add Bus")
+                  }
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
