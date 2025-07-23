@@ -81,6 +81,22 @@ export default function SentMessages() {
   const [statusFilter, setStatusFilter] = useState("")
   const [dateFilter, setDateFilter] = useState("")
 
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    return [
+      {
+        label: "Broadcast Messages",
+        href: "/mot/broadcast-messages",
+        current: false
+      },
+      {
+        label: "Sent Messages",
+        href: null,
+        current: true
+      }
+    ]
+  }
+
   // Filter messages using useMemo for better performance
   const filteredMessages = useMemo(() => {
     return broadcastMessages.filter((message) => {
@@ -149,6 +165,8 @@ export default function SentMessages() {
     { value: "low", label: "Low Priority" }
   ]
 
+  const breadcrumbs = getBreadcrumbs()
+
   return (
     <Layout
       activeItem="broadcast"
@@ -157,15 +175,37 @@ export default function SentMessages() {
       role="mot"
     >
       <div className="space-y-6">
-        {/* Back Link */}
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
+                  
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+
+        {/* Message Count Summary */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.push('/mot/broadcast-messages')}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Broadcast Messages
-          </button>
+         
         </div>
 
         <FilterBar
@@ -200,9 +240,7 @@ export default function SentMessages() {
           onPageSizeChange={handlePageSizeChange}
           pageSizeOptions={[5, 10, 20, 50]}
         />
-
-        </div>
-      
+      </div>
     </Layout>
   )
 }
