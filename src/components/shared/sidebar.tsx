@@ -90,13 +90,13 @@ export function Sidebar({
     {
       icon: Bus,
       label: 'Bus Information',
-      active: activeItem === 'information',
+      active: activeItem === 'bus-information',
       href: '/mot/bus-infomation',
     },
     {
       icon: DollarSign,
       label: 'Fare Management',
-      active: activeItem === 'fare',
+      active: activeItem === 'bus-fare',
       href: '/mot/bus-fare',
     },
     {
@@ -108,7 +108,7 @@ export function Sidebar({
     {
       icon: MessageSquare,
       label: 'Broadcast Messages',
-      active: activeItem === 'messages',
+      active: activeItem === 'broadcast',
       href: '/mot/broadcast-messages',
     },
     {
@@ -178,17 +178,15 @@ export function Sidebar({
 
   return (
     <div
-      className={`${
-        isCollapsed ? 'w-20' : 'w-68'
-      } bg-blue-800 text-white transition-all duration-300 ease-in-out flex flex-col h-screen fixed left-0 top-0 z-40`}
+      className={`${isCollapsed ? 'w-20' : 'w-68'
+        } bg-blue-800 text-white transition-all duration-300 ease-in-out flex flex-col h-screen fixed left-0 top-0 z-40`}
     >
       {/* Header Section */}
       <div className="p-4 border-b border-blue-500 h-20 flex items-center">
         <div className="flex items-center justify-between w-full">
           <div
-            className={`flex items-center gap-3 ${
-              isCollapsed ? 'justify-center' : ''
-            }`}
+            className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''
+              }`}
           >
             {!isCollapsed && (
               <div className="bg-blue-800  rounded-lg flex-shrink-0">
@@ -228,19 +226,16 @@ export function Sidebar({
             <Link
               key={index}
               href={item.href}
-              className={`w-full flex items-center ${
-                isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-3'
-              } rounded-lg text-sm font-medium transition-all duration-200 group ${
-                item.active
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-3'
+                } rounded-lg text-sm font-medium transition-all duration-200 group ${item.active
                   ? 'bg-white text-blue-600 shadow-sm'
                   : 'text-blue-100 hover:bg-blue-500 hover:text-white'
-              }`}
+                }`}
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon
-                className={`w-5 h-5 flex-shrink-0 ${
-                  item.active ? 'text-blue-600' : ''
-                }`}
+                className={`w-5 h-5 flex-shrink-0 ${item.active ? 'text-blue-600' : ''
+                  }`}
               />
               {!isCollapsed && (
                 <span className="truncate ml-3">{item.label}</span>

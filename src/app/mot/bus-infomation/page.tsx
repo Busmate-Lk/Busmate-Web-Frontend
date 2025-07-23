@@ -240,7 +240,7 @@ export default function BusInfo() {
 
   return (
     <Layout
-      activeItem="bus-infomation"
+      activeItem="bus-information"
       pageTitle="Bus Fleet Management"
       pageDescription="Manage and monitor your bus fleet operations"
       role="mot"
