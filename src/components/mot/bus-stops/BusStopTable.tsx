@@ -45,7 +45,7 @@ export default function BusStopTable({ busStops }: { busStops: BusStopResponse[]
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {busStops.map((stop) => (
+            {busStops?.map((stop) => (
               <tr key={stop.id}>
                 <td className="px-6 py-4 font-medium text-gray-900">{stop.id}</td>
                 <td className="px-6 py-4 font-medium text-gray-900">{stop.name}</td>
@@ -81,7 +81,7 @@ export default function BusStopTable({ busStops }: { busStops: BusStopResponse[]
       {/* Pagination */}
       <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
         <p className="text-sm text-gray-600">
-          Showing {busStops.length} results
+          Showing {busStops?.length} results
         </p>
         <div className="flex items-center gap-2">
           <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">Previous</button>

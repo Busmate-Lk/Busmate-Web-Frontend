@@ -8,7 +8,7 @@ export default function BusStopStats({ busStops }: { busStops: BusStopResponse[]
         <div className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Total Bus Stops</p>
-            <p className="text-3xl font-bold text-gray-900">{busStops.length}</p>
+            <p className="text-3xl font-bold text-gray-900">{busStops?.length}</p>
             <p className="text-sm text-green-600 mt-1">+3% from last month</p>
           </div>
           <div className="p-3 bg-blue-100 rounded-full">

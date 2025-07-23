@@ -11,7 +11,7 @@ export default function AddBusStopFacilities({ facilities, handleFacilityChange 
         <span className="font-semibold text-lg text-gray-900">Available Facilities</span>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {Object.entries(facilities).map(([facility, checked]) => (
+        {Object.entries(facilities)?.map(([facility, checked]) => (
           <label key={facility} className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
