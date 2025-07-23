@@ -7,6 +7,7 @@ import FareStatistics from "@/components/mot/FareStatistics"
 import FareFilters from "@/components/mot/FareFilters"
 import FareTable from "@/components/mot/FareTable"
 import FareQuickActions from "@/components/mot/FareQuickActions"
+import { usePagination, Pagination } from '@/components/mot/pagination'
 import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
@@ -116,6 +117,17 @@ export default function Fare() {
     })
   }, [fares, searchTerm, busTypeFilter, statusFilter])
 
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedFares,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredFares, 10) // 10 items per page by default
+
   const handleAddFare = () => {
     router.push("/mot/bus-fare-form")
   }
@@ -141,6 +153,12 @@ export default function Fare() {
   const confirmDelete = () => {
     if (selectedFare) {
       setFares(prevFares => prevFares.filter(fare => fare.id !== selectedFare.id))
+      
+      // Reset to first page if current page becomes empty after deletion
+      if (paginatedFares.length === 1 && currentPage > 1) {
+        handlePageChange(1)
+      }
+      
       console.log("Deleted fare:", selectedFare.id)
     }
     setShowDeleteModal(false)
@@ -160,10 +178,6 @@ export default function Fare() {
     }
     setShowDeactivateModal(false)
     setSelectedFare(null)
-  }
-
-  const handleApplyFilters = () => {
-    console.log("Apply filters")
   }
 
   return (
@@ -189,17 +203,27 @@ export default function Fare() {
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
               onAddNewFare={handleAddFare}
-              
             />
           </div>
         </div>
 
         <FareTable
-          fares={filteredFares}
+          fares={paginatedFares}
           onView={handleViewFare}
           onEdit={handleEditFare}
           onDelete={handleDeleteFare}
           onDeactivate={handleDeactivateFare}
+        />
+
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
         />
 
         <FareQuickActions

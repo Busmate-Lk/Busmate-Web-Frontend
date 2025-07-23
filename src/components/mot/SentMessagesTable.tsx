@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Eye, Trash2 } from "lucide-react"
 import { getTargetGroupBadge, getPriorityBadge, getCategoryBadge } from "@/components/mot/BadgeUtils"
-import TablePagination from "@/components/mot/TablePagination"
 import {
   DeleteConfirmationModal,
 } from '@/components/mot/confirmation-modals'
@@ -163,12 +162,7 @@ export default function SentMessagesTable({
             </table>
           </div>
           
-          <TablePagination 
-            currentPage={1}
-            totalItems={messages.length}
-            itemsPerPage={10}
-            onPageChange={(page) => console.log("Page:", page)}
-          />
+          
         </div>
       </div>
 

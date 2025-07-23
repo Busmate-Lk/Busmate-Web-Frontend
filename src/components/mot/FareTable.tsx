@@ -192,34 +192,6 @@ export default function FareTable({
         </div>
       )}
 
-      {/* Pagination */}
-      {fares.length > 0 && (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
-            Showing {fares.length} result{fares.length !== 1 ? 's' : ''}
-          </p>
-          <div className="flex items-center gap-2">
-            <button 
-              className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
-              disabled
-            >
-              Previous
-            </button>
-            <button className="px-3 py-1 bg-blue-600 text-white rounded text-sm">
-              1
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 transition-colors duration-200">
-              2
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 transition-colors duration-200">
-              3
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 transition-colors duration-200">
-              Next
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

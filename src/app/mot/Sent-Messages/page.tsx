@@ -7,6 +7,7 @@ import { Layout } from "@/components/shared/layout"
 import FilterBar from "@/components/mot/FilterBar"
 import MessageTabs from "@/components/mot/MessageTabs"
 import SentMessagesTable from "@/components/mot/SentMessagesTable"
+import { usePagination, Pagination } from '@/components/mot/pagination'
 
 // Data directly in the page
 export interface BroadcastMessage {
@@ -110,8 +111,20 @@ export default function SentMessages() {
     })
   }, [broadcastMessages, searchTerm, groupFilter, statusFilter, dateFilter])
 
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedMessages,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredMessages, 10) // 10 items per page by default
+
   const handleView = (message: BroadcastMessage) => {
     console.log("Viewing message:", message.id)
+    router.push(`/mot/broadcast-message-view?id=${message.id}`)
   }
 
   const handleDelete = (message: BroadcastMessage) => {
@@ -172,16 +185,24 @@ export default function SentMessages() {
         <MessageTabs tabs={tabs} />
 
         <SentMessagesTable 
-          messages={filteredMessages}
+          messages={paginatedMessages}
           onView={handleView}
           onDelete={handleDelete}
         />
 
-        {/* Message count display */}
-        <div className="text-sm text-gray-600">
-          Showing {filteredMessages.length} sent messages
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
+
         </div>
-      </div>
+      
     </Layout>
   )
 }

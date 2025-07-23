@@ -7,6 +7,7 @@ import { Layout } from "@/components/shared/layout"
 import FilterBar from "@/components/mot/FilterBar"
 import MessageTabs from "@/components/mot/MessageTabs"
 import PendingMessagesTable from "@/components/mot/PendingMessagesTable"
+import { usePagination, Pagination } from '@/components/mot/pagination'
 
 // Data directly in the page
 export interface BroadcastMessage {
@@ -107,6 +108,17 @@ export default function PendingMessages() {
     })
   }, [broadcastMessages, searchTerm, groupFilter, statusFilter, dateFilter])
 
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedMessages,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredMessages, 10) // 10 items per page by default
+
   const handleEdit = (message: BroadcastMessage) => {
     console.log("Editing message:", message.id)
     router.push(`/mot/edit-messages?id=${message.id}`)
@@ -131,7 +143,7 @@ export default function PendingMessages() {
     {
       id: "pending",
       label: "Pending Messages",
-      count: filteredMessages.length,
+      count: filteredMessages.length, // Show filtered count in tab
       active: true,
       onClick: () => {}
     }
@@ -181,24 +193,30 @@ export default function PendingMessages() {
         <MessageTabs tabs={tabs} />
 
         <PendingMessagesTable 
-          messages={filteredMessages} 
+          messages={paginatedMessages} // Changed from filteredMessages to paginatedMessages
           onEdit={handleEdit}
           onView={handleView}
           onSend={handleSend}
           onDelete={handleDelete}
         />
 
-        {/* Enhanced Message count display with filter info */}
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>
-            Showing {filteredMessages.length} of {broadcastMessages.filter(m => m.status === "Pending").length} pending messages
-          </span>
-          {(searchTerm || groupFilter || statusFilter || dateFilter) && (
-            <span className="text-blue-600">
-              {filteredMessages.length === 0 ? "No matches found" : "Filtered results"}
-            </span>
-          )}
-        </div>
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
+
+        {/* Optional: Add filter status if needed (only when no results) */}
+        {(searchTerm || groupFilter || statusFilter || dateFilter) && totalItems === 0 && (
+          <div className="text-center text-sm text-gray-500 py-4">
+            <span className="text-blue-600">No pending messages match the selected filters</span>
+          </div>
+        )}
       </div>
     </Layout>
   )
