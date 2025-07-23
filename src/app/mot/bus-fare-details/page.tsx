@@ -90,6 +90,22 @@ export default function BusFareDetails() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showDeactivateModal, setShowDeactivateModal] = useState(false)
 
+  // Breadcrumb configuration
+  const getBreadcrumbs = () => {
+    return [
+      {
+        label: "Bus Fare Management",
+        href: "/mot/bus-fare",
+        current: false
+      },
+      {
+        label: fareData ? `${fareData.id} Details` : "Fare Details",
+        href: null,
+        current: true
+      }
+    ]
+  }
+
   useEffect(() => {
     if (fareId) {
       // Simulate API call
@@ -217,6 +233,8 @@ export default function BusFareDetails() {
     )
   }
 
+  const breadcrumbs = getBreadcrumbs()
+
   return (
     <Layout
       activeItem="bus-fare"
@@ -225,16 +243,39 @@ export default function BusFareDetails() {
       role="mot"
     >
       <div className="space-y-6">
-        {/* Back Navigation */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Fare Management</span>
-          </button>
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-1">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <li key={index} className="flex items-center">
+                  {index > 0 && (
+                    <span className="text-gray-400 mx-2">/</span>
+                  )}
+                  
+                  {breadcrumb.current ? (
+                    <span className="text-sm font-medium text-gray-900">
+                      {breadcrumb.label}
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => router.push(breadcrumb.href!)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      {breadcrumb.label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
 
+        {/* Status Indicator */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+          </div>
+          
           {/* Action Buttons */}
           <div className="flex items-center gap-3">
             <button
@@ -445,30 +486,10 @@ export default function BusFareDetails() {
                 )}
               </div>
             </div>
-
-            {/* Quick Calculator */}
-            <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">Quick Fare Calculator</h4>
-              <p className="text-xs text-blue-700 mb-3">
-                Calculate fare for different distances using current rates
-              </p>
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span>25 km:</span>
-                  <span className="font-medium">Rs. {calculateFare(25).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>50 km:</span>
-                  <span className="font-medium">Rs. {calculateFare(50).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>100 km:</span>
-                  <span className="font-medium">Rs. {calculateFare(100).toFixed(2)}</span>
-                </div>
-              </div>
+             
             </div>
           </div>
-        </div>
+     
 
         {/* Confirmation Modals */}
         <DeleteConfirmationModal
