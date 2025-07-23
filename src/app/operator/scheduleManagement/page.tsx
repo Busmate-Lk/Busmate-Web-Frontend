@@ -28,7 +28,7 @@ export default function ScheduleManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("")
- 
+
 
   const routesData: RouteData[] = [
     {
@@ -150,17 +150,12 @@ export default function ScheduleManagement() {
       {/* <Sidebar activeItem="schedule" /> */}
 
       <div className="flex-1">
-        <Header 
-          pageTitle="Schedule Management" 
+        <Header
+          pageTitle="Schedule Management"
           pageDescription="Plan and manage bus schedules, routes, and timetables"
         />
 
         <div className="p-6">
-          <PageHeader
-            title="Route & Schedule Management"
-            subtitle="Manage your fleet routes and schedules efficiently"
-          />
-
           <SearchFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}

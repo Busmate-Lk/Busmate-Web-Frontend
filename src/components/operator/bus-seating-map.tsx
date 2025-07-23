@@ -1,212 +1,117 @@
 "use client"
 
+import { User } from "lucide-react"
 import { useState } from "react"
-import { Grid3X3 } from "lucide-react"
 
-interface Seat {
-  number: number
-  status: "available" | "booked" | "notInUse"
-  position: { row: number; column: number }
+const seatLayout = [
+  ["A1", "A2", "A3", "A4", "A5"],
+  ["B1", "B2", "B3", "B4", "B5"],
+  ["C1", "C2", "C3", "C4", "C5"],
+  ["D1", "D2", "D3", "D4", "D5"],
+  ["E1", "E2", "E3", "E4", "E5"],
+  ["F1", "F2", "F3", "F4", "F5"],
+  ["G1", "G2", "G3", "G4", "G5"],
+  ["H1", "H2", "H3", "H4", "H5"],
+  ["I1", "I2", "I3", "I4", "I5"],
+  ["J1", "J2", "J3", "J4", "J5"],
+  ["K1", "K2", "K3", "K4", "K5"],
+]
+
+// Example seat status map
+const seatStatus: Record<string, "available" | "reserved" | "booked" | "notInUse"> = {
+  A1: "available", A2: "reserved", A4: "available", A5: "notInUse", A3: "available",
+  B1: "available", B2: "available", B3: "reserved", B4: "available", B5: "notInUse",
+  C1: "booked",    C2: "available", C3: "available", C4: "reserved", C5: "available",
+  D1: "available", D2: "notInUse", D3: "available", D4: "available", D5: "reserved",
+  E1: "reserved", E2: "available", E3: "available", E4: "notInUse", E5: "available",
+  F1: "available", F2: "available", F3: "reserved", F4: "available", F5: "available",
+  G1: "available", G2: "available", G3: "reserved", G4: "reserved", G5: "available",
+  H1: "available", H2: "available", H3: "available", H4: "available", H5: "available",
+  I1: "reserved", I2: "available", I3: "available", I4: "available",  I5: "available",
+  J1: "available", J2: "available", J3: "reserved", J4: "available", J5: "notInUse",
+  K1: "available", K2: "available", K3: "available", K4: "reserved", K5: "available",
 }
 
-interface BusSeatingMapProps {
-  showAllSeats: boolean
-  onToggleShowAll: (show: boolean) => void
+const seatColors: Record<string, string> = {
+  available: "bg-green-500 text-white",
+  reserved: "bg-yellow-400 text-white",
+  booked: "bg-red-500 text-white",
+  notInUse: "bg-gray-200 text-gray-400",
 }
 
-export function BusSeatingMap({ showAllSeats, onToggleShowAll }: BusSeatingMapProps) {
-  const [selectedSeat, setSelectedSeat] = useState<number | null>(null)
+export function BusSeatingMap() {
+  const [selected, setSelected] = useState<string | null>(null)
 
-  // Define seat layout (48 seats total)
-  const seats: Seat[] = [
-    // Front section (seats 1-20)
-    { number: 1, status: "available", position: { row: 1, column: 1 } },
-    { number: 2, status: "booked", position: { row: 1, column: 2 } },
-    { number: 3, status: "available", position: { row: 1, column: 4 } },
-    { number: 4, status: "available", position: { row: 1, column: 5 } },
-    { number: 5, status: "booked", position: { row: 2, column: 1 } },
-    { number: 6, status: "available", position: { row: 2, column: 2 } },
-    { number: 7, status: "available", position: { row: 2, column: 4 } },
-    { number: 8, status: "booked", position: { row: 2, column: 5 } },
-    { number: 9, status: "available", position: { row: 3, column: 1 } },
-    { number: 10, status: "available", position: { row: 3, column: 2 } },
-    { number: 11, status: "available", position: { row: 3, column: 4 } },
-    { number: 12, status: "available", position: { row: 3, column: 5 } },
-    { number: 13, status: "booked", position: { row: 4, column: 1 } },
-    { number: 14, status: "available", position: { row: 4, column: 2 } },
-    { number: 15, status: "available", position: { row: 4, column: 4 } },
-    { number: 16, status: "available", position: { row: 4, column: 5 } },
-    { number: 17, status: "available", position: { row: 5, column: 1 } },
-    { number: 18, status: "available", position: { row: 5, column: 2 } },
-    { number: 19, status: "available", position: { row: 5, column: 4 } },
-    { number: 20, status: "booked", position: { row: 5, column: 5 } },
-
-    { number: 7, status: "available", position: { row: 2, column: 4 } },
-    { number: 8, status: "booked", position: { row: 2, column: 5 } },
-    { number: 9, status: "available", position: { row: 3, column: 1 } },
-    { number: 10, status: "available", position: { row: 3, column: 2 } },
-    { number: 11, status: "available", position: { row: 3, column: 4 } },
-    { number: 12, status: "available", position: { row: 3, column: 5 } },
-    { number: 13, status: "booked", position: { row: 4, column: 1 } },
-    { number: 14, status: "available", position: { row: 4, column: 2 } },
-    { number: 15, status: "available", position: { row: 4, column: 4 } },
-    { number: 16, status: "available", position: { row: 4, column: 5 } },
-    { number: 17, status: "available", position: { row: 5, column: 1 } },
-    { number: 18, status: "available", position: { row: 5, column: 2 } },
-    { number: 19, status: "available", position: { row: 5, column: 4 } },
-    { number: 20, status: "booked", position: { row: 5, column: 5 } },
-    // Back section (seats 47-48)
-    { number: 47, status: "available", position: { row: 7, column: 1 } },
-    { number: 48, status: "available", position: { row: 7, column: 2 } },
-  ]
-
-  const getSeatColor = (status: string) => {
-    switch (status) {
-      case "available":
-        return "bg-green-500 hover:bg-green-600 text-white"
-      case "booked":
-        return "bg-red-500 text-white"
-      case "notInUse":
-        return "bg-gray-400 text-gray-600"
-      default:
-        return "bg-gray-200"
-    }
-  }
-
-  const seatCounts = {
-    available: seats.filter((seat) => seat.status === "available").length,
-    booked: seats.filter((seat) => seat.status === "booked").length,
-    notInUse: seats.filter((seat) => seat.status === "notInUse").length,
+  // Count for legend
+  const legendCount = {
+    available: Object.values(seatStatus).filter((s) => s === "available").length,
+    reserved: Object.values(seatStatus).filter((s) => s === "reserved").length,
+    booked: Object.values(seatStatus).filter((s) => s === "booked").length,
+    notInUse: Object.values(seatStatus).filter((s) => s === "notInUse").length,
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <Grid3X3 className="w-4 h-4 text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900">Bus Seating Arrangement</h2>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Show All Seats</span>
-            <button
-              onClick={() => onToggleShowAll(!showAllSeats)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                showAllSeats ? "bg-blue-600" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  showAllSeats ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
+    <div className="flex flex-col items-center py-8">
+      {/* Driver */}
+      <div className="flex justify-center mb-4">
+        <div className="flex flex-col items-center">
+          <div className="bg-gray-800 text-white rounded shadow px-3 py-2 flex flex-col items-center">
+            <User className="w-5 h-5 mb-1" />
+            <span className="text-xs font-semibold">Driver</span>
           </div>
         </div>
+      </div>
 
-        {/* Bus Layout */}
-        <div className="bg-gray-50 rounded-lg p-6">
-          <div className="text-center mb-4">
-            <span className="text-sm font-medium text-gray-600">Front of Bus</span>
-          </div>
+      {/* Seat Grid */}
+      <div className="grid grid-cols-6 gap-3 mb-8">
+        {seatLayout.map((row, rowIdx) =>
+          row.flatMap((seat, colIdx) => {
+            const elements = [];
+            // After 2nd column, insert a spacer
+            if (colIdx === 2) {
+              elements.push(
+                <div key={`spacer-${rowIdx}`} className="w-6 h-12" />
+              );
+            }
+            if (seat) {
+              elements.push(
+                <button
+                  key={seat}
+                  className={`w-12 h-12 rounded-md font-bold text-sm flex items-center justify-center shadow transition-all border-2 border-white focus:outline-none ${seatColors[seatStatus[seat]]} ${selected === seat ? "ring-2 ring-blue-500" : ""}`}
+                  onClick={() => setSelected(seat)}
+                  disabled={seatStatus[seat] === "notInUse"}
+                  title={seat}
+                >
+                  {seat}
+                </button>
+              );
+            } else {
+              elements.push(
+                <div key={`empty-${rowIdx}-${colIdx}`} className="w-12 h-12" />
+              );
+            }
+            return elements;
+          })
+        )}
+      </div>
 
-          {/* Driver Area */}
-          <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Seat Grid */}
-          <div className="space-y-4">
-            {/* Main seating area */}
-            <div className="grid grid-cols-5 gap-2 max-w-md mx-auto">
-              {[1, 2, 3, 4, 5].map((row) => (
-                <div key={row} className="contents">
-                  {[1, 2, 3, 4, 5].map((col) => {
-                    if (col === 3) {
-                      return (
-                        <div key={`${row}-${col}`} className="flex items-center justify-center">
-                          {row === 3 && <span className="text-xs text-gray-500 font-medium">AISLE</span>}
-                        </div>
-                      )
-                    }
-
-                    const seatNumber =
-                      row === 1 ? col : row === 2 ? col + 4 : row === 3 ? col + 6 : row === 4 ? col + 10 : col + 14
-                    const adjustedSeatNumber = col > 3 ? seatNumber - 1 : seatNumber
-                    const seat = seats.find((s) => s.number === adjustedSeatNumber)
-
-                    if (!seat) return <div key={`${row}-${col}`} className="w-10 h-10"></div>
-
-                    return (
-                      <button
-                        key={`${row}-${col}`}
-                        onClick={() => setSelectedSeat(seat.number)}
-                        className={`w-10 h-10 rounded-lg text-xs font-bold transition-colors ${getSeatColor(seat.status)} ${
-                          selectedSeat === seat.number ? "ring-2 ring-blue-500" : ""
-                        }`}
-                        disabled={seat.status === "booked" || seat.status === "notInUse"}
-                      >
-                        {seat.number}
-                      </button>
-                    )
-                  })}
-                </div>
-              ))}
-            </div>
-
-            {/* Additional seats indicator */}
-            <div className="text-center py-2">
-              <span className="text-xs text-gray-400">... Additional 28 seats ...</span>
-            </div>
-
-            {/* Back seats */}
-            <div className="flex justify-center gap-2">
-              <button
-                className={`w-10 h-10 rounded-lg text-xs font-bold transition-colors ${getSeatColor("available")}`}
-                onClick={() => setSelectedSeat(47)}
-              >
-                47
-              </button>
-              <button
-                className={`w-10 h-10 rounded-lg text-xs font-bold transition-colors ${getSeatColor("available")}`}
-                onClick={() => setSelectedSeat(48)}
-              >
-                48
-              </button>
-              <div className="w-10 h-10 bg-gray-300 rounded-lg"></div>
-              <div className="w-10 h-10 bg-gray-300 rounded-lg"></div>
-            </div>
-          </div>
-
-          <div className="text-center mt-6">
-            <span className="text-sm font-medium text-gray-600">Back of Bus</span>
-          </div>
+      {/* Legend */}
+      <div className="flex gap-6 mt-4 flex-wrap justify-center">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded bg-green-500" />
+          <span className="text-sm">Available ({legendCount.available})</span>
         </div>
-
-        {/* Seat Status Legend */}
-        <div className="mt-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">Seat Status Legend</h3>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span className="text-sm text-gray-700">Available ({seatCounts.available + 26})</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span className="text-sm text-gray-700">Booked ({seatCounts.booked + 10})</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-400 rounded"></div>
-              <span className="text-sm text-gray-700">Not in Use ({seatCounts.notInUse})</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded bg-yellow-400" />
+          <span className="text-sm">Reserved ({legendCount.reserved})</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded bg-red-500" />
+          <span className="text-sm">Booked ({legendCount.booked})</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded bg-gray-200 border border-gray-300" />
+          <span className="text-sm text-gray-500">Not in Use ({legendCount.notInUse})</span>
         </div>
       </div>
     </div>
