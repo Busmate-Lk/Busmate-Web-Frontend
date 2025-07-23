@@ -1,6 +1,6 @@
 import { Eye, Edit, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { BusStop } from "@/app/mot/(authenticated)/bus-stops/page"
+import { BusStopResponse } from "@/types/responsedto/bus-stop"
 
 function getStatusBadge(status: string) {
   switch (status) {
@@ -25,7 +25,7 @@ function getStatusBadge(status: string) {
   }
 }
 
-export default function BusStopTable({ busStops }: { busStops: BusStop[] }) {
+export default function BusStopTable({ busStops }: { busStops: BusStopResponse[] }) {
   const router = useRouter()
   return (
     <div className="bg-white rounded-lg shadow">
@@ -50,10 +50,10 @@ export default function BusStopTable({ busStops }: { busStops: BusStop[] }) {
                 <td className="px-6 py-4 font-medium text-gray-900">{stop.id}</td>
                 <td className="px-6 py-4 font-medium text-gray-900">{stop.name}</td>
                 <td className="px-6 py-4 text-gray-600 font-mono text-sm">
-                  {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)}
+                  {/* {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)} */}
                 </td>
-                <td className="px-6 py-4 font-medium text-gray-900">{stop.city} / {stop.province}</td>
-                <td className="px-6 py-4">{getStatusBadge(stop.status)}</td>
+                {/* <td className="px-6 py-4 font-medium text-gray-900">{stop.city} / {stop.province}</td> */}
+                {/* <td className="px-6 py-4">{getStatusBadge(stop.status)}</td> */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <button

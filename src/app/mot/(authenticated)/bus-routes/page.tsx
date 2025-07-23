@@ -13,6 +13,7 @@ import { RouteDetailsModal } from '@/components/mot/route-details-modal';
 import { RouteDeleteModal } from '@/components/mot/route-delete-modal';
 import { usePagination } from '@/components/mot/pagination';
 import { Edit, Trash2, Plus } from 'lucide-react';
+import { defaultRouteCategories, routes } from './data';
 
 export interface RouteCategory {
   id: string;
@@ -27,125 +28,13 @@ export default function BusRoutesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [routeCategory, setRouteGroups] = useState<RouteCategory[]>(defaultRouteCategories);
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     routeId: '',
     routeName: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  const routes: BusRoute[] = [
-    {
-      id: '1',
-      routeName: 'Colombo - Galle Express',
-      routeNumber: '001A',
-      category: 'Express Routes',
-      stopsCount: 6,
-      status: 'Active',
-      distance: '119 km',
-      estimatedTime: '2h 30m',
-      scheduleCount: 8,
-      lastUpdated: '2024-01-15',
-      stops: [
-        'Colombo Fort',
-        'Mount Lavinia',
-        'Kalutara',
-        'Bentota',
-        'Hikkaduwa',
-        'Galle',
-      ],
-    },
-    {
-      id: '2',
-      routeName: 'Colombo - Kandy',
-      routeNumber: '003',
-      category: 'Long Distance Highway',
-      stopsCount: 5,
-      status: 'Active',
-      distance: '115 km',
-      estimatedTime: '3h 15m',
-      scheduleCount: 12,
-      lastUpdated: '2024-01-14',
-      stops: [
-        'Colombo Fort',
-        'Kadawatha',
-        'Ambepussa',
-        'Peradeniya',
-        'Kandy Central Bus Stand',
-      ],
-    },
-    {
-      id: '3',
-      routeName: 'Kandy - Nuwara Eliya',
-      routeNumber: '015B',
-      category: 'Long Distance Highway',
-      stopsCount: 6,
-      status: 'Active',
-      distance: '76 km',
-      estimatedTime: '2h 45m',
-      scheduleCount: 6,
-      lastUpdated: '2024-01-13',
-      stops: [
-        'Kandy',
-        'Gampola',
-        'Nawalapitiya',
-        'Pussellawa',
-        'Ramboda',
-        'Nuwara Eliya',
-      ],
-    },
-    {
-      id: '4',
-      routeName: 'Galle - Matara',
-      routeNumber: '101C',
-      category: 'Long Distance Highway',
-      stopsCount: 7,
-      status: 'Active',
-      distance: '45 km',
-      estimatedTime: '1h 20m',
-      scheduleCount: 10,
-      lastUpdated: '2024-01-10',
-      stops: [
-        'Galle',
-        'Unawatuna',
-        'Ahangama',
-        'Weligama',
-        'Mirissa',
-        'Kamburugamuwa',
-        'Matara',
-      ],
-    },
-    {
-      id: '5',
-      routeName: 'Colombo - Kurunegala',
-      routeNumber: '066X',
-      category: 'Long Distance Highway',
-      stopsCount: 5,
-      status: 'Active',
-      distance: '94 km',
-      estimatedTime: '2h 00m',
-      scheduleCount: 9,
-      lastUpdated: '2024-01-11',
-      stops: ['Colombo Fort', 'Ja-Ela', 'Negombo', 'Alawwa', 'Kurunegala'],
-    },
-  ];
-
-  const [routeCategory, setRouteGroups] = useState<RouteCategory[]>([
-    {
-      id: '1',
-      name: 'Express Routes',
-      description: 'Long distance express services',
-      routeCount: 5,
-      color: '#3B82F6',
-    },
-    {
-      id: '2',
-      name: 'Long DIstance Highway',
-      description: 'Urban and suburban routes',
-      routeCount: 12,
-      color: '#10B981',
-    },
-  ]);
 
   // Modal states
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);

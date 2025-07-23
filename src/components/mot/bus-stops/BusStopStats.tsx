@@ -1,7 +1,7 @@
 import { Bus, CheckCircle, AlertTriangle, MapPin } from "lucide-react"
-import { BusStop } from "@/app/mot/(authenticated)/bus-stops/page"
+import { BusStopResponse } from "@/types/responsedto/bus-stop"
 
-export default function BusStopStats({ busStops }: { busStops: BusStop[] }) {
+export default function BusStopStats({ busStops }: { busStops: BusStopResponse[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
       <div className="border-l-4 border-blue-500 bg-white rounded-lg shadow">
@@ -21,7 +21,7 @@ export default function BusStopStats({ busStops }: { busStops: BusStop[] }) {
           <div>
             <p className="text-sm font-medium text-gray-600">Active Stops</p>
             <p className="text-3xl font-bold text-gray-900">
-              {busStops.filter(b => b.status === "Active").length}
+              {/* {busStops.filter(b => b.status === "Active").length} */}
             </p>
             <p className="text-sm text-green-600 mt-1">+5% from last month</p>
           </div>
@@ -35,7 +35,7 @@ export default function BusStopStats({ busStops }: { busStops: BusStop[] }) {
           <div>
             <p className="text-sm font-medium text-gray-600">Under Maintenance</p>
             <p className="text-3xl font-bold text-gray-900">
-              {busStops.filter(b => b.status === "Maintenance").length}
+              {/* {busStops.filter(b => b.status === "Maintenance").length} */}
             </p>
             <p className="text-sm text-yellow-600 mt-1">-2% from last month</p>
           </div>
@@ -49,7 +49,7 @@ export default function BusStopStats({ busStops }: { busStops: BusStop[] }) {
           <div>
             <p className="text-sm font-medium text-gray-600">Provinces Covered</p>
             <p className="text-3xl font-bold text-gray-900">
-              {Array.from(new Set(busStops.map(b => b.province))).length}
+              {/* {Array.from(new Set(busStops.map(b => b.province))).length} */}
             </p>
             <p className="text-sm text-purple-600 mt-1">All provinces</p>
           </div>

@@ -10,156 +10,19 @@ import { RoutePathVisualization } from "@/components/mot/route-path-visualizatio
 import { RouteStopsTable } from "@/components/mot/route-stops-table";
 import { RoutePerformanceDisplay } from "@/components/mot/route-performance-display";
 import { RouteSchedulesDisplay } from "@/components/mot/route-schedules-display";
+import { routes } from './data';
 
-interface IntermediateStop {
-  id: number;
-  name: string;
-  latitude: string;
-  longitude: string;
-  travelTimeFromPrevious: string; // Time taken to travel from previous stop (in minutes)
-  sequence: number;
-}
-
-interface Schedule {
-  id: string;
-  departureTime: string;
-  arrivalTime: string;
-  busType: string;
-  frequency: string;
-  operatingDays: string[];
-  busNumber?: string;
-  driverName?: string;
-  status?: 'Active' | 'Delayed' | 'Cancelled';
-}
-
-interface Route {
-  id: string;
-  // Basic Information
-  routeName: string;
-  routeNumber: string;
-  routeGroup: string;
-  startingPoint: string;
-  endPoint: string;
-  startLat: string;
-  startLng: string;
-  endLat: string;
-  endLng: string;
-  status: 'Active' | 'Inactive' | 'Maintenance';
-  // Performance Metrics
-  totalDistance: string;
-  estimatedTravelTime: string;
-  averageSpeed: string;
-  fuelConsumption: string;
-  // Additional fields
-  operator: string;
-  scheduleCount: number;
-  lastUpdated: string;
-  // Intermediate stops
-  intermediateStops: IntermediateStop[];
-  // Schedules
-  schedules: Schedule[];
-}
+// Import types from data file
+type DetailedBusRoute = typeof routes[0];
 
 export default function RouteDetailsPage() {
   const [activeTab, setActiveTab] = useState<'details' | 'stops' | 'schedules' | 'performance'>('details');
-  const [route, setRoute] = useState<Route | null>(null);
+  const [route, setRoute] = useState<DetailedBusRoute | null>(null);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
   
   const routeId = searchParams?.get('id');
-
-  // Static route data (copied from bus-routes/page.tsx)
-  const routes: Route[] = [
-    {
-      id: '1',
-      routeName: 'Colombo - Galle Express',
-      routeNumber: '001A',
-      routeGroup: 'Express Routes',
-      startingPoint: 'Colombo Fort',
-      endPoint: 'Galle',
-      startLat: '6.9271',
-      startLng: '79.8612',
-      endLat: '7.2906',
-      endLng: '80.6337',
-      status: 'Active',
-      totalDistance: '119',
-      estimatedTravelTime: '2h 30m',
-      averageSpeed: '33.0',
-      fuelConsumption: '8.5',
-      operator: 'Lanka Bus Services',
-      scheduleCount: 8,
-      lastUpdated: '2024-01-15',
-      intermediateStops: [
-        { id: 1, name: 'Mount Lavinia', latitude: '', longitude: '', travelTimeFromPrevious: '20', sequence: 1 },
-        { id: 2, name: 'Kalutara', latitude: '', longitude: '', travelTimeFromPrevious: '25', sequence: 2 },
-        { id: 3, name: 'Bentota', latitude: '', longitude: '', travelTimeFromPrevious: '20', sequence: 3 },
-        { id: 4, name: 'Hikkaduwa', latitude: '', longitude: '', travelTimeFromPrevious: '15', sequence: 4 },
-      ],
-      schedules: [
-        {
-          id: '1',
-          departureTime: '06:00',
-          arrivalTime: '09:30',
-          busType: 'luxury',
-          frequency: 'hourly',
-          operatingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-          busNumber: 'BUS-001',
-          driverName: 'John Silva',
-          status: 'Active',
-        },
-        {
-          id: '2',
-          departureTime: '14:00',
-          arrivalTime: '17:30',
-          busType: 'semi-luxury',
-          frequency: '30min',
-          operatingDays: ['saturday', 'sunday'],
-          busNumber: 'BUS-002',
-          driverName: 'Mary Fernando',
-          status: 'Active',
-        },
-        {
-          id: '3',
-          departureTime: '10:00',
-          arrivalTime: '13:30',
-          busType: 'standard',
-          frequency: 'hourly',
-          operatingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-          busNumber: 'BUS-003',
-          driverName: 'David Perera',
-          status: 'Delayed',
-        },
-      ],
-    },
-    {
-      id: '2',
-      routeName: 'Colombo - Kandy',
-      routeNumber: '003',
-      routeGroup: 'Long Distance Highway',
-      startingPoint: 'Colombo Fort',
-      endPoint: 'Kandy Central Bus Stand',
-      startLat: '',
-      startLng: '',
-      endLat: '',
-      endLng: '',
-      status: 'Active',
-      totalDistance: '115',
-      estimatedTravelTime: '3h 15m',
-      averageSpeed: '',
-      fuelConsumption: '',
-      operator: '',
-      scheduleCount: 12,
-      lastUpdated: '2024-01-14',
-      intermediateStops: [
-        { id: 1, name: 'Kadawatha', latitude: '', longitude: '', travelTimeFromPrevious: '30', sequence: 1 },
-        { id: 2, name: 'Ambepussa', latitude: '', longitude: '', travelTimeFromPrevious: '40', sequence: 2 },
-        { id: 3, name: 'Peradeniya', latitude: '', longitude: '', travelTimeFromPrevious: '25', sequence: 3 },
-      ],
-      schedules: [],
-    },
-    // ...add other routes as needed...
-  ];
 
   useEffect(() => {
     setLoading(true);
@@ -200,7 +63,7 @@ export default function RouteDetailsPage() {
 
   const calculateTotalTravelTime = () => {
     if (!route) return 0;
-    return route.intermediateStops.reduce((total, stop) => 
+    return route.intermediateStops.reduce((total: number, stop) => 
       total + (parseFloat(stop.travelTimeFromPrevious) || 0), 0
     );
   };
@@ -285,7 +148,7 @@ export default function RouteDetailsPage() {
         <RouteDetailsHeader
           routeName={route.routeName}
           routeNumber={route.routeNumber}
-          routeGroup={route.routeGroup}
+          routeGroup={route.routeCategory}
           onBack={handleBack}
           onEdit={handleEditRoute}
         />
@@ -302,7 +165,7 @@ export default function RouteDetailsPage() {
         <div className="space-y-6">
           {activeTab === 'details' && (
             <div className="space-y-6">
-              <RouteBasicInfo route={route} />
+              <RouteBasicInfo route={{...route, routeGroup: route.routeCategory}} />
               <RoutePathVisualization
                 startingPoint={route.startingPoint}
                 endPoint={route.endPoint}

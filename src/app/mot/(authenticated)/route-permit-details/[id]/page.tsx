@@ -12,53 +12,15 @@ import { RoutePermitActions } from "@/components/mot/route-permit-actions";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
 import { Layout } from "@/components/shared/layout";
+import { documents, initialNotes, permitInfo, timelineSteps } from "./data";
 
 export default function RoutePermitDetails() {
   const router = useRouter();
   const params = useParams();
   const permitId = params?.id || "138";
+  const [notes, setNotes] = useState(initialNotes);
 
-  const permitInfo = {
-    busRouteNo: "138",
-    routeName: "Colombo - Kandy",
-    operator: "CTB",
-    status: "Active",
-    permitId: "PRM-2024-001",
-    issueDate: "Jan 15, 2024",
-    expiryDate: "Jan 15, 2025",
-    authorizedBuses: "12",
-    permitType: "Regular Service",
-    region: "Western Province",
-    depot: "Colombo Central Depot",
-  };
-
-  const timelineSteps = [
-    { status: "Requested", date: "Jan 10, 2024", completed: true },
-    { status: "Under Review", date: "Jan 12, 2024", completed: true },
-    { status: "Approved", date: "Jan 15, 2024", completed: true },
-  ];
-
-  const documents = [
-    { name: "Route Plan.pdf", type: "pdf" },
-    { name: "Vehicle Registration.jpg", type: "image" },
-    { name: "Insurance Certificate.pdf", type: "pdf" },
-    { name: "Driver License.jpg", type: "image" },
-  ];
-
-  const [notes, setNotes] = useState([
-    {
-      author: "Transport Officer - John Silva",
-      date: "Jan 19, 2024",
-      content:
-        "Route inspection completed. All requirements met. Approved for operation.",
-    },
-    {
-      author: "Safety Inspector - Maria Fernando",
-      date: "Jan 16, 2024",
-      content:
-        "Safety compliance verified. All vehicles meet the required standards.",
-    },
-  ]);
+  
 
   const handleAddNote = (noteContent: string) => {
     const currentDate = new Date().toLocaleDateString("en-US", {
