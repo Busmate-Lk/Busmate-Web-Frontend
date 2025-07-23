@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
 import FilterBar from "@/components/mot/FilterBar"
 import MessageTabs from "@/components/mot/MessageTabs"
@@ -68,6 +70,7 @@ const broadcastMessages: BroadcastMessage[] = [
 ]
 
 export default function PendingMessages() {
+  const router = useRouter()
   const [groupFilter, setGroupFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [dateFilter, setDateFilter] = useState("")
@@ -117,6 +120,17 @@ export default function PendingMessages() {
       role="mot"
     >
       <div className="space-y-6">
+        {/* Back Link */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/mot/broadcast-messages')}
+            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Broadcast Messages
+          </button>
+        </div>
+
         <FilterBar
           groupFilter={groupFilter}
           setGroupFilter={setGroupFilter}

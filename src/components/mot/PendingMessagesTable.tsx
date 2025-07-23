@@ -4,6 +4,7 @@ import { getTargetGroupBadge, getPriorityBadge, getCategoryBadge } from "@/compo
 import TablePagination from "@/components/mot/TablePagination"
 import {
   DeleteConfirmationModal,
+  SendConfirmationModal,
 } from '@/components/mot/confirmation-modals'
 
 // Import the interface from the parent page
@@ -30,6 +31,11 @@ export default function PendingMessagesTable({
   const [messageToDelete, setMessageToDelete] = useState<BroadcastMessage | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // State for send modal
+  const [showSendModal, setShowSendModal] = useState(false)
+  const [messageToSend, setMessageToSend] = useState<BroadcastMessage | null>(null)
+  const [isSending, setIsSending] = useState(false)
+
   // Update the PendingMessagesTable to navigate properly:
   const handleEdit = (message: BroadcastMessage) => {
     if (onEdit) {
@@ -41,6 +47,12 @@ export default function PendingMessagesTable({
   const handleDeleteClick = (message: BroadcastMessage) => {
     setMessageToDelete(message)
     setShowDeleteModal(true)
+  }
+
+  // Handle send button click
+  const handleSendClick = (message: BroadcastMessage) => {
+    setMessageToSend(message)
+    setShowSendModal(true)
   }
 
   // Confirm delete function
@@ -80,6 +92,43 @@ export default function PendingMessagesTable({
     }
   }
 
+  // Confirm send function
+  const handleConfirmSend = async () => {
+    if (!messageToSend) return
+
+    setIsSending(true)
+    
+    try {
+      // Simulate API call
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // Simulate 5% chance of failure for testing
+          if (Math.random() < 0.05) {
+            reject(new Error("Network error"))
+          } else {
+            resolve(true)
+          }
+        }, 2000)
+      })
+      
+      // Call the parent's onSend function
+      onSend(messageToSend)
+      
+      // Close modal and reset state
+      setShowSendModal(false)
+      setMessageToSend(null)
+      
+      console.log("Message sent successfully:", messageToSend.id)
+      
+    } catch (error) {
+      console.error("Error sending message:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      alert(`Failed to send message: ${errorMessage}. Please try again.`)
+    } finally {
+      setIsSending(false)
+    }
+  }
+
   // Cancel delete function
   const handleCancelDelete = () => {
     if (isDeleting) {
@@ -88,6 +137,16 @@ export default function PendingMessagesTable({
     
     setShowDeleteModal(false)
     setMessageToDelete(null)
+  }
+
+  // Cancel send function
+  const handleCancelSend = () => {
+    if (isSending) {
+      return // Prevent closing while sending is in progress
+    }
+    
+    setShowSendModal(false)
+    setMessageToSend(null)
   }
 
   return (
@@ -170,7 +229,7 @@ export default function PendingMessagesTable({
                             <Edit className="w-4 h-4" />
                           </button>
                           <button 
-                            onClick={() => onSend(message)}
+                            onClick={() => handleSendClick(message)}
                             className="p-1 text-green-600 hover:text-green-700 hover:bg-green-50 rounded transition-colors"
                             title="Send message now"
                           >
@@ -211,6 +270,20 @@ export default function PendingMessagesTable({
         itemName={
           messageToDelete 
             ? `"${messageToDelete.title}"` 
+            : "this message"
+        }
+      />
+
+      {/* Send Confirmation Modal */}
+      <SendConfirmationModal
+        isOpen={showSendModal}
+        onClose={handleCancelSend}
+        onConfirm={handleConfirmSend}
+        isLoading={isSending}
+        title="Send Message Now"
+        itemName={
+          messageToSend 
+            ? `"${messageToSend.title}"` 
             : "this message"
         }
       />
