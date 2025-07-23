@@ -198,10 +198,6 @@ export default function FleetManagement() {
         />
 
         <div className="p-6">
-          <PageHeader
-            title="Fleet Management"
-           
-          />
 
           <Tabs tabs={tabs} defaultValue="all" onValueChange={setActiveTab} />
         </div>
