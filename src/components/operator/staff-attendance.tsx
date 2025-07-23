@@ -1,35 +1,60 @@
 "use client"
 
 import { useState } from "react"
-import { Download } from "lucide-react"
+import { Download, User } from "lucide-react"
 
 interface AttendanceRecord {
   id: string
   name: string
+  role: "Driver" | "Conductor"
   status: "Present" | "Absent"
   avatar: string
 }
 
 export function StaffAttendance() {
-  const [selectedDate, setSelectedDate] = useState("2024-01-15")
+  const [selectedDate, setSelectedDate] = useState("2025-07-22")
 
   const attendanceData: AttendanceRecord[] = [
     {
       id: "1",
-      name: "John Smith",
+      name: "Kasun Perera",
+      role: "Driver",
       status: "Present",
       avatar: "/placeholder.svg?height=32&width=32",
     },
     {
       id: "2",
-      name: "Sarah Johnson",
+      name: "Nuwan Silva",
+      role: "Conductor",
       status: "Present",
       avatar: "/placeholder.svg?height=32&width=32",
     },
     {
       id: "3",
-      name: "Mike Davis",
+      name: "Chaminda Fernando",
+      role: "Driver",
+      status: "Present",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    {
+      id: "4",
+      name: "Roshan Jayawardena",
+      role: "Conductor",
       status: "Absent",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    {
+      id: "5",
+      name: "Pradeep Kumara",
+      role: "Driver",
+      status: "Present",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    {
+      id: "6",
+      name: "Mahinda Rathnayake",
+      role: "Conductor",
+      status: "Present",
       avatar: "/placeholder.svg?height=32&width=32",
     },
   ]
@@ -67,12 +92,10 @@ export function StaffAttendance() {
           {attendanceData.map((record) => (
             <div key={record.id} className="flex items-center justify-between py-2">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <img
-                    src={record.avatar || "/placeholder.svg"}
-                    alt={record.name}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  record.role === "Driver" ? "bg-green-100" : "bg-purple-100"
+                }`}>
+                  <User className={`w-4 h-4 ${record.role === "Driver" ? "text-green-600" : "text-purple-600"}`} />
                 </div>
                 <span className="font-medium text-gray-900">{record.name}</span>
               </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, ChevronDown } from "lucide-react"
+import { Search, ChevronDown, X } from "lucide-react"
 import { useState } from "react"
 
 interface SearchFiltersProps {
@@ -8,8 +8,8 @@ interface SearchFiltersProps {
   onSearchChange: (query: string) => void
   statusFilter: string
   onStatusChange: (status: string) => void
-  timeFilter: string
-  onTimeChange: (time: string) => void
+  dateFilter: string
+  onDateChange: (date: string) => void
   searchPlaceholder?: string
 }
 
@@ -18,24 +18,16 @@ export function SearchFilters({
   onSearchChange,
   statusFilter,
   onStatusChange,
-  timeFilter,
-  onTimeChange,
+  dateFilter,
+  onDateChange,
   searchPlaceholder = "Search...",
 }: SearchFiltersProps) {
   const [statusOpen, setStatusOpen] = useState(false)
-  const [timeOpen, setTimeOpen] = useState(false)
 
   const statusOptions = [
     { value: "all", label: "All Status" },
     { value: "active", label: "Active" },
     { value: "inactive", label: "Inactive" },
-  ]
-
-  const timeOptions = [
-    { value: "all", label: "All Times" },
-    { value: "morning", label: "Morning" },
-    { value: "afternoon", label: "Afternoon" },
-    { value: "evening", label: "Evening" },
   ]
 
   return (
@@ -78,30 +70,27 @@ export function SearchFilters({
         )}
       </div>
 
-      {/* Time Filter */}
+      {/* Date Filter */}
       <div className="relative">
-        <button
-          onClick={() => setTimeOpen(!timeOpen)}
-          className="flex h-10 w-32 text-gray-400 items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <span>{timeOptions.find((opt) => opt.value === timeFilter)?.label}</span>
-          <ChevronDown className="h-4 w-4 opacity-50" />
-        </button>
-        {timeOpen && (
-          <div className="absolute top-full mt-1 w-32 rounded-md border border-gray-200 bg-white shadow-lg z-50">
-            {timeOptions.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => {
-                  onTimeChange(option.value)
-                  setTimeOpen(false)
-                }}
-                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
-              >
-                {option.label}
-              </button>
-            ))}
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => onDateChange(e.target.value)}
+          className="flex h-10 w-40 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8 appearance-none placeholder-transparent"
+          placeholder="Select date"
+        />
+        {!dateFilter && (
+          <div className="absolute inset-0 flex items-center px-3 pointer-events-none">
+            <span className="text-gray-400 text-sm"></span>
           </div>
+        )}
+        {dateFilter && (
+          <button
+            onClick={() => onDateChange("")}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-4 w-4" />
+          </button>
         )}
       </div>
     </div>
