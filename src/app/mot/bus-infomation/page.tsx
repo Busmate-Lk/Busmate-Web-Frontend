@@ -7,6 +7,7 @@ import { Layout } from "@/components/shared/layout"
 import BusStatsCards from "@/components/mot/BusStatsCards"
 import BusFilters from "@/components/mot/BusFilters"
 import BusTable from "@/components/mot/BusTable"
+import { usePagination, Pagination } from '@/components/mot/pagination'
 import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
@@ -173,6 +174,17 @@ export default function BusInfo() {
     })
   }, [buses, searchTerm, busTypeFilter, operatorTypeFilter, statusFilter])
 
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedBuses,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredBuses, 10) // 10 items per page by default
+
   const handleView = (bus: Bus) => {
     router.push(`/mot/bus-information-details?id=${bus.id}`)
   }
@@ -196,6 +208,11 @@ export default function BusInfo() {
       setBuses(buses.filter(bus => bus.id !== selectedBus.id))
       setShowDeleteModal(false)
       setSelectedBus(null)
+      
+      // Reset to first page if current page has no items after deletion
+      if (paginatedBuses.length === 1 && currentPage > 1) {
+        handlePageChange(1)
+      }
       
       console.log(`Bus ${selectedBus.busNumber} has been deleted successfully`)
     }
@@ -254,11 +271,22 @@ export default function BusInfo() {
         </div>
         
         <BusTable
-          buses={filteredBuses}
+          buses={paginatedBuses}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onDeactivate={handleDeactivate}
+        />
+
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[5, 10, 20, 50]}
         />
 
         {/* Delete Confirmation Modal */}

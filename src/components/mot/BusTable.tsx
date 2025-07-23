@@ -150,23 +150,7 @@ export default function BusTable({
         </div>
       )}
       
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-        <p className="text-sm text-gray-600">
-          Showing {buses.length} results
-        </p>
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">
-            Previous
-          </button>
-          <button className="px-3 py-1 border rounded bg-blue-600 text-white">1</button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">2</button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">3</button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100 transition-colors">
-            Next
-          </button>
         </div>
-      </div>
-    </div>
+     
   )
 }
