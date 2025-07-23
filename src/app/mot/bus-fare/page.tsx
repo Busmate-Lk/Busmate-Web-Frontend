@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
 import FareStatistics from "@/components/mot/FareStatistics"
@@ -86,8 +86,8 @@ const fareStructures: FareStructure[] = [
 export default function Fare() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
-  const [busTypeFilter, setBusTypeFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [busTypeFilter, setBusTypeFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState("")
   
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -95,16 +95,26 @@ export default function Fare() {
   const [selectedFare, setSelectedFare] = useState<FareStructure | null>(null)
   const [fares, setFares] = useState<FareStructure[]>(fareStructures)
 
-  const filteredFares = fares.filter((fare) => {
-    const matchesSearch =
-      fare.route?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fare.operator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fare.id.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesBusType = busTypeFilter === "all" || fare.busType.toLowerCase() === busTypeFilter.toLowerCase()
-    const matchesStatus = statusFilter === "all" || fare.status.toLowerCase() === statusFilter.toLowerCase()
+  // Fixed filtering logic using useMemo for better performance
+  const filteredFares = useMemo(() => {
+    return fares.filter((fare) => {
+      // Search filter - only apply if searchTerm has content
+      const matchesSearch = !searchTerm || searchTerm.trim() === '' ||
+        fare.route?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fare.operator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fare.id.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesSearch && matchesBusType && matchesStatus
-  })
+      // Bus type filter - only apply if busTypeFilter is not empty
+      const matchesBusType = !busTypeFilter || busTypeFilter === '' || 
+        fare.busType === busTypeFilter
+
+      // Status filter - only apply if statusFilter is not empty  
+      const matchesStatus = !statusFilter || statusFilter === '' || 
+        fare.status === statusFilter
+
+      return matchesSearch && matchesBusType && matchesStatus
+    })
+  }, [fares, searchTerm, busTypeFilter, statusFilter])
 
   const handleAddFare = () => {
     router.push("/mot/bus-fare-form")
@@ -152,11 +162,6 @@ export default function Fare() {
     setSelectedFare(null)
   }
 
-  const handleCalculator = () => {
-    console.log("Open fare calculator")
-    // Add calculator logic here
-  }
-
   const handleApplyFilters = () => {
     console.log("Apply filters")
   }
@@ -173,29 +178,19 @@ export default function Fare() {
           fareStructures={fares}
         />
 
-        {/* Filters and Action Buttons in the same line */}
+        {/* Filters and Action Buttons */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div className="flex-1">
             <FareFilters
               searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
               busTypeFilter={busTypeFilter}
+              setBusTypeFilter={setBusTypeFilter}
               statusFilter={statusFilter}
-              onSearchChange={setSearchTerm}
-              onBusTypeChange={setBusTypeFilter}
-              onStatusChange={setStatusFilter}
-              onApplyFilters={handleApplyFilters}
+              setStatusFilter={setStatusFilter}
+              onAddNewFare={handleAddFare}
+              
             />
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={handleAddFare}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-2 transition-colors duration-200"
-            >
-              <Plus className="w-4 h-4" />
-              Add New Fare
-            </button>
           </div>
         </div>
 
