@@ -1,11 +1,11 @@
 import { FileText } from 'lucide-react';
-import { BusStopFormData } from '@/types/models/BusStop';
+import { BusStopRequest } from '@/types/requestdto/bus-stop';
 
 export default function AddBusStopBasicInfo({
   formData,
   handleInputChange,
 }: {
-  formData: BusStopFormData;
+  formData: BusStopRequest;
   handleInputChange: (field: string, value: string | number | boolean) => void;
 }) {
   return (

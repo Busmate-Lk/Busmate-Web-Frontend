@@ -1,4 +1,10 @@
-import { addStop, deleteStop, getStopById, getStops, updateStop } from '@/lib/api/route-management/stops';
+import {
+  addStop,
+  deleteStop,
+  getStopById,
+  getStops,
+  updateStop,
+} from '@/lib/api/route-management/stops';
 import { BusStopRequest } from '@/types/requestdto/bus-stop';
 import { BusStopResponse } from '@/types/responsedto/bus-stop';
 import { useEffect, useState } from 'react';
@@ -19,14 +25,14 @@ const useBusStops = () => {
     }
   };
 
-  const loadBusStopById = async (id:String) =>{
+  const loadBusStopById = async (id: String) => {
     try {
       const response = await getStopById(id);
-      return response
+      return response;
     } catch (error: any) {
       console.log('error loading', error);
     }
-  }
+  };
 
   useEffect(() => {
     loadBusStops();
@@ -43,27 +49,27 @@ const useBusStops = () => {
     }
   };
 
-  const updateBusStop =async(data:BusStopRequest,id:String)=>{
+  const updateBusStop = async (data: BusStopRequest, id: String) => {
     try {
-      const response = await updateStop(data,id);
+      const response = await updateStop(data, id);
       console.log(response);
     } catch (error) {
-      console.error('Failed to update');    
-    }finally{
-      loadBusStops()
-    }
-  }
-
-  const deleteBusStop= async(id:String)=>{
-    try {
-      const response =await deleteStop(id);
-      console.log(response);      
-    } catch (error) {
-      console.error('Failed to delete')
-    }finally{
+      console.error('Failed to update');
+    } finally {
       loadBusStops();
     }
-  }
+  };
+
+  const deleteBusStop = async (id: String) => {
+    try {
+      const response = await deleteStop(id);
+      console.log(response);
+    } catch (error) {
+      console.error('Failed to delete');
+    } finally {
+      loadBusStops();
+    }
+  };
 
   return {
     busStops,
