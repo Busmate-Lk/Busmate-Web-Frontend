@@ -84,7 +84,7 @@ export function Sidebar({
     {
       icon: MapPin,
       label: 'Bus Stops',
-      active: activeItem === 'stops',
+      active: activeItem === 'bus-stops',
       href: '/mot/bus-stops',
     },
     {
