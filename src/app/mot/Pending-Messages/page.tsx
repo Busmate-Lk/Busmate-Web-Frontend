@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
@@ -71,23 +71,55 @@ const broadcastMessages: BroadcastMessage[] = [
 
 export default function PendingMessages() {
   const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState("")
   const [groupFilter, setGroupFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [dateFilter, setDateFilter] = useState("")
 
-  const pendingMessages = broadcastMessages.filter((message) => message.status === "Pending")
+  // Filter messages using useMemo for better performance
+  const filteredMessages = useMemo(() => {
+    return broadcastMessages.filter((message) => {
+      // Only show pending messages
+      if (message.status !== "Pending") return false;
+
+      // Search filter
+      const matchesSearch = !searchTerm || searchTerm.trim() === '' ||
+        message.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.body.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.category.toLowerCase().includes(searchTerm.toLowerCase())
+
+      // Group filter
+      const matchesGroup = !groupFilter || groupFilter === '' || 
+        message.targetGroups.includes(groupFilter)
+
+      // Priority filter (repurposed statusFilter for priority)
+      const matchesPriority = !statusFilter || statusFilter === '' || 
+        (statusFilter === "high" && message.priority === "High") ||
+        (statusFilter === "medium" && message.priority === "Medium") ||
+        (statusFilter === "low" && message.priority === "Low")
+
+      // Date filter (check scheduled date)
+      const matchesDate = !dateFilter || dateFilter === '' ||
+        (message.scheduledTime && message.scheduledTime.startsWith(dateFilter))
+
+      return matchesSearch && matchesGroup && matchesPriority && matchesDate
+    })
+  }, [broadcastMessages, searchTerm, groupFilter, statusFilter, dateFilter])
 
   const handleEdit = (message: BroadcastMessage) => {
     console.log("Editing message:", message.id)
+    router.push(`/mot/edit-messages?id=${message.id}`)
   }
 
   const handleView = (message: BroadcastMessage) => {
     console.log("Viewing message:", message.id)
+    router.push(`/mot/broadcast-message-view?id=${message.id}`)
   }
 
   const handleSend = (message: BroadcastMessage) => {
     console.log("Sending message:", message.id)
-    // Add send logic here
+    // Add send logic here - could update message status to "Sent"
   }
 
   const handleDelete = (message: BroadcastMessage) => {
@@ -99,17 +131,17 @@ export default function PendingMessages() {
     {
       id: "pending",
       label: "Pending Messages",
-      count: pendingMessages.length,
+      count: filteredMessages.length,
       active: true,
       onClick: () => {}
     }
   ]
 
   const priorityOptions = [
-    { value: "", label: "All" },
-    { value: "high", label: "High" },
-    { value: "medium", label: "Medium" },
-    { value: "low", label: "Low" }
+    { value: "", label: "All Priorities" },
+    { value: "high", label: "High Priority" },
+    { value: "medium", label: "Medium Priority" },
+    { value: "low", label: "Low Priority" }
   ]
 
   return (
@@ -124,14 +156,17 @@ export default function PendingMessages() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.push('/mot/broadcast-messages')}
-            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Broadcast Messages
           </button>
         </div>
 
+        {/* Enhanced Filter Bar with Search */}
         <FilterBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
           groupFilter={groupFilter}
           setGroupFilter={setGroupFilter}
           statusFilter={statusFilter}
@@ -140,21 +175,29 @@ export default function PendingMessages() {
           setDateFilter={setDateFilter}
           statusOptions={priorityOptions}
           dateLabel="Scheduled Date"
+          searchPlaceholder="Search by title, content, category, or message ID..."
         />
 
         <MessageTabs tabs={tabs} />
 
         <PendingMessagesTable 
-          messages={pendingMessages} 
+          messages={filteredMessages} 
           onEdit={handleEdit}
           onView={handleView}
           onSend={handleSend}
           onDelete={handleDelete}
         />
 
-        {/* Message count display */}
-        <div className="text-sm text-gray-600">
-          Showing {pendingMessages.length} pending messages
+        {/* Enhanced Message count display with filter info */}
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span>
+            Showing {filteredMessages.length} of {broadcastMessages.filter(m => m.status === "Pending").length} pending messages
+          </span>
+          {(searchTerm || groupFilter || statusFilter || dateFilter) && (
+            <span className="text-blue-600">
+              {filteredMessages.length === 0 ? "No matches found" : "Filtered results"}
+            </span>
+          )}
         </div>
       </div>
     </Layout>

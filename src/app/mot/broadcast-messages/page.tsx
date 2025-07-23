@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Layout } from "@/components/shared/layout"
 import BroadcastStats from "@/components/mot/BroadcastStats"
 import CreateMessageForm from "@/components/mot/CreateMessageForm"
 import MessageBox, { BroadcastMessage } from "@/components/mot/MessageBox"
+import BroadcastFilters from "@/components/mot/BroadcastFilters"
 import MessagesTable from "@/components/mot/MessagesTable"
 import QuickTemplates from "@/components/mot/QuickTemplates"
 import {
@@ -139,8 +140,44 @@ export default function Broadcast() {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
-    const sentMessages = broadcastMessages.filter((message) => message.status === "Sent")
-    const pendingMessages = broadcastMessages.filter((message) => message.status === "Pending")
+    // Filter states
+    const [searchTerm, setSearchTerm] = useState("")
+    const [priorityFilter, setPriorityFilter] = useState("")
+    const [categoryFilter, setCategoryFilter] = useState("")
+    const [statusFilter, setStatusFilter] = useState("")
+    const [targetGroupFilter, setTargetGroupFilter] = useState("")
+
+    // Filter messages using useMemo for better performance
+    const filteredMessages = useMemo(() => {
+        return broadcastMessages.filter((message) => {
+            // Search filter
+            const matchesSearch = !searchTerm || searchTerm.trim() === '' ||
+                message.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                message.body.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                message.id.toLowerCase().includes(searchTerm.toLowerCase())
+
+            // Priority filter
+            const matchesPriority = !priorityFilter || priorityFilter === '' || 
+                message.priority === priorityFilter
+
+            // Category filter
+            const matchesCategory = !categoryFilter || categoryFilter === '' || 
+                message.category === categoryFilter
+
+            // Status filter
+            const matchesStatus = !statusFilter || statusFilter === '' || 
+                message.status === statusFilter
+
+            // Target group filter
+            const matchesTargetGroup = !targetGroupFilter || targetGroupFilter === '' || 
+                message.targetGroups.includes(targetGroupFilter)
+
+            return matchesSearch && matchesPriority && matchesCategory && matchesStatus && matchesTargetGroup
+        })
+    }, [broadcastMessages, searchTerm, priorityFilter, categoryFilter, statusFilter, targetGroupFilter])
+
+    const sentMessages = filteredMessages.filter((message) => message.status === "Sent")
+    const pendingMessages = filteredMessages.filter((message) => message.status === "Pending")
 
     const handleSendMessage = (messageData: any) => {
         console.log("Sending message:", messageData)
@@ -238,9 +275,27 @@ export default function Broadcast() {
                     />
                 </div>
 
+                {/* Filters Section */}
+                <div className="mt-6">
+                    
+                        <BroadcastFilters
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            priorityFilter={priorityFilter}
+                            setPriorityFilter={setPriorityFilter}
+                            categoryFilter={categoryFilter}
+                            setCategoryFilter={setCategoryFilter}
+                            statusFilter={statusFilter}
+                            setStatusFilter={setStatusFilter}
+                            targetGroupFilter={targetGroupFilter}
+                            setTargetGroupFilter={setTargetGroupFilter}
+                        />
+                    
+                </div>
+
                 <div className="mt-6">
                     <MessagesTable
-                        messages={broadcastMessages}
+                        messages={filteredMessages}
                         onEdit={handleEditMessage}
                         onView={handleViewMessage}
                         onDelete={handleDeleteMessage}

@@ -87,16 +87,7 @@ export default function MessagesTable({
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900">All Broadcast Messages</h3>
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Filter
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 flex items-center gap-2">
-              <Search className="w-4 h-4" />
-              Search
-            </button>
-          </div>
+          
         </div>
 
         <div className="overflow-x-auto">

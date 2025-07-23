@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
@@ -75,11 +75,40 @@ const broadcastMessages: BroadcastMessage[] = [
 
 export default function SentMessages() {
   const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState("")
   const [groupFilter, setGroupFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [dateFilter, setDateFilter] = useState("")
 
-  const sentMessages = broadcastMessages.filter((message) => message.status === "Sent")
+  // Filter messages using useMemo for better performance
+  const filteredMessages = useMemo(() => {
+    return broadcastMessages.filter((message) => {
+      // Only show sent messages
+      if (message.status !== "Sent") return false;
+
+      // Search filter
+      const matchesSearch = !searchTerm || searchTerm.trim() === '' ||
+        message.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.body.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        message.id.toLowerCase().includes(searchTerm.toLowerCase())
+
+      // Group filter
+      const matchesGroup = !groupFilter || groupFilter === '' || 
+        message.targetGroups.includes(groupFilter)
+
+      // Status/Priority filter (repurposed for priority)
+      const matchesStatus = !statusFilter || statusFilter === '' || 
+        (statusFilter === "high" && message.priority === "High") ||
+        (statusFilter === "medium" && message.priority === "Medium") ||
+        (statusFilter === "low" && message.priority === "Low")
+
+      // Date filter (check sent date)
+      const matchesDate = !dateFilter || dateFilter === '' ||
+        (message.sentAt && message.sentAt.startsWith(dateFilter))
+
+      return matchesSearch && matchesGroup && matchesStatus && matchesDate
+    })
+  }, [broadcastMessages, searchTerm, groupFilter, statusFilter, dateFilter])
 
   const handleView = (message: BroadcastMessage) => {
     console.log("Viewing message:", message.id)
@@ -94,14 +123,14 @@ export default function SentMessages() {
     {
       id: "sent",
       label: "Sent Messages",
-      count: sentMessages.length,
+      count: filteredMessages.length,
       active: true,
       onClick: () => {}
     }
   ]
 
   const statusOptions = [
-    { value: "", label: "All" },
+    { value: "", label: "All Priorities" },
     { value: "high", label: "High Priority" },
     { value: "medium", label: "Medium Priority" },
     { value: "low", label: "Low Priority" }
@@ -124,10 +153,11 @@ export default function SentMessages() {
             <ArrowLeft className="w-4 h-4" />
             Back to Broadcast Messages
           </button>
-
         </div>
 
         <FilterBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
           groupFilter={groupFilter}
           setGroupFilter={setGroupFilter}
           statusFilter={statusFilter}
@@ -136,19 +166,20 @@ export default function SentMessages() {
           setDateFilter={setDateFilter}
           statusOptions={statusOptions}
           dateLabel="Sent Date"
+          searchPlaceholder="Search by title, content, or message ID..."
         />
 
         <MessageTabs tabs={tabs} />
 
         <SentMessagesTable 
-          messages={sentMessages}
+          messages={filteredMessages}
           onView={handleView}
           onDelete={handleDelete}
         />
 
         {/* Message count display */}
         <div className="text-sm text-gray-600">
-          Showing {sentMessages.length} sent messages
+          Showing {filteredMessages.length} sent messages
         </div>
       </div>
     </Layout>

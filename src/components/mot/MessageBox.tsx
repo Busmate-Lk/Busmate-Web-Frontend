@@ -184,16 +184,7 @@ export default function MessageBox({ messages, sentMessages, pendingMessages }: 
             </div>
             <h3 className="text-lg font-semibold text-gray-900">Message Box</h3>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Filter
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100 flex items-center gap-2">
-              <Search className="w-4 h-4" />
-              Search
-            </button>
-          </div>
+          
         </div>
 
         {/* Quick Stats */}
