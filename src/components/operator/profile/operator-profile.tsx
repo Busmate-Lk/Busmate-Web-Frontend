@@ -122,43 +122,7 @@ export function OperatorProfile() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Added new bus to fleet</p>
-                    <p className="text-xs text-gray-500">Today, 10:30 AM • Bus ID: CBS-025</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Updated driver schedule</p>
-                    <p className="text-xs text-gray-500">Yesterday, 3:15 PM • Route 138</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-orange-500 mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Maintenance completed</p>
-                    <p className="text-xs text-gray-500">Dec 20, 2024 • Bus CBS-012</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Route permit renewed</p>
-                    <p className="text-xs text-gray-500">Dec 18, 2024 • Route 245</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          
         </div>
 
         {/* Profile Summary */}
@@ -174,7 +138,7 @@ export function OperatorProfile() {
               <div className="flex justify-center space-x-2 mb-4">
                 <Badge className="bg-green-100 text-green-800">Active</Badge>
                 <Badge className="bg-blue-100 text-blue-800">Verified</Badge>
-                <Badge className="bg-orange-100 text-orange-800">Premium</Badge>
+                {/* <Badge className="bg-orange-100 text-orange-800">Premium</Badge> */}
               </div>
               <Button variant="outline" className="w-full bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
                 Change Avatar
@@ -249,6 +213,44 @@ export function OperatorProfile() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Added new bus to fleet</p>
+                    <p className="text-xs text-gray-500">Today, 10:30 AM • Bus ID: CBS-025</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Updated driver schedule</p>
+                    <p className="text-xs text-gray-500">Yesterday, 3:15 PM • Route 138</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-orange-500 mt-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Maintenance completed</p>
+                    <p className="text-xs text-gray-500">Dec 20, 2024 • Bus CBS-012</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Route permit renewed</p>
+                    <p className="text-xs text-gray-500">Dec 18, 2024 • Route 245</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* <Card>
+            <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -269,7 +271,7 @@ export function OperatorProfile() {
                 Route Permits
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <div className="flex space-x-3">
             <Button variant="outline" className="flex-1 bg-gray-500/20 text-gray-600 border-gray-200 hover:bg-gray-500/30 shadow-md">

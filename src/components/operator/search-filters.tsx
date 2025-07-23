@@ -76,11 +76,12 @@ export function SearchFilters({
           type="date"
           value={dateFilter}
           onChange={(e) => onDateChange(e.target.value)}
-          className="flex h-10 w-40 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
+          className="flex h-10 w-40 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8 appearance-none placeholder-transparent"
+          placeholder="Select date"
         />
         {!dateFilter && (
           <div className="absolute inset-0 flex items-center px-3 pointer-events-none">
-            <span className="text-gray-400 text-sm">Select date</span>
+            <span className="text-gray-400 text-sm"></span>
           </div>
         )}
         {dateFilter && (
