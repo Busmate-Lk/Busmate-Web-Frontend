@@ -66,8 +66,8 @@ export function Sidebar({
     {
       icon: Route,
       label: 'Routes Management',
-      active: activeItem === 'bus-routes',
-      href: '/mot/bus-routes',
+      active: activeItem === 'bus-route-groups',
+      href: '/mot/bus-route-groups',
     },
     {
       icon: Calendar,

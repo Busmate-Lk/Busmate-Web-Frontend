@@ -1,6 +1,9 @@
 import {
   getRouteGroupById,
   getRouteGroups,
+  addRouteGroup,
+  updateRouteGroup,
+  deleteRouteGroup,
 } from '@/lib/api/route-management/bus-route-group';
 import { BusRouteGroupRequest } from '@/types/requestdto/bus-route-group';
 import { BusRouteGroupResponse } from '@/types/responsedto/bus-route-group';
@@ -41,7 +44,7 @@ const useBusRouteGroups = () => {
 
   const addBusRouteGroup = async (data: BusRouteGroupRequest) => {
     try {
-      const response = await addBusRouteGroup(data);
+      const response = await addRouteGroup(data);
       console.log(response);
     } catch (error) {
       console.error('Failed to add');
@@ -49,12 +52,13 @@ const useBusRouteGroups = () => {
       loadBusRouteGroups();
     }
   };
+
   const updateBusRouteGroup = async (
     data: BusRouteGroupRequest,
     id: String
   ) => {
     try {
-      const response = await updateBusRouteGroup(data, id);
+      const response = await updateRouteGroup(data, id);
       console.log(response);
     } catch (error) {
       console.error('Failed to update');
@@ -62,9 +66,10 @@ const useBusRouteGroups = () => {
       loadBusRouteGroups();
     }
   };
+
   const deleteBusRouteGroup = async (id: String) => {
     try {
-      const response = await deleteBusRouteGroup(id);
+      const response = await deleteRouteGroup(id);
       console.log(response);
     } catch (error) {
       console.error('Failed to delete');
@@ -72,6 +77,7 @@ const useBusRouteGroups = () => {
       loadBusRouteGroups();
     }
   };
+
   return {
     busRouteGroupes,
     loading,
@@ -81,3 +87,6 @@ const useBusRouteGroups = () => {
     loadBusRouteGroupbyId,
   };
 };
+
+export { useBusRouteGroups };
+export default useBusRouteGroups;
