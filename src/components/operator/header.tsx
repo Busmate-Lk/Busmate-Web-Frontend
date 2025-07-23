@@ -3,6 +3,7 @@
 import { Bus, ChevronDown, Bell, User, LogOut } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useAuth } from "@/context/AuthContext"
+import Link from "next/link"
 
 interface HeaderProps {
   pageTitle?: string
@@ -91,17 +92,6 @@ export function Header({ pageTitle, pageDescription }: HeaderProps) {
       document.removeEventListener('keydown', handleEscapeKey)
     }
   }, [])
-
-  const getGreeting = () => {
-    const hour = new Date().getHours()
-    if (hour < 12) {
-      return "Good morning"
-    } else if (hour < 17) {
-      return "Good afternoon"
-    } else {
-      return "Good evening"
-    }
-  }
 
   const getUserDisplayName = () => {
     if (!user) return "Operator"
@@ -204,9 +194,9 @@ export function Header({ pageTitle, pageDescription }: HeaderProps) {
           ) : (
             <>
               <h1 className="text-2xl font-bold text-gray-900">
-                {getGreeting()}, {getUserDisplayName()}!
+                Mandakini Travels PVT LTD
               </h1>
-              <p className="text-sm text-slate-600 mt-0.5">Welcome back to BUSMATE LK Fleet Operations</p>
+              <p className="text-sm text-slate-600 mt-0.5">Fleet Management System</p>
             </>
           )}
         </div>
@@ -330,10 +320,13 @@ export function Header({ pageTitle, pageDescription }: HeaderProps) {
                   </div>
                 </div>
                 
-                <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                <Link 
+                  href="/operator/profile"
+                  className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
                   <User className="w-4 h-4" />
                   View Profile
-                </button>
+                </Link>
                 <button 
                   className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   onClick={handleLogout}

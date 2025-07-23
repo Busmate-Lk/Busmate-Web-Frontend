@@ -19,50 +19,107 @@ interface RouteData {
   frequency: string
   assignedBus: string
   status: "Active" | "Inactive"
+  scheduleDate: string
+  validFrom: string
+  validTo: string
 }
 
 export default function ScheduleManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [timeFilter, setTimeFilter] = useState("all")
+  const [dateFilter, setDateFilter] = useState("")
  
 
   const routesData: RouteData[] = [
     {
       id: "1",
-      routeName: "Downtown Express",
-      startPoint: "Central Station",
-      endPoint: "Business District",
+      routeName: "MATARA-GALLE",
+      startPoint: "Matara Bus Stand",
+      endPoint: "Galle Fort Terminal",
       stops: 8,
       scheduleStart: "7:00 AM",
       scheduleEnd: "9:00 PM",
-      frequency: "Every 15 mins",
-      assignedBus: "Bus #A101",
+      frequency: "",
+      assignedBus: "ND 4536 - Mandakini Express",
       status: "Active",
+      scheduleDate: "2025-07-22",
+      validFrom: "2025-07-22",
+      validTo: "2025-12-31",
     },
     {
       id: "2",
-      routeName: "Airport Shuttle",
-      startPoint: "Airport",
-      endPoint: "Hotel District",
+      routeName: "MATARA-COLOMBO",
+      startPoint: "Matara Bus Stand",
+      endPoint: "Colombo Central Terminal",
       stops: 5,
       scheduleStart: "6:00 AM",
       scheduleEnd: "11:00 PM",
-      frequency: "Every 30 mins",
-      assignedBus: "Bus #B205",
+      frequency: "",
+      assignedBus: "ND 7892 - Mandakini Super",
       status: "Active",
+      scheduleDate: "2025-07-23",
+      validFrom: "2025-07-23",
+      validTo: "2025-12-31",
     },
     {
       id: "3",
-      routeName: "University Line",
-      startPoint: "Campus North",
-      endPoint: "Campus South",
+      routeName: "MATARA-TANGALLE",
+      startPoint: "Matara Bus Stand",
+      endPoint: "Tangalle Beach Junction",
       stops: 12,
       scheduleStart: "6:30 AM",
       scheduleEnd: "10:00 PM",
-      frequency: "Every 20 mins",
-      assignedBus: "Bus #C312",
+      frequency: "",
+      assignedBus: "ND 3421 - Mandakini Classic",
+      status: "Active",
+      scheduleDate: "2025-07-24",
+      validFrom: "2025-07-24",
+      validTo: "2025-11-30",
+    },
+    {
+      id: "4",
+      routeName: "MATARA-HAMBANTOTA",
+      startPoint: "Matara Bus Stand",
+      endPoint: "Hambantota New Town",
+      stops: 15,
+      scheduleStart: "5:30 AM",
+      scheduleEnd: "11:30 PM",
+      frequency: "",
+      assignedBus: "ND 8765 - Mandakini Deluxe",
+      status: "Active",
+      scheduleDate: "2025-07-25",
+      validFrom: "2025-07-25",
+      validTo: "2025-10-31",
+    },
+    {
+      id: "5",
+      routeName: "MATARA-AKURESSA",
+      startPoint: "Matara Bus Stand",
+      endPoint: "Akuressa Junction",
+      stops: 6,
+      scheduleStart: "8:00 AM",
+      scheduleEnd: "6:00 PM",
+      frequency: "",
+      assignedBus: "ND 5234 - Mandakini Premium",
+      status: "Active",
+      scheduleDate: "2025-07-26",
+      validFrom: "2025-07-26",
+      validTo: "2025-09-30",
+    },
+    {
+      id: "6",
+      routeName: "MATARA-WELIGAMA",
+      startPoint: "Matara Bus Stand",
+      endPoint: "Weligama Bay Terminal",
+      stops: 20,
+      scheduleStart: "6:00 AM",
+      scheduleEnd: "10:00 PM",
+      frequency: "",
+      assignedBus: "ND 9876 - Mandakini Royal",
       status: "Inactive",
+      scheduleDate: "2025-07-27",
+      validFrom: "2025-07-27",
+      validTo: "2025-08-31",
     },
   ]
 
@@ -70,15 +127,18 @@ export default function ScheduleManagement() {
     const matchesSearch =
       route.routeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       route.startPoint.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      route.endPoint.toLowerCase().includes(searchQuery.toLowerCase())
+      route.endPoint.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      route.assignedBus.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesStatus = statusFilter === "all" || route.status.toLowerCase() === statusFilter.toLowerCase()
 
-    return matchesSearch && matchesStatus
+    const matchesDate = !dateFilter || route.scheduleDate === dateFilter
+
+    return matchesSearch && matchesStatus && matchesDate
   })
 
-  const handleEditRoute = (routeId: string) => {
-    console.log("Edit route:", routeId)
+  const handleViewRoute = (routeId: string) => {
+    console.log("View route:", routeId)
   }
 
   const handleDeleteRoute = (routeId: string) => {
@@ -90,7 +150,10 @@ export default function ScheduleManagement() {
       {/* <Sidebar activeItem="schedule" /> */}
 
       <div className="flex-1">
-        <Header />
+        <Header 
+          pageTitle="Schedule Management" 
+          pageDescription="Plan and manage bus schedules, routes, and timetables"
+        />
 
         <div className="p-6">
           <PageHeader
@@ -103,8 +166,8 @@ export default function ScheduleManagement() {
             onSearchChange={setSearchQuery}
             statusFilter={statusFilter}
             onStatusChange={setStatusFilter}
-            timeFilter={timeFilter}
-            onTimeChange={setTimeFilter}
+            dateFilter={dateFilter}
+            onDateChange={setDateFilter}
             searchPlaceholder="Search routes..."
           />
 
@@ -113,7 +176,7 @@ export default function ScheduleManagement() {
               <h2 className="text-lg font-semibold text-gray-800">Routes Overview</h2>
             </div>
             <div className="p-0">
-              <RouteTable routes={filteredRoutes} onEdit={handleEditRoute} onDelete={handleDeleteRoute} />
+              <RouteTable routes={filteredRoutes} onView={handleViewRoute} onDelete={handleDeleteRoute} />
             </div>
           </div>
         </div>
