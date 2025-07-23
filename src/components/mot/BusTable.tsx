@@ -1,4 +1,4 @@
-import { Eye, Edit, Trash2, Ban } from "lucide-react"
+import { Eye, Edit, Trash2, Power } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { Bus } from "@/app/mot/bus-infomation/page"
 
@@ -123,7 +123,7 @@ export default function BusTable({
                         className="p-1 text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded transition-colors"
                         title="Deactivate bus"
                       >
-                        <Ban className="w-4 h-4" />
+                        <Power className="w-4 h-4" />
                       </button>
                     )}
                     

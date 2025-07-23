@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from 'next/navigation'
 import { Plus } from "lucide-react"
 import { Layout } from "@/components/shared/layout"
@@ -142,9 +142,9 @@ const sriLankanBuses: Bus[] = [
 export default function BusInfo() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
-  const [busTypeFilter, setBusTypeFilter] = useState("All Types")
-  const [operatorTypeFilter, setOperatorTypeFilter] = useState("All Operators")
-  const [statusFilter, setStatusFilter] = useState("All Statuses")
+  const [busTypeFilter, setBusTypeFilter] = useState("")
+  const [operatorTypeFilter, setOperatorTypeFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState("")
   
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -152,16 +152,26 @@ export default function BusInfo() {
   const [selectedBus, setSelectedBus] = useState<Bus | null>(null)
   const [buses, setBuses] = useState<Bus[]>(sriLankanBuses)
 
-  const filteredBuses = buses.filter((bus) => {
-    const matchesSearch =
-      bus.busNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bus.operator.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesBusType = busTypeFilter === "All Types" || bus.busType.toLowerCase() === busTypeFilter.toLowerCase()
-    const matchesOperatorType =
-      operatorTypeFilter === "All Operators" || bus.operatorType.toLowerCase() === operatorTypeFilter.toLowerCase()
-    const matchesStatus = statusFilter === "All Statuses" || bus.status.toLowerCase() === statusFilter.toLowerCase()
-    return matchesSearch && matchesBusType && matchesOperatorType && matchesStatus
-  })
+  // Fixed filtering logic using useMemo for better performance
+  const filteredBuses = useMemo(() => {
+    return buses.filter((bus) => {
+      // Search filter - check if search term is in bus number or operator
+      const matchesSearch = !searchTerm || 
+        bus.busNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bus.operator.toLowerCase().includes(searchTerm.toLowerCase())
+
+      // Bus type filter - only apply if busTypeFilter is not empty
+      const matchesBusType = !busTypeFilter || bus.busType === busTypeFilter
+
+      // Operator type filter - only apply if operatorTypeFilter is not empty
+      const matchesOperatorType = !operatorTypeFilter || bus.operatorType === operatorTypeFilter
+
+      // Status filter - only apply if statusFilter is not empty
+      const matchesStatus = !statusFilter || bus.status === statusFilter
+
+      return matchesSearch && matchesBusType && matchesOperatorType && matchesStatus
+    })
+  }, [buses, searchTerm, busTypeFilter, operatorTypeFilter, statusFilter])
 
   const handleView = (bus: Bus) => {
     router.push(`/mot/bus-information-details?id=${bus.id}`)
@@ -187,7 +197,6 @@ export default function BusInfo() {
       setShowDeleteModal(false)
       setSelectedBus(null)
       
-      // Optional: Show success message
       console.log(`Bus ${selectedBus.busNumber} has been deleted successfully`)
     }
   }
@@ -202,7 +211,6 @@ export default function BusInfo() {
       setShowDeactivateModal(false)
       setSelectedBus(null)
       
-      // Optional: Show success message
       console.log(`Bus ${selectedBus.busNumber} has been deactivated successfully`)
     }
   }
