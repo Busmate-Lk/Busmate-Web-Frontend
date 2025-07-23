@@ -7,7 +7,7 @@ export default function BusStatsCards() {
         <div className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Total Buses</p>
-            <p className="text-3xl font-bold text-gray-900">18,247</p>
+            <p className="text-3xl font-bold text-gray-900">6</p>
             <p className="text-sm text-green-600 mt-1">+8% from last month</p>
           </div>
           <div className="p-3 bg-blue-100 rounded-full">
@@ -19,8 +19,8 @@ export default function BusStatsCards() {
         <div className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Active Buses</p>
-            <p className="text-3xl font-bold text-gray-900">16,089</p>
-            <p className="text-sm text-green-600 mt-1">+12% from last month</p>
+            <p className="text-3xl font-bold text-gray-900">5</p>
+            <p className="text-sm text-green-600 mt-1">+1% from last month</p>
           </div>
           <div className="p-3 bg-green-100 rounded-full">
             <CheckCircle className="w-6 h-6 text-green-600" />
@@ -30,9 +30,9 @@ export default function BusStatsCards() {
       <div className="border-l-4 border-yellow-500 bg-white rounded-lg shadow">
         <div className="p-6 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Under Maintenance</p>
-            <p className="text-3xl font-bold text-gray-900">2,158</p>
-            <p className="text-sm text-yellow-600 mt-1">-5% from last month</p>
+            <p className="text-sm font-medium text-gray-600">Inactive Buses</p>
+            <p className="text-3xl font-bold text-gray-900">1</p>
+            <p className="text-sm text-yellow-600 mt-1">-1% from last month</p>
           </div>
           <div className="p-3 bg-yellow-100 rounded-full">
             <AlertTriangle className="w-6 h-6 text-yellow-600" />
@@ -43,8 +43,8 @@ export default function BusStatsCards() {
         <div className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Bus Depots</p>
-            <p className="text-3xl font-bold text-gray-900">125</p>
-            <p className="text-sm text-purple-600 mt-1">+2 this quarter</p>
+            <p className="text-3xl font-bold text-gray-900">4</p>
+            {/*<p className="text-sm text-purple-600 mt-1">+2 this quarter</p>*/}
           </div>
           <div className="p-3 bg-purple-100 rounded-full">
             <MapPin className="w-6 h-6 text-purple-600" />

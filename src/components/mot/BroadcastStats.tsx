@@ -59,7 +59,7 @@ export default function BroadcastStats({ totalMessages, sentMessages, pendingMes
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Active Recipients</p>
-              <p className="text-3xl font-bold text-gray-900">18,542</p>
+              <p className="text-3xl font-bold text-gray-900">6</p>
               <p className="text-sm text-purple-600 mt-1">All stakeholders</p>
             </div>
             <div className="p-3 bg-purple-100 rounded-full">
