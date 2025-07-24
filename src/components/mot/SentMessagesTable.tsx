@@ -5,8 +5,19 @@ import {
   DeleteConfirmationModal,
 } from '@/components/mot/confirmation-modals'
 
-// Import the interface from the parent page
-import { BroadcastMessage } from "@/app/mot/Sent-Messages/page"
+// Define the interface directly in this file or create a shared types file
+export interface BroadcastMessage {
+  id: string
+  title: string
+  body: string
+  targetGroups: string[]
+  priority: "High" | "Medium" | "Low"
+  category: string
+  scheduledTime: string
+  status: "Sent" | "Pending"
+  createdAt: string
+  sentAt?: string
+}
 
 interface SentMessagesTableProps {
   messages: BroadcastMessage[]
@@ -14,12 +25,12 @@ interface SentMessagesTableProps {
   onDelete?: (message: BroadcastMessage) => void
 }
 
-export default function SentMessagesTable({ 
-  messages, 
-  onView = () => {}, 
-  onDelete = () => {} 
+export default function SentMessagesTable({
+  messages,
+  onView = () => { },
+  onDelete = () => { }
 }: SentMessagesTableProps) {
-  
+
   // State for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [messageToDelete, setMessageToDelete] = useState<BroadcastMessage | null>(null)
@@ -36,7 +47,7 @@ export default function SentMessagesTable({
     if (!messageToDelete) return
 
     setIsDeleting(true)
-    
+
     try {
       // Simulate API call
       await new Promise((resolve, reject) => {
@@ -49,16 +60,16 @@ export default function SentMessagesTable({
           }
         }, 1500)
       })
-      
+
       // Call the parent's onDelete function
       onDelete(messageToDelete)
-      
+
       // Close modal and reset state
       setShowDeleteModal(false)
       setMessageToDelete(null)
-      
+
       console.log("Sent message deleted successfully:", messageToDelete.id)
-      
+
     } catch (error) {
       console.error("Error deleting sent message:", error)
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
@@ -73,7 +84,7 @@ export default function SentMessagesTable({
     if (isDeleting) {
       return // Prevent closing while deletion is in progress
     }
-    
+
     setShowDeleteModal(false)
     setMessageToDelete(null)
   }
@@ -110,8 +121,8 @@ export default function SentMessagesTable({
                         <div>
                           <p className="font-medium text-gray-900">{message.title}</p>
                           <p className="text-sm text-gray-500">
-                            {message.body.length > 80 
-                              ? `${message.body.substring(0, 80)}...` 
+                            {message.body.length > 80
+                              ? `${message.body.substring(0, 80)}...`
                               : message.body
                             }
                           </p>
@@ -134,19 +145,19 @@ export default function SentMessagesTable({
                       </td>
                       <td className="py-4 px-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                           Sent
+                          Sent
                         </span>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <button 
+                          <button
                             onClick={() => onView(message)}
                             className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
                             title="View message details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteClick(message)}
                             className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
                             title="Delete message"
@@ -161,8 +172,6 @@ export default function SentMessagesTable({
               </tbody>
             </table>
           </div>
-          
-          
         </div>
       </div>
 
@@ -174,8 +183,8 @@ export default function SentMessagesTable({
         isLoading={isDeleting}
         title="Delete Sent Message"
         itemName={
-          messageToDelete 
-            ? `"${messageToDelete.title}"` 
+          messageToDelete
+            ? `"${messageToDelete.title}"`
             : "this message"
         }
       />

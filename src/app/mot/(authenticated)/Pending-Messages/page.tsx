@@ -10,18 +10,7 @@ import PendingMessagesTable from "@/components/mot/PendingMessagesTable"
 import { usePagination, Pagination } from '@/components/mot/pagination'
 
 // Data directly in the page
-export interface BroadcastMessage {
-  id: string
-  title: string
-  body: string
-  targetGroups: string[]
-  priority: "High" | "Medium" | "Low"
-  category: string
-  scheduledTime: string
-  status: "Sent" | "Pending"
-  createdAt: string
-  sentAt?: string
-}
+import type { BroadcastMessage } from "@/components/mot/PendingMessagesTable"
 
 const broadcastMessages: BroadcastMessage[] = [
   {
@@ -68,6 +57,28 @@ const broadcastMessages: BroadcastMessage[] = [
     status: "Pending",
     createdAt: "2024-12-01 08:15",
   },
+    {
+        id: "BM009",
+        title: "Weather Alert - Heavy Rains Expected in Southern Province",
+        body: "Meteorological Department warns of heavy rainfall in Southern Province from December 3-5. Routes to Galle, Matara, and Hambantota may experience delays. Drivers are advised to exercise caution and reduce speed on wet roads.",
+        targetGroups: ["Drivers", "Bus Operators", "Passengers"],
+        priority: "High",
+        category: "Emergency",
+        scheduledTime: "2024-12-03 06:00",
+        status: "Pending",
+        createdAt: "2024-12-02 18:30",
+    },
+    {
+        id: "BM010",
+        title: "New Bus Terminal Opening - Maharagama",
+        body: "The new Maharagama Bus Terminal will commence operations from December 15th, 2024. All routes currently terminating at Maharagama Junction will be redirected to the new terminal. Updated route maps and schedules are available at regional offices.",
+        targetGroups: ["Bus Operators", "Drivers", "Passengers"],
+        priority: "Medium",
+        category: "Route Update",
+        scheduledTime: "2024-12-10 09:00",
+        status: "Pending",
+        createdAt: "2024-12-01 12:45",
+    },
 ]
 
 export default function PendingMessages() {

@@ -67,7 +67,7 @@ const fareStructures: FareStructure[] = [
     baseFare: 900.0,
     perKmRate: 6.4,
     effectiveFrom: "2025-10-01",
-    status: "Pending",
+    status: "Active",
     route: "Colombo - Matara",
     operator: "Coastal Express",
   },

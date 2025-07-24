@@ -103,6 +103,7 @@ export default function LocationAssignmentForm({
             />
             <ErrorMessage fieldName="primaryRoute" />
           </div>
+          {/*}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Secondary Route
@@ -115,7 +116,7 @@ export default function LocationAssignmentForm({
               onChange={(e) => onInputChange("secondaryRoute", e.target.value)}
             />
             <ErrorMessage fieldName="secondaryRoute" />
-          </div>
+          </div>*/}
         </div>
 
         {/* Route Information */}
@@ -123,7 +124,7 @@ export default function LocationAssignmentForm({
           <h4 className="text-sm font-medium text-blue-900 mb-2">Route Assignment Information:</h4>
           <ul className="text-xs text-blue-700 space-y-1">
             <li>• Primary route is the main service route for this bus</li>
-            <li>• Secondary route is used during peak hours or as backup</li>
+            {/* <li>• Secondary route is used during peak hours or as backup</li>*/}
             <li>• Route assignments can be changed later through the route management system</li>
             <li>• Ensure depot location supports the assigned routes</li>
           </ul>

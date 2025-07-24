@@ -25,8 +25,6 @@ export default function BasicInformationForm({
     switch (status) {
       case "Active":
         return "bg-green-100 text-green-800"
-      case "Maintenance":
-        return "bg-yellow-100 text-yellow-800"
       case "Inactive":
         return "bg-red-100 text-red-800"
       default:
@@ -95,7 +93,6 @@ export default function BasicInformationForm({
               <option value="Non-AC">Non-AC</option>
               <option value="Luxury">Luxury</option>
               <option value="Semi-Luxury">Semi-Luxury</option>
-              <option value="Sleeper">Sleeper</option>
             </select>
             <ErrorMessage fieldName="busType" />
           </div>
@@ -186,7 +183,6 @@ export default function BasicInformationForm({
             >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
-              <option value="Maintenance">Under Maintenance</option>
             </select>
             <ErrorMessage fieldName="status" />
           </div>
