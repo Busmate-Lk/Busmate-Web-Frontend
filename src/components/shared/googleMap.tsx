@@ -12,6 +12,7 @@ const center = {
   lat: (galle.lat + matara.lat) / 2,
   lng: (galle.lng + matara.lng) / 2,
 };
+// This component displays a Google Map with markers for Galle and Matara, and shows the driving route between them.
 
 export default function GoogleMapComponent() {
   const { isLoaded } = useJsApiLoader({
