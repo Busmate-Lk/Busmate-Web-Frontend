@@ -2,11 +2,9 @@ import { Plus, FileText, Calculator } from "lucide-react"
 
 interface FareQuickActionsProps {
   onAddFare: () => void
-  onViewChart: () => void
-  onCalculator?: () => void
 }
 
-export default function FareQuickActions({ onAddFare, onViewChart, onCalculator }: FareQuickActionsProps) {
+export default function FareQuickActions({ onAddFare }: FareQuickActionsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div 
@@ -22,19 +20,7 @@ export default function FareQuickActions({ onAddFare, onViewChart, onCalculator 
         </div>
       </div>
 
-      <div 
-        onClick={onViewChart}
-        className="bg-white rounded-lg shadow border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
-      >
-        <div className="p-6 text-center">
-          <div className="p-3 bg-green-100 rounded-full w-fit mx-auto mb-4">
-            <FileText className="w-6 h-6 text-green-600" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-2">View Fare Chart</h3>
-          <p className="text-sm text-gray-600">Browse comprehensive fare charts and pricing</p>
-        </div>
-      </div>
-
+     
       
     </div>
   )

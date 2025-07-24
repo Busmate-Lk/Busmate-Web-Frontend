@@ -1,5 +1,8 @@
 "use client";
 
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { useState, useMemo } from 'react';
+
 export interface Bus {
   id: string;
   busNumber: string;
@@ -23,155 +26,143 @@ interface LiveMapViewProps {
   lastRefresh: Date;
 }
 
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+// Center of Sri Lanka
+const defaultCenter = {
+  lat: 7.8731,
+  lng: 80.7718
+};
+
 export function LiveMapView({
   buses,
   onBusClick,
   lastRefresh,
 }: LiveMapViewProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "on-time":
-        return "bg-green-500";
-      case "delayed":
-        return "bg-red-500";
-      case "inactive":
-        return "bg-gray-500";
-      default:
-        return "bg-blue-500";
-    }
-  };
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+  });
 
-  // Function to convert lat/lng to map position (simplified projection)
-  const getMapPosition = (lat: number, lng: number, index: number) => {
-    // Sri Lanka bounds: roughly 5.9-9.8 lat, 79.5-81.9 lng
-    const latRange = { min: 5.9, max: 9.8 };
-    const lngRange = { min: 79.5, max: 81.9 };
+  const [selectedBus, setSelectedBus] = useState<Bus | null>(null);
+
+  // Calculate map center based on bus locations
+  const mapCenter = useMemo(() => {
+    if (buses.length === 0) return defaultCenter;
     
-    // Convert to percentage positions on the map
-    const x = ((lng - lngRange.min) / (lngRange.max - lngRange.min)) * 80 + 10; // 10-90% range
-    const y = ((latRange.max - lat) / (latRange.max - latRange.min)) * 80 + 10; // Inverted for map display
+    const avgLat = buses.reduce((sum, bus) => sum + bus.location.lat, 0) / buses.length;
+    const avgLng = buses.reduce((sum, bus) => sum + bus.location.lng, 0) / buses.length;
     
-    // Add slight offset to prevent overlapping markers
-    const offsetX = (index % 3) * 2;
-    const offsetY = Math.floor(index / 3) * 2;
-    
+    return { lat: avgLat, lng: avgLng };
+  }, [buses]);
+
+  const getMarkerIcon = (status: string) => {
+    const color = status === "on-time" ? "green" : status === "delayed" ? "red" : "gray";
     return {
-      left: `${Math.max(5, Math.min(95, x + offsetX))}%`,
-      top: `${Math.max(5, Math.min(95, y + offsetY))}%`
+      url: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='${color}' stroke='white' stroke-width='2'/%3E%3C/svg%3E`,
+      scaledSize: new google.maps.Size(24, 24),
     };
   };
+
+  const handleMarkerClick = (bus: Bus) => {
+    setSelectedBus(bus);
+    onBusClick(bus);
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="flex-1">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden h-full">
+          <div className="flex flex-row items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 className="text-lg font-semibold text-gray-900">Live Map View</h3>
+          </div>
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading Map...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden h-full">
         <div className="flex flex-row items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
           <h3 className="text-lg font-semibold text-gray-900">Live Map View</h3>
-          <button className="p-1 h-auto text-gray-500 hover:text-gray-700 rounded">
-            <div className="flex items-center gap-1">
-              <span className="text-xs">⋯</span>
+          <div className="flex items-center gap-4">
+            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded text-xs text-gray-600">
+              {buses.length} Bus{buses.length !== 1 ? 'es' : ''} Tracked
             </div>
-          </button>
-        </div>
-        <div className="relative bg-gradient-to-br from-blue-100 to-green-100 overflow-hidden" style={{ height: 'calc(100% - 73px)' }}>
-          {/* Map Background with Sri Lanka-like shape overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-200 via-green-100 to-yellow-100">
-            {/* Subtle map grid lines */}
-            <div className="absolute inset-0 opacity-20">
-              {/* Vertical lines */}
-              {[20, 40, 60, 80].map(pos => (
-                <div
-                  key={`v-${pos}`}
-                  className="absolute h-full w-px bg-gray-400"
-                  style={{ left: `${pos}%` }}
-                />
-              ))}
-              {/* Horizontal lines */}
-              {[20, 40, 60, 80].map(pos => (
-                <div
-                  key={`h-${pos}`}
-                  className="absolute w-full h-px bg-gray-400"
-                  style={{ top: `${pos}%` }}
-                />
-              ))}
-            </div>
-
-            {/* Bus count indicator */}
-            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow">
-              <p className="text-sm font-medium text-gray-900">
-                {buses.length} Bus{buses.length !== 1 ? 'es' : ''} Tracked
-              </p>
-            </div>
-              {/* Bus Markers */}
-              {buses.length > 0 ? (
-                buses.map((bus, index) => {
-                  const position = getMapPosition(bus.location.lat, bus.location.lng, index);
-                  return (
-                    <div
-                      key={bus.id}
-                      className="absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform group"
-                      style={position}
-                      onClick={() => onBusClick(bus)}
-                    >
-                      <div
-                        className={`w-4 h-4 ${getStatusColor(
-                          bus.status
-                        )} rounded-full border-2 border-white shadow-lg pulse-${bus.status}`}
-                      ></div>
-                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded shadow text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="font-semibold">{bus.busNumber}</div>
-                        <div className="text-gray-600">{bus.route}</div>
-                        <div className="text-gray-500">{bus.passengers} passengers</div>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-white/90 backdrop-blur-sm px-6 py-4 rounded-lg shadow text-center">
-                    <p className="text-gray-600 font-medium">No buses match current filters</p>
-                    <p className="text-gray-500 text-sm mt-1">Try adjusting your search or filter criteria</p>
-                  </div>
-                </div>
-              )}
-
-            {/* Last Update Info */}
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow">
-              <p className="text-xs text-gray-600">
-                Last updated: {lastRefresh.toLocaleTimeString()}
-              </p>
+            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded text-xs text-gray-600">
+              Last updated: {lastRefresh.toLocaleTimeString()}
             </div>
           </div>
+        </div>
+        
+        <div className="relative overflow-hidden" style={{ height: 'calc(100% - 73px)' }}>
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={mapCenter}
+            zoom={buses.length > 0 ? 8 : 7}
+            options={{
+              zoomControl: true,
+              streetViewControl: false,
+              mapTypeControl: false,
+              fullscreenControl: false,
+            }}
+          >
+            {buses.map((bus) => (
+              <Marker
+                key={bus.id}
+                position={bus.location}
+                onClick={() => handleMarkerClick(bus)}
+                icon={getMarkerIcon(bus.status)}
+              />
+            ))}
 
-          {/* CSS for animations */}
-          <style jsx>{`
-            .pulse-on-time {
-              animation: pulse-green 2s infinite;
-            }
-            .pulse-delayed {
-              animation: pulse-red 2s infinite;
-            }
-            .pulse-inactive {
-              animation: none;
-            }
-            
-            @keyframes pulse-green {
-              0%, 100% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-              }
-              50% {
-                box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
-              }
-            }
-            
-            @keyframes pulse-red {
-              0%, 100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-              }
-              50% {
-                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
-              }
-            }
-          `}</style>
+            {selectedBus && (
+              <InfoWindow
+                position={selectedBus.location}
+                onCloseClick={() => setSelectedBus(null)}
+              >
+                <div className="p-2">
+                  <div className="font-semibold text-lg">{selectedBus.busNumber}</div>
+                  <div className="text-gray-600 mb-2">{selectedBus.route}</div>
+                  <div className="space-y-1 text-sm">
+                    <div><strong>Driver:</strong> {selectedBus.driver}</div>
+                    <div><strong>Status:</strong> 
+                      <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                        selectedBus.status === "on-time" ? "bg-green-100 text-green-800" :
+                        selectedBus.status === "delayed" ? "bg-red-100 text-red-800" :
+                        "bg-gray-100 text-gray-800"
+                      }`}>
+                        {selectedBus.status.replace("-", " ").toUpperCase()}
+                      </span>
+                    </div>
+                    <div><strong>Passengers:</strong> {selectedBus.passengers}</div>
+                    <div><strong>Next Stop:</strong> {selectedBus.nextStop}</div>
+                    <div><strong>ETA:</strong> {selectedBus.eta}</div>
+                    <div><strong>Location:</strong> {selectedBus.location.address}</div>
+                    <div className="text-gray-500"><strong>Last Update:</strong> {selectedBus.lastUpdate}</div>
+                  </div>
+                </div>
+              </InfoWindow>
+            )}
+          </GoogleMap>
+
+          {buses.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+              <div className="bg-white px-6 py-4 rounded-lg shadow text-center">
+                <p className="text-gray-600 font-medium">No buses match current filters</p>
+                <p className="text-gray-500 text-sm mt-1">Try adjusting your search or filter criteria</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -22,6 +22,7 @@ import {
   X,
   Clock,
   Settings,
+  Pen,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -66,14 +67,20 @@ export function Sidebar({
     {
       icon: Route,
       label: 'Routes Management',
-      active: activeItem === 'bus-routes',
-      href: '/mot/bus-routes',
+      active: activeItem === 'bus-route-groups',
+      href: '/mot/bus-route-groups',
     },
     {
       icon: Calendar,
-      label: 'Schedule Assignment',
+      label: 'Schedule Management',
       active: activeItem === 'schedule',
-      href: '/mot/schedule-assignment',
+      href: '/mot/schedule-management',
+    },
+    {
+      icon: Pen,
+      label: 'Schedule Assignment',
+      active: activeItem === 'schedule-assignment',
+      href: '/mot/schedule-assign-form',
     },
     {
       icon: FileText,
@@ -84,19 +91,19 @@ export function Sidebar({
     {
       icon: MapPin,
       label: 'Bus Stops',
-      active: activeItem === 'stops',
+      active: activeItem === 'bus-stops',
       href: '/mot/bus-stops',
     },
     {
       icon: Bus,
       label: 'Bus Information',
-      active: activeItem === 'information',
+      active: activeItem === 'bus-information',
       href: '/mot/bus-infomation',
     },
     {
       icon: DollarSign,
       label: 'Fare Management',
-      active: activeItem === 'fare',
+      active: activeItem === 'bus-fare',
       href: '/mot/bus-fare',
     },
     {
@@ -108,7 +115,7 @@ export function Sidebar({
     {
       icon: MessageSquare,
       label: 'Broadcast Messages',
-      active: activeItem === 'messages',
+      active: activeItem === 'broadcast',
       href: '/mot/broadcast-messages',
     },
     {
@@ -122,6 +129,12 @@ export function Sidebar({
       label: 'Policy Update',
       active: activeItem === 'policy',
       href: '/mot/policy-update',
+    },
+    {
+      icon: FileText,
+      label: 'Staff Management',
+      active: activeItem === 'staff',
+      href: '/mot/staff-management',
     },
   ];
 
@@ -138,30 +151,30 @@ export function Sidebar({
       active: activeItem === 'schedule',
       href: '/timeKeeper/schedule',
     },
-    {
-      icon: Clock,
-      label: 'Time Tracking',
-      active: activeItem === 'tracking',
-      href: '/timeKeeper/time-tracking',
-    },
-    {
-      icon: FileText,
-      label: 'Reports',
-      active: activeItem === 'reports',
-      href: '/timeKeeper/reports',
-    },
-    {
-      icon: BarChart3,
-      label: 'Analytics',
-      active: activeItem === 'analytics',
-      href: '/timeKeeper/analytics',
-    },
-    {
-      icon: Settings,
-      label: 'Settings',
-      active: activeItem === 'settings',
-      href: '/timeKeeper/settings',
-    },
+    // {
+    //   icon: Clock,
+    //   label: 'Time Tracking',
+    //   active: activeItem === 'tracking',
+    //   href: '/timeKeeper/time-tracking',
+    // },
+    // {
+    //   icon: FileText,
+    //   label: 'Reports',
+    //   active: activeItem === 'reports',
+    //   href: '/timeKeeper/reports',
+    // },
+    // {
+    //   icon: BarChart3,
+    //   label: 'Analytics',
+    //   active: activeItem === 'analytics',
+    //   href: '/timeKeeper/analytics',
+    // },
+    // {
+    //   icon: Settings,
+    //   label: 'Settings',
+    //   active: activeItem === 'settings',
+    //   href: '/timeKeeper/settings',
+    // },
   ];
 
   let sidebarItems = null;
@@ -178,17 +191,15 @@ export function Sidebar({
 
   return (
     <div
-      className={`${
-        isCollapsed ? 'w-20' : 'w-68'
-      } bg-blue-800 text-white transition-all duration-300 ease-in-out flex flex-col h-screen fixed left-0 top-0 z-40`}
+      className={`${isCollapsed ? 'w-20' : 'w-68'
+        } bg-blue-800 text-white transition-all duration-300 ease-in-out flex flex-col h-screen fixed left-0 top-0 z-40`}
     >
       {/* Header Section */}
       <div className="p-4 border-b border-blue-500 h-20 flex items-center">
         <div className="flex items-center justify-between w-full">
           <div
-            className={`flex items-center gap-3 ${
-              isCollapsed ? 'justify-center' : ''
-            }`}
+            className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''
+              }`}
           >
             {!isCollapsed && (
               <div className="bg-blue-800  rounded-lg flex-shrink-0">
@@ -228,19 +239,16 @@ export function Sidebar({
             <Link
               key={index}
               href={item.href}
-              className={`w-full flex items-center ${
-                isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-3'
-              } rounded-lg text-sm font-medium transition-all duration-200 group ${
-                item.active
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-3'
+                } rounded-lg text-sm font-medium transition-all duration-200 group ${item.active
                   ? 'bg-white text-blue-600 shadow-sm'
                   : 'text-blue-100 hover:bg-blue-500 hover:text-white'
-              }`}
+                }`}
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon
-                className={`w-5 h-5 flex-shrink-0 ${
-                  item.active ? 'text-blue-600' : ''
-                }`}
+                className={`w-5 h-5 flex-shrink-0 ${item.active ? 'text-blue-600' : ''
+                  }`}
               />
               {!isCollapsed && (
                 <span className="truncate ml-3">{item.label}</span>

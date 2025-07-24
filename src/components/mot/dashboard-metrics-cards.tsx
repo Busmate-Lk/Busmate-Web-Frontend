@@ -24,7 +24,7 @@ export function DashboardMetricsCards({ metrics }: DashboardMetricsCardsProps) {
       {metrics.map((metric, index) => (
         <div
           key={index}
-          className={`relative overflow-hidden border-l-4 ${metric.borderColor} rounded-lg border bg-white shadow-sm`}
+          className={`relative overflow-hidden border-l-4 ${metric.borderColor} rounded-lg  bg-white shadow-sm`}
         >
           <div className="p-6">
             <div className="flex items-center justify-between">
