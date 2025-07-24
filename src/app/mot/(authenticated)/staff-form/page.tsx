@@ -19,6 +19,7 @@ import {
   dummyOperators,
   busStations,
 } from '@/lib/data/staffData';
+import { Layout } from '@/components/shared/layout';
 
 export default function StaffFormPage() {
   const searchParams = useSearchParams();
@@ -193,324 +194,330 @@ export default function StaffFormPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-6">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {getPageTitle()}
-            </h1>
-            <p className="text-gray-600 mt-1">{getPageDescription()}</p>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Personal Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center mb-4">
-              <User className="w-5 h-5 text-gray-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900">
-                Personal Information
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.name ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter full name"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="nic"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  NIC Number *
-                </label>
-                <input
-                  type="text"
-                  id="nic"
-                  value={formData.nic}
-                  onChange={(e) => handleInputChange('nic', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.nic ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter NIC number"
-                />
-                {errors.nic && (
-                  <p className="mt-1 text-sm text-red-600">{errors.nic}</p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="dateOfBirth"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Date of Birth *
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="date"
-                    id="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={(e) =>
-                      handleInputChange('dateOfBirth', e.target.value)
-                    }
-                    className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.dateOfBirth ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                </div>
-                {errors.dateOfBirth && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.dateOfBirth}
-                  </p>
-                )}
-              </div>
+    <Layout>
+      <div className="space-y-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center mb-6">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {getPageTitle()}
+              </h1>
+              <p className="text-gray-600 mt-1">{getPageDescription()}</p>
             </div>
           </div>
 
-          {/* Contact Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center mb-4">
-              <Phone className="w-5 h-5 text-gray-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900">
-                Contact Information
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label
-                  htmlFor="contactNo"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Contact Number *
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="tel"
-                    id="contactNo"
-                    value={formData.contactNo}
-                    onChange={(e) =>
-                      handleInputChange('contactNo', e.target.value)
-                    }
-                    className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.contactNo ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="+94712345678"
-                  />
-                </div>
-                {errors.contactNo && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.contactNo}
-                  </p>
-                )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Information */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <User className="w-5 h-5 text-gray-400 mr-2" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Personal Information
+                </h2>
               </div>
 
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Email Address *
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.email ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="name@example.com"
-                  />
-                </div>
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Role-specific Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center mb-4">
-              {staffType === 'timekeeper' ? (
-                <MapPin className="w-5 h-5 text-gray-400 mr-2" />
-              ) : (
-                <Award className="w-5 h-5 text-gray-400 mr-2" />
-              )}
-              <h2 className="text-lg font-semibold text-gray-900">
-                {staffType === 'timekeeper'
-                  ? 'Station Information'
-                  : 'Professional Information'}
-              </h2>
-            </div>
-
-            {staffType === 'timekeeper' ? (
-              <div>
-                <label
-                  htmlFor="workingBusStation"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Working Bus Station *
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <select
-                    id="workingBusStation"
-                    value={formData.workingBusStation}
-                    onChange={(e) =>
-                      handleInputChange('workingBusStation', e.target.value)
-                    }
-                    className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.workingBusStation
-                        ? 'border-red-300'
-                        : 'border-gray-300'
-                    }`}
-                  >
-                    <option value="">Select a bus station</option>
-                    {busStations.map((station) => (
-                      <option key={station} value={station}>
-                        {station}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {errors.workingBusStation && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.workingBusStation}
-                  </p>
-                )}
-              </div>
-            ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label
-                    htmlFor="licenseNumber"
+                    htmlFor="name"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    License Number *
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.name ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter full name"
+                  />
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="nic"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    NIC Number *
+                  </label>
+                  <input
+                    type="text"
+                    id="nic"
+                    value={formData.nic}
+                    onChange={(e) => handleInputChange('nic', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.nic ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter NIC number"
+                  />
+                  {errors.nic && (
+                    <p className="mt-1 text-sm text-red-600">{errors.nic}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="dateOfBirth"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Date of Birth *
                   </label>
                   <div className="relative">
-                    <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
-                      type="text"
-                      id="licenseNumber"
-                      value={formData.licenseNumber}
+                      type="date"
+                      id="dateOfBirth"
+                      value={formData.dateOfBirth}
                       onChange={(e) =>
-                        handleInputChange('licenseNumber', e.target.value)
+                        handleInputChange('dateOfBirth', e.target.value)
                       }
                       className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.licenseNumber
+                        errors.dateOfBirth
                           ? 'border-red-300'
                           : 'border-gray-300'
                       }`}
-                      placeholder="DL-123456789"
                     />
                   </div>
-                  {errors.licenseNumber && (
+                  {errors.dateOfBirth && (
                     <p className="mt-1 text-sm text-red-600">
-                      {errors.licenseNumber}
+                      {errors.dateOfBirth}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <Phone className="w-5 h-5 text-gray-400 mr-2" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Contact Information
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="contactNo"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Contact Number *
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="tel"
+                      id="contactNo"
+                      value={formData.contactNo}
+                      onChange={(e) =>
+                        handleInputChange('contactNo', e.target.value)
+                      }
+                      className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        errors.contactNo ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                      placeholder="+94712345678"
+                    />
+                  </div>
+                  {errors.contactNo && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.contactNo}
                     </p>
                   )}
                 </div>
 
                 <div>
                   <label
-                    htmlFor="experienceYears"
+                    htmlFor="email"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Experience (Years) *
+                    Email Address *
                   </label>
                   <div className="relative">
-                    <Award className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
-                      type="number"
-                      id="experienceYears"
-                      min="0"
-                      max="50"
-                      value={formData.experienceYears}
+                      type="email"
+                      id="email"
+                      value={formData.email}
                       onChange={(e) =>
-                        handleInputChange(
-                          'experienceYears',
-                          parseInt(e.target.value) || 0
-                        )
+                        handleInputChange('email', e.target.value)
                       }
                       className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.experienceYears
-                          ? 'border-red-300'
-                          : 'border-gray-300'
+                        errors.email ? 'border-red-300' : 'border-gray-300'
                       }`}
-                      placeholder="Years of experience"
+                      placeholder="name@example.com"
                     />
                   </div>
-                  {errors.experienceYears && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.experienceYears}
-                    </p>
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                   )}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            {/* Role-specific Information */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                {staffType === 'timekeeper' ? (
+                  <MapPin className="w-5 h-5 text-gray-400 mr-2" />
+                ) : (
+                  <Award className="w-5 h-5 text-gray-400 mr-2" />
+                )}
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {staffType === 'timekeeper'
+                    ? 'Station Information'
+                    : 'Professional Information'}
+                </h2>
+              </div>
+
+              {staffType === 'timekeeper' ? (
+                <div>
+                  <label
+                    htmlFor="workingBusStation"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Working Bus Station *
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <select
+                      id="workingBusStation"
+                      value={formData.workingBusStation}
+                      onChange={(e) =>
+                        handleInputChange('workingBusStation', e.target.value)
+                      }
+                      className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        errors.workingBusStation
+                          ? 'border-red-300'
+                          : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">Select a bus station</option>
+                      {busStations.map((station) => (
+                        <option key={station} value={station}>
+                          {station}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.workingBusStation && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.workingBusStation}
+                    </p>
+                  )}
+                </div>
               ) : (
-                <Save className="w-4 h-4 mr-2" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      htmlFor="licenseNumber"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      License Number *
+                    </label>
+                    <div className="relative">
+                      <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        id="licenseNumber"
+                        value={formData.licenseNumber}
+                        onChange={(e) =>
+                          handleInputChange('licenseNumber', e.target.value)
+                        }
+                        className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          errors.licenseNumber
+                            ? 'border-red-300'
+                            : 'border-gray-300'
+                        }`}
+                        placeholder="DL-123456789"
+                      />
+                    </div>
+                    {errors.licenseNumber && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.licenseNumber}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="experienceYears"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Experience (Years) *
+                    </label>
+                    <div className="relative">
+                      <Award className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="number"
+                        id="experienceYears"
+                        min="0"
+                        max="50"
+                        value={formData.experienceYears}
+                        onChange={(e) =>
+                          handleInputChange(
+                            'experienceYears',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          errors.experienceYears
+                            ? 'border-red-300'
+                            : 'border-gray-300'
+                        }`}
+                        placeholder="Years of experience"
+                      />
+                    </div>
+                    {errors.experienceYears && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.experienceYears}
+                      </p>
+                    )}
+                  </div>
+                </div>
               )}
-              {isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Save'}
-            </button>
-          </div>
-        </form>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
+                {isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Save'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }

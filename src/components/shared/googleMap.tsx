@@ -1,19 +1,37 @@
 import { GoogleMap, useJsApiLoader, Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 import { useState, useCallback } from 'react';
 
-const containerStyle = {
-  width: '100vw',
-  height: '100vh',
+interface GoogleMapComponentProps {
+  containerStyle?: React.CSSProperties;
+  center?: { lat: number; lng: number };
+  zoom?: number;
+  markers?: Array<{
+    id: string;
+    position: { lat: number; lng: number };
+    title?: string;
+  }>;
+  showDirections?: boolean;
+  origin?: { lat: number; lng: number };
+  destination?: { lat: number; lng: number };
+}
+
+const defaultContainerStyle = {
+  width: '100%',
+  height: '400px',
 };
 
-const galle = { lat: 6.0328, lng: 80.217 }; // Galle, Sri Lanka
-const matara = { lat: 5.9485, lng: 80.5353 }; // Matara, Sri Lanka
-const center = {
-  lat: (galle.lat + matara.lat) / 2,
-  lng: (galle.lng + matara.lng) / 2,
-};
+// Default center (Colombo, Sri Lanka)
+const defaultCenter = { lat: 6.9271, lng: 79.8612 };
 
-export default function GoogleMapComponent() {
+export default function GoogleMapComponent({
+  containerStyle = defaultContainerStyle,
+  center = defaultCenter,
+  zoom = 10,
+  markers = [],
+  showDirections = false,
+  origin,
+  destination,
+}: GoogleMapComponentProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   });
@@ -25,20 +43,44 @@ export default function GoogleMapComponent() {
     }
   }, []);
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded) {
+    return (
+      <div style={containerStyle} className="flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600 text-sm">Loading Map...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10}>
-      {/* Markers for Galle and Matara */}
-      <Marker position={galle}  />
-      <Marker position={matara} />
+    <GoogleMap 
+      mapContainerStyle={containerStyle} 
+      center={center} 
+      zoom={zoom}
+      options={{
+        zoomControl: true,
+        streetViewControl: false,
+        mapTypeControl: true,
+        fullscreenControl: true,
+      }}
+    >
+      {/* Render markers */}
+      {markers.map((marker) => (
+        <Marker
+          key={marker.id}
+          position={marker.position}
+          title={marker.title}
+        />
+      ))}
 
       {/* Directions Service and Renderer */}
-      {!directions && (
+      {showDirections && origin && destination && !directions && (
         <DirectionsService
           options={{
-            origin: galle,
-            destination: matara,
+            origin,
+            destination,
             travelMode: google.maps.TravelMode.DRIVING,
           }}
           callback={directionsCallback}
