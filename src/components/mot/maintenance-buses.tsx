@@ -14,7 +14,7 @@ interface MaintenanceBusesProps {
 
 export function MaintenanceBuses({ buses }: MaintenanceBusesProps) {
   return (
-    <div className="rounded-lg border bg-white shadow-sm">
+    <div className="rounded-lg  bg-white shadow-sm">
       <div className="flex flex-row items-center justify-between p-6">
         <h3 className="text-lg font-semibold text-black">
           Buses Marked for Maintenance

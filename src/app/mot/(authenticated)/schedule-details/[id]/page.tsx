@@ -8,6 +8,7 @@ import { IntermediateStopsCard } from '@/components/mot/intermediate-stops-card'
 import { ScheduleDetailsActions } from '@/components/mot/schedule-details-actions';
 import { RouteSchedulesTable } from '@/components/mot/route-schedules-table';
 import { useRouter, useParams } from 'next/navigation';
+import { dummySchedules } from '@/lib/data/schedules-dummy';
 import { Layout } from '@/components/shared/layout';
 import { useState } from 'react';
 
@@ -19,6 +20,44 @@ export default function ScheduleDetails() {
 
   // Mock schedule data based on ID with bidirectional schedules
   const getScheduleData = (id: string) => {
+    // Use the new dummy data
+    const schedule = dummySchedules.find((s) => String(s.id) === id);
+    if (schedule) {
+      return {
+        id: String(schedule.id),
+        routeId: String(schedule.routeId),
+        routeName: String(schedule.routeName),
+        busNo: 'NB-' + Math.floor(Math.random() * 9999), // Mock bus number
+        startPoint: String(schedule.scheduleStops[0]?.stopName || ''),
+        endPoint: String(
+          schedule.scheduleStops[schedule.scheduleStops.length - 1]?.stopName ||
+            ''
+        ),
+        departure: String(schedule.scheduleStops[0]?.departureTime || ''),
+        arrival: String(
+          schedule.scheduleStops[schedule.scheduleStops.length - 1]
+            ?.arrivalTime || ''
+        ),
+        validFrom: schedule.effectiveStartDate.toISOString().split('T')[0],
+        validUntil: schedule.effectiveEndDate.toISOString().split('T')[0],
+        days: 'Mon-Fri', // Mock days
+        status: String(schedule.status),
+        permitNo: 'PRM-2024-001', // Mock permit
+        operatorName: 'Lanka Transport Co.', // Mock operator
+        conductor: 'S.D. Silva', // Mock conductor
+        daysDetails: {
+          monday: true,
+          tuesday: true,
+          wednesday: true,
+          thursday: true,
+          friday: true,
+          saturday: false,
+          sunday: false,
+        },
+      };
+    }
+
+    // Fallback to original mock data
     const schedules = {
       SCH001: {
         id: 'SCH001',
@@ -611,13 +650,30 @@ export default function ScheduleDetails() {
   //   },
   // ];
 
-  const intermediateStops = [
-    { id: 1, name: 'Colombo Fort', time: '06:30 AM' },
-    { id: 2, name: 'Kelaniya', time: '07:00 AM' },
-    { id: 3, name: 'Kadawatha', time: '07:30 AM' },
-    { id: 4, name: 'Kegalle', time: '08:45 AM' },
-    { id: 5, name: 'Kandy Central', time: '10:15 AM' },
-  ];
+  // Get intermediate stops from the schedule data
+  const getIntermediateStops = () => {
+    const scheduleData = dummySchedules.find(
+      (s) => String(s.id) === scheduleId
+    );
+    if (scheduleData && scheduleData.scheduleStops) {
+      return scheduleData.scheduleStops.map((stop, index) => ({
+        id: index + 1,
+        name: String(stop.stopName),
+        time: String(stop.departureTime),
+      }));
+    }
+
+    // Fallback to original mock data
+    return [
+      { id: 1, name: 'Colombo Fort', time: '06:30 AM' },
+      { id: 2, name: 'Kelaniya', time: '07:00 AM' },
+      { id: 3, name: 'Kadawatha', time: '07:30 AM' },
+      { id: 4, name: 'Kegalle', time: '08:45 AM' },
+      { id: 5, name: 'Kandy Central', time: '10:15 AM' },
+    ];
+  };
+
+  const intermediateStops = getIntermediateStops();
 
   // Attached permits data
   const attachedPermits = [
@@ -750,13 +806,11 @@ export default function ScheduleDetails() {
 
         {activeTab === 'route-schedules' && routeSchedules && (
           <div className="space-y-6">
-            
-              <RouteSchedulesTable
-                routeData={routeSchedules}
-                currentScheduleId={schedule.id}
-              />
-              <DaysOfOperationCard daysDetails={schedule.daysDetails} />
-           
+            <RouteSchedulesTable
+              routeData={routeSchedules}
+              currentScheduleId={schedule.id}
+            />
+            <DaysOfOperationCard daysDetails={schedule.daysDetails} />
           </div>
         )}
 
