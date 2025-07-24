@@ -1,6 +1,6 @@
 "use client";
 
-import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
+import { Layout } from "@/components/shared/layout";
 import { ScheduleDetailsHeader } from "@/components/timeKeeper/schedule-details-header";
 import { ScheduleBasicInfo } from "@/components/timeKeeper/schedule-basic-info";
 import { RouteInformationCard } from "@/components/timeKeeper/route-information-card";
@@ -126,7 +126,7 @@ export default function ScheduleDetails() {
   };
 
   return (
-    <TimeKeeperLayout
+    <Layout
       activeItem="schedule"
       pageTitle="Schedule Details"
       pageDescription="View detailed information about the bus schedule"
@@ -161,6 +161,6 @@ export default function ScheduleDetails() {
           onEdit={handleEdit}
         />
       </div>
-    </TimeKeeperLayout>
+    </Layout>
   );
 }
