@@ -14,7 +14,7 @@ interface RoutePermitAlertsProps {
 
 export function RoutePermitAlerts({ alerts }: RoutePermitAlertsProps) {
   return (
-    <div className="rounded-lg border bg-white shadow-sm">
+    <div className="rounded-lg  bg-white shadow-sm">
       <div className="flex flex-row items-center justify-between p-6">
         <h3 className="text-lg font-semibold text-black">
           Route Permit Expiry Alerts

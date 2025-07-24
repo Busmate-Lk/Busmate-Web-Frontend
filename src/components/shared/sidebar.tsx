@@ -22,6 +22,7 @@ import {
   X,
   Clock,
   Settings,
+  Pen,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -66,14 +67,20 @@ export function Sidebar({
     {
       icon: Route,
       label: 'Routes Management',
-      active: activeItem === 'bus-routes',
-      href: '/mot/bus-routes',
+      active: activeItem === 'bus-route-groups',
+      href: '/mot/bus-route-groups',
     },
     {
       icon: Calendar,
-      label: 'Schedule Assignment',
+      label: 'Schedule Management',
       active: activeItem === 'schedule',
-      href: '/mot/schedule-assignment',
+      href: '/mot/schedule-management',
+    },
+    {
+      icon: Pen,
+      label: 'Schedule Assignment',
+      active: activeItem === 'schedule-assignment',
+      href: '/mot/schedule-assign-form',
     },
     {
       icon: FileText,
@@ -122,6 +129,12 @@ export function Sidebar({
       label: 'Policy Update',
       active: activeItem === 'policy',
       href: '/mot/policy-update',
+    },
+    {
+      icon: FileText,
+      label: 'Staff Management',
+      active: activeItem === 'staff',
+      href: '/mot/staff-management',
     },
   ];
 

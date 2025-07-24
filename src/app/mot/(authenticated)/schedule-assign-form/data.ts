@@ -11,13 +11,47 @@ export interface Bus {
   isAssigned?: boolean;
 }
 
-export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const DAYS_OF_WEEK = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
 export const SAMPLE_TIME_SLOTS = [
-  '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00',
-  '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00',
-  '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00',
-  '17:30', '18:00', '18:30', '19:00', '19:30', '20:00'
+  '05:30',
+  '06:00',
+  '06:30',
+  '07:00',
+  '07:30',
+  '08:00',
+  '08:30',
+  '09:00',
+  '09:30',
+  '10:00',
+  '10:30',
+  '11:00',
+  '11:30',
+  '12:00',
+  '12:30',
+  '13:00',
+  '13:30',
+  '14:00',
+  '14:30',
+  '15:00',
+  '15:30',
+  '16:00',
+  '16:30',
+  '17:00',
+  '17:30',
+  '18:00',
+  '18:30',
+  '19:00',
+  '19:30',
+  '20:00',
 ];
 
 export const SAMPLE_BUSES: Bus[] = [
@@ -70,5 +104,58 @@ export const SAMPLE_BUSES: Bus[] = [
     permitStatus: 'Active',
     fuelType: 'Diesel',
     model: 'TATA LP 909',
+  },
+];
+
+// Route definitions for selection
+export interface Route {
+  id: string;
+  routeNumber: string;
+  routeName: string;
+  hasSchedules: boolean;
+}
+
+export const SAMPLE_ROUTES: Route[] = [
+  {
+    id: 'RT101',
+    routeNumber: '001',
+    routeName: 'Colombo - Kandy',
+    hasSchedules: true,
+  },
+  {
+    id: 'RT102',
+    routeNumber: '002',
+    routeName: 'Colombo - Galle',
+    hasSchedules: true,
+  },
+  {
+    id: 'RT103',
+    routeNumber: '003',
+    routeName: 'Kandy - Nuwara Eliya',
+    hasSchedules: true,
+  },
+  {
+    id: 'RT104',
+    routeNumber: '004',
+    routeName: 'Colombo - Negombo',
+    hasSchedules: true,
+  },
+  {
+    id: 'RT105',
+    routeNumber: '005',
+    routeName: 'Galle - Matara',
+    hasSchedules: true,
+  },
+  {
+    id: 'RT106',
+    routeNumber: '006',
+    routeName: 'Colombo - Kurunegala',
+    hasSchedules: true,
+  },
+  {
+    id: 'RT107',
+    routeNumber: '007',
+    routeName: 'Anuradhapura - Polonnaruwa',
+    hasSchedules: true,
   },
 ];

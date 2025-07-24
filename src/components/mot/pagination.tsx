@@ -156,10 +156,10 @@ export function usePagination<T>(
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(data?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedData = data.slice(startIndex, endIndex);
+  const paginatedData = data?.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -179,7 +179,7 @@ export function usePagination<T>(
     paginatedData,
     handlePageChange,
     handlePageSizeChange,
-    totalItems: data.length,
+    totalItems: data?.length,
     itemsPerPage,
   };
 }

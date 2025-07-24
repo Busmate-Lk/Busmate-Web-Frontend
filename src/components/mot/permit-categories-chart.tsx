@@ -56,7 +56,7 @@ export function PermitCategoriesChart() {
   };
 
   return (
-    <div className="rounded-lg border bg-white shadow-sm">
+    <div className="rounded-lg  bg-white shadow-sm">
       <div className="flex flex-row items-center justify-between p-6">
         <h3 className="text-lg text-black font-semibold">
           Permit Categories

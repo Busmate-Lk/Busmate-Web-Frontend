@@ -282,7 +282,7 @@ export default function ScheduleAssignment() {
     <Layout
       role="mot"
       activeItem="schedule"
-      pageTitle="Schedule Assignment"
+      pageTitle="Schedule Management"
       pageDescription="Manage route timetables and bus assignments for all bus routes"
     >
       <div className="space-y-6">
