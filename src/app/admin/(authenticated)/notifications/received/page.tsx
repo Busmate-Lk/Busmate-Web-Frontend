@@ -1,6 +1,6 @@
 "use client"
 
-import { NotificationPanel } from "@/components/admin/notifications"
+import { NotificationPanel } from "@/components/admin/notifications/notification-panel"
 
 export default function ReceivedNotificationsPage() {
     return (

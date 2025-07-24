@@ -10,7 +10,7 @@ export default function ConductorProfilePage({ params }: { params: { id: string 
 
   return (
     <div className="p-6">
-      <NavigationBreadcrumb items={breadcrumbItems} />
+      {/* <NavigationBreadcrumb items={breadcrumbItems} /> */}
       <ConductorProfile userId={params.id} />
     </div>
   )

@@ -4,7 +4,7 @@ import { Users, Activity, AlertTriangle, Bus, TrendingUp } from "lucide-react"
 const stats = [
   {
     title: "Total Users",
-    value: "12,847",
+    value: "1,920,847",
     change: "+12.5%",
     changeType: "positive",
     icon: Users,
@@ -28,7 +28,7 @@ const stats = [
   },
   {
     title: "Total Buses",
-    value: "342",
+    value: "15,621",
     change: "+5 new",
     changeType: "positive",
     icon: Bus,
@@ -36,7 +36,7 @@ const stats = [
   },
   {
     title: "Transactions",
-    value: "Rs 2.4M",
+    value: "Rs 1.4M",
     change: "Today",
     changeType: "neutral",
     icon: TrendingUp,
@@ -48,17 +48,20 @@ export function StatsCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {stats.map((stat) => (
-        <Card key={stat.title} className={`shadow-sm bg-gradient-to-br ${stat.color === "blue"
-          ? "from-blue-50 to-white"
-          : stat.color === "green"
-            ? "from-green-50 to-white"
-            : stat.color === "red"
-              ? "from-red-50 to-white"
-              : stat.color === "purple"
-                ? "from-purple-50 to-white"
-                : "from-yellow-50 to-white"
-          }`}>
-          <CardContent className="p-6">
+        <Card
+          key={stat.title}
+          className={`shadow-sm border-l-4 ${stat.color === "blue"
+            ? "border-blue-500"
+            : stat.color === "green"
+              ? "border-green-500"
+              : stat.color === "red"
+                ? "border-red-500"
+                : stat.color === "purple"
+                  ? "border-purple-500"
+                  : "border-yellow-500"
+            } bg-white`}
+        >
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>

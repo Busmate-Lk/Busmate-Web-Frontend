@@ -88,7 +88,7 @@ export function Header({ title, description }: HeaderProps) {
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl mb-6">
-            <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex h-20 items-center justify-between px-6">
                 {/* Left section - Dashboard Title */}
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">{title}</h1>

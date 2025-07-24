@@ -10,7 +10,7 @@ export default function MotAdminProfilePage({ params }: { params: { id: string }
 
   return (
     <div className="p-6">
-      <NavigationBreadcrumb items={breadcrumbItems} />
+      {/* <NavigationBreadcrumb items={breadcrumbItems} /> */}
       <MotAdminProfile userId={params.id} />
     </div>
   )

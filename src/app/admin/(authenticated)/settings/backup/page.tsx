@@ -1,5 +1,5 @@
 import { Header } from "@/components/admin/shared"
-import { BackupRecovery } from "@/components/admin/settings"
+import { BackupRecovery } from "@/components/admin/settings/backup-recovery"
 import { Button } from "@/components/admin/ui/button"
 import { ArrowLeft, RefreshCw, Play } from "lucide-react"
 import Link from "next/link"

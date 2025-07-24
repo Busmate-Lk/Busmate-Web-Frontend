@@ -1,6 +1,6 @@
 "use client"
 
-import { ApplicationLogs } from "@/components/admin/logs"
+import { ApplicationLogs } from "@/components/admin/logs/application-logs"
 
 export default function ApplicationLogsPage() {
     return (

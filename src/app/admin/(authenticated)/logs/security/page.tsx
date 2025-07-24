@@ -1,6 +1,6 @@
 "use client"
 
-import { SecurityLogs } from "@/components/admin/logs"
+import { SecurityLogs } from "@/components/admin/logs/security-logs"
 
 export default function SecurityLogsPage() {
     return (
