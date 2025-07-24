@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Search, Plus, Download, ChevronDown, X } from "lucide-react";
+import { Search, Plus, Download, ChevronDown, X } from 'lucide-react';
 
 interface ScheduleSearchFiltersProps {
   searchTerm?: string;
@@ -13,6 +13,7 @@ interface ScheduleSearchFiltersProps {
   setRouteFilter?: (route: string) => void;
   onAddNew: () => void;
   onExportAll?: () => void;
+  isTimeKeeper?: boolean;
 }
 
 export function ScheduleSearchFilters({
@@ -26,8 +27,10 @@ export function ScheduleSearchFilters({
   setRouteFilter,
   onAddNew,
   onExportAll,
+  isTimeKeeper = false,
 }: ScheduleSearchFiltersProps) {
-  const hasActiveFilters = searchTerm || statusFilter || operatorFilter || routeFilter;
+  const hasActiveFilters =
+    searchTerm || statusFilter || operatorFilter || routeFilter;
 
   const clearAllFilters = () => {
     setSearchTerm?.('');
@@ -43,13 +46,17 @@ export function ScheduleSearchFilters({
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
-              placeholder="Search by schedule ID, bus no, or route name..."
+              placeholder={
+                isTimeKeeper
+                  ? 'Search by schedule ID, bus no, route, or platform...'
+                  : 'Search by schedule ID, bus no, or route name...'
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm?.(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder-gray-500"
             />
           </div>
-          
+
           {/* Status Filter */}
           <div className="relative">
             <select
@@ -64,7 +71,7 @@ export function ScheduleSearchFilters({
             </select>
             <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
           </div>
-          
+
           {/* Operator Filter */}
           <div className="relative">
             <select
@@ -117,13 +124,15 @@ export function ScheduleSearchFilters({
               Export All
             </button>
           )}
-          <button
-            className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center"
-            onClick={onAddNew}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Schedule
-          </button>
+          {!isTimeKeeper && (
+            <button
+              className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center"
+              onClick={onAddNew}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Schedule
+            </button>
+          )}
         </div>
       </div>
 
