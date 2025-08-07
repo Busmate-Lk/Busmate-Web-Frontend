@@ -1,44 +1,41 @@
-"use client";
+'use client';
 
-import { Eye, Edit, Trash2, MapPin, Clock, Users, Calendar } from "lucide-react";
-import { Pagination } from "./pagination";
+import {
+  Eye,
+  Edit,
+  Trash2,
+  MapPin,
+  Clock,
+  Users,
+  Calendar,
+} from 'lucide-react';
 import { BusRouteGroupResponse } from '@/types/responsedto/bus-route-group';
 
 interface BusRouteGroupsTableProps {
   routeGroups: BusRouteGroupResponse[];
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (pageSize: number) => void;
   onView: (routeGroupId: string) => void;
   onEdit: (routeGroupId: string) => void;
   onDelete: (routeGroupId: string, routeGroupName: string) => void;
   activeFilters?: {
     search?: string;
   };
+  loading?: boolean;
 }
 
 export function BusRouteGroupsTable({
   routeGroups,
-  currentPage,
-  totalPages,
-  totalItems,
-  itemsPerPage,
-  onPageChange,
-  onPageSizeChange,
   onView,
   onEdit,
   onDelete,
   activeFilters,
+  loading,
 }: BusRouteGroupsTableProps) {
   const formatDate = (dateString: Date) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -48,24 +45,33 @@ export function BusRouteGroupsTable({
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Route Groups</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Route Groups
+            </h3>
             <p className="text-sm text-gray-600 mt-1">
-              Showing {routeGroups?.length} of {totalItems} route groups
+              Showing {routeGroups?.length} route groups
             </p>
           </div>
         </div>
       </div>
 
-      {routeGroups?.length === 0 ? (
+      {loading ? (
+        <div className="px-6 py-12 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading route groups...</p>
+        </div>
+      ) : routeGroups?.length === 0 ? (
         <div className="px-6 py-12 text-center">
           <div className="text-gray-400 mb-2">
             <MapPin className="h-12 w-12 mx-auto" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No route groups found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No route groups found
+          </h3>
           <p className="text-gray-600">
-            {activeFilters?.search 
-              ? "Try adjusting your search criteria or create a new route group." 
-              : "Get started by creating your first route group."}
+            {activeFilters?.search
+              ? 'Try adjusting your search criteria or create a new route group.'
+              : 'Get started by creating your first route group.'}
           </p>
         </div>
       ) : (
@@ -97,8 +103,8 @@ export function BusRouteGroupsTable({
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {routeGroups?.map((routeGroup) => (
-                  <tr 
-                    key={String(routeGroup.id)} 
+                  <tr
+                    key={String(routeGroup.id)}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4">
@@ -158,7 +164,12 @@ export function BusRouteGroupsTable({
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => onDelete(String(routeGroup.id), String(routeGroup.name))}
+                          onClick={() =>
+                            onDelete(
+                              String(routeGroup.id),
+                              String(routeGroup.name)
+                            )
+                          }
                           className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete Route Group"
                         >
@@ -170,18 +181,6 @@ export function BusRouteGroupsTable({
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="px-6 py-4 border-t border-gray-200">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={onPageChange}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              onPageSizeChange={onPageSizeChange}
-            />
           </div>
         </>
       )}
