@@ -1,32 +1,32 @@
 export interface ScheduleManagementResponse {
-  id: String;
-  name: String;
-  routeId: String;
-  routeName: String;
-  routeGroupId: String;
-  routeGroupName: String;
-  scheduleType: String;
+  id: string;
+  name: string;
+  routeId: string;
+  routeName: string;
+  routeGroupId: string;
+  routeGroupName: string;
+  scheduleType: string;
   effectiveStartDate: Date;
   effectiveEndDate: Date;
-  status: String;
+  status: string;
   scheduleStops: {
-    stopId: String;
-    stopName: String;
+    stopId: string;
+    stopName: string;
     location: {
       latitude: number;
       longitude: number;
-      address: String;
-      city: String;
-      state: String;
-      zipCode: String;
-      country: String;
+      address: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
     };
     stopOrder: number;
-    arrivalTime: String;
-    departureTime: String;
+    arrivalTime: string;
+    departureTime: string;
   }[];
   createdAt: Date;
   updatedAt: Date;
-  createdBy: String;
-  updatedBy: String;
+  createdBy: string;
+  updatedBy: string;
 }

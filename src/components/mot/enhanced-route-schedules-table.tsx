@@ -232,13 +232,7 @@ export function EnhancedRouteSchedulesTable({
               </div>
 
               {/* Additional Info */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div>
-                  <span className="font-medium text-gray-900">
-                    Route Group:
-                  </span>
-                  <div className="text-gray-600">{schedule.routeGroupName}</div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
                   <span className="font-medium text-gray-900">Created by:</span>
                   <div className="text-gray-600">{schedule.createdBy}</div>

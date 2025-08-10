@@ -24,12 +24,14 @@ function getAccessibilityBadge(isAccessible: boolean) {
 
 export default function BusStopTable({
   busStops,
+  loading,
 }: {
   busStops: BusStopResponse[];
+  loading: boolean;
 }) {
   const router = useRouter();
   const { deleteBusStop } = useBusStops();
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);  
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (stopId: string, stopName: string) => {
     if (
@@ -67,9 +69,6 @@ export default function BusStopTable({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Stop ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Stop Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -90,107 +89,110 @@ export default function BusStopTable({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {busStops?.map((stop) => (
-              <tr key={stop.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  {stop.id}
-                </td>
-                <td className="px-6 py-4">
-                  <div>
-                    <div className="font-medium text-gray-900">{stop.name}</div>
-                    {stop.description && (
-                      <div className="text-sm text-gray-500 truncate max-w-xs">
-                        {stop.description}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1 text-gray-400" />
-                    <div className="text-sm">
-                      <div className="font-mono">
-                        {stop.location.latitude.toFixed(4)},{' '}
-                        {stop.location.longitude.toFixed(4)}
-                      </div>
-                      <div className="text-gray-500 truncate max-w-xs">
-                        {stop.location.address}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm">
-                    <div className="font-medium text-gray-900">
-                      {stop.location.city}
-                    </div>
-                    <div className="text-gray-500">{stop.location.state}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  {getAccessibilityBadge(stop.isAccessible)}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {formatDate(stop.createdAt)}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() =>
-                        router.push(`/mot/bus-stop-details?id=${stop.id}`)
-                      }
-                      className="text-gray-600 hover:text-gray-900 transition-colors"
-                      title="View Details"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() =>
-                        router.push(`/mot/bus-stop-form?id=${stop.id}`)
-                      }
-                      className="text-blue-600 hover:text-blue-700 transition-colors"
-                      title="Edit"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(stop.id, stop.name)}
-                      disabled={isDeleting === stop.id}
-                      className="text-red-600 hover:text-red-700 transition-colors disabled:opacity-50"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-2 text-gray-500">
+                      Loading bus stops...
+                    </span>
                   </div>
                 </td>
               </tr>
-            ))}
+            ) : busStops?.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="text-gray-500">
+                    <div className="text-lg font-medium">
+                      No bus stops found
+                    </div>
+                    <div className="text-sm">
+                      Try adjusting your search criteria or add a new bus stop.
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              busStops?.map((stop) => (
+                <tr key={stop.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {stop.name}
+                      </div>
+                      {stop.description && (
+                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                          {stop.description}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">
+                    <div className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-1 text-gray-400" />
+                      <div className="text-sm">
+                        <div className="font-mono">
+                          {stop.location.latitude.toFixed(4)},{' '}
+                          {stop.location.longitude.toFixed(4)}
+                        </div>
+                        <div className="text-gray-500 truncate max-w-xs">
+                          {stop.location.address}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm">
+                      <div className="font-medium text-gray-900">
+                        {stop.location.city}
+                      </div>
+                      <div className="text-gray-500">{stop.location.state}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {getAccessibilityBadge(stop.isAccessible)}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {formatDate(stop.createdAt)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() =>
+                          router.push(`/mot/bus-stop-details?id=${stop.id}`)
+                        }
+                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                        title="View Details"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          router.push(`/mot/bus-stop-form?id=${stop.id}`)
+                        }
+                        className="text-blue-600 hover:text-blue-700 transition-colors"
+                        title="Edit"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(stop.id, stop.name)}
+                        disabled={isDeleting === stop.id}
+                        className="text-red-600 hover:text-red-700 transition-colors disabled:opacity-50"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-        <p className="text-sm text-gray-600">
-          Showing {busStops?.length} results
-        </p>
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">
-            Previous
-          </button>
-          <button className="px-3 py-1 border rounded bg-blue-600 text-white">
-            1
-          </button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">
-            2
-          </button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">
-            3
-          </button>
-          <button className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-100">
-            Next
-          </button>
-        </div>
-      </div>
+      
     </div>
   );
 }
