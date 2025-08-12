@@ -1,14 +1,14 @@
 import { Bus, CheckCircle, AlertTriangle, MapPin } from "lucide-react"
-import { BusStopResponse } from "@/types/responsedto/bus-stop"
+import { StopResponse } from "@/lib/api-client/route-management"
 import { useMemo } from "react"
 
-export default function BusStopStats({ busStops }: { busStops: BusStopResponse[] }) {
+export default function BusStopStats({ busStops }: { busStops: StopResponse[] }) {
   const stats = useMemo(() => {
     const totalStops = busStops?.length || 0
     const accessibleStops = busStops?.filter(stop => stop.isAccessible)?.length || 0
     const nonAccessibleStops = totalStops - accessibleStops
-    const uniqueStates = new Set(busStops?.map(stop => stop.location.state)).size
-    const uniqueCities = new Set(busStops?.map(stop => stop.location.city)).size
+    const uniqueStates = new Set(busStops?.map(stop => stop.location?.state).filter(Boolean)).size
+    const uniqueCities = new Set(busStops?.map(stop => stop.location?.city).filter(Boolean)).size
 
     return {
       totalStops,
