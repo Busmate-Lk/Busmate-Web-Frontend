@@ -11,7 +11,7 @@ export interface BusStopResponse {
     zipCode: string;
     country: string;
   };
-  isAccessible: true;
+  isAccessible: boolean;
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;

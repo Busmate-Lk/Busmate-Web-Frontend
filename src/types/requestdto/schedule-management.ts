@@ -1,16 +1,16 @@
 import { time } from 'console';
 
 export interface ScheduleManagementRequest {
-  name: String;
-  routeId: String;
-  scheduleType: String;
+  name: string;
+  routeId: string;
+  scheduleType: string;
   effectiveStartDate: Date;
   effectiveEndDate: Date;
-  status: String;
+  status: string;
   scheduleStops: {
-    stopId: String;
+    stopId: string;
     stopOrder: number;
-    arrivalTime: String;
-    departureTime: String;
+    arrivalTime: string;
+    departureTime: string;
   }[];
 }

@@ -6,6 +6,7 @@ import { login as apiLogin, logout as apiLogout, getCurrentUser } from '@/lib/ap
 import { LoginRequest } from '@/types/requestdto/auth';
 import { getUserFromToken, isTokenExpired } from '@/lib/utils/jwtHandler';
 import { getCookie, setCookie, clearAuthCookies, setSecureAuthCookie } from '@/lib/utils/cookieUtils';
+import { OpenAPI } from '@/lib/api-client/route-management';
 
 interface AuthState {
   user: User | null;
@@ -30,6 +31,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Configure OpenAPI token function
+  const configureApiToken = () => {
+    OpenAPI.TOKEN = async () => {
+      const token = getCookie('access_token');
+      return token || '';
+    };
+  };
+
+  // Clear API token
+  const clearApiToken = () => {
+    OpenAPI.TOKEN = undefined;
+  };
+
   // Check authentication status
   const checkAuth = async () => {
     try {
@@ -42,6 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // No token found, user is not authenticated
         setUser(null);
         setIsAuthenticated(false);
+        clearApiToken();
         return;
       }
 
@@ -69,6 +84,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setSecureAuthCookie('access_token', authData.access_token, authData.expires_in);
               setSecureAuthCookie('refresh_token', authData.refresh_token, 30 * 24 * 60 * 60); // 30 days
               
+              // Configure API client with new token
+              configureApiToken();
+              
               // Extract and set user data
               const userFromToken = getUserFromToken(authData.access_token);
               if (userFromToken) {
@@ -90,12 +108,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         // Refresh failed, clear cookies and redirect
         clearAuthCookies(['access_token', 'refresh_token']);
+        clearApiToken();
         setUser(null);
         setIsAuthenticated(false);
         return;
       }
 
-      // Token is valid, extract user info
+      // Token is valid, configure API client
+      configureApiToken();
+
+      // Extract user info
       const userFromToken = getUserFromToken(token);
       if (userFromToken) {
         setUser({
@@ -108,12 +130,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         // Invalid token payload
         clearAuthCookies(['access_token', 'refresh_token']);
+        clearApiToken();
         setUser(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       clearAuthCookies(['access_token', 'refresh_token']);
+      clearApiToken();
       setUser(null);
       setIsAuthenticated(false);
     } finally {
@@ -132,6 +156,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSecureAuthCookie('access_token', authResponse.access_token, authResponse.expires_in);
       setSecureAuthCookie('refresh_token', authResponse.refresh_token, 30 * 24 * 60 * 60); // 30 days
       
+      // Configure API client with new token
+      configureApiToken();
+      
       // Extract user data from response
       const userData: User = {
         id: authResponse.user.id,
@@ -149,6 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Login failed:', error);
       // Clear any potentially set cookies on login failure
       clearAuthCookies(['access_token', 'refresh_token']);
+      clearApiToken();
       setUser(null);
       setIsAuthenticated(false);
       throw error;
@@ -172,6 +200,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       // Clear all auth-related cookies
       clearAuthCookies(['access_token', 'refresh_token']);
+      
+      // Clear API token
+      clearApiToken();
       
       setIsLoading(false);
       
