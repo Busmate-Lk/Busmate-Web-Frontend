@@ -7,17 +7,9 @@ import { PageHeader } from "@/components/operator/page-header"
 import { BusCard } from "@/components/operator/bus-card"
 import { Tabs } from "@/components/operator/tabs"
 import Link from "next/link"
+import {BusData} from "@/types/responsedto/busDetails-by-operator"
 
-interface BusData {
-  id: string
-  busNumber: string
-  busName: string
-  route: string
-  driver: string
-  conductor: string
-  conductorPhone: string
-  status: "Active" | "Maintenance" | "Inactive"
-}
+
 
 export default function FleetManagement() {
   const [activeTab, setActiveTab] = useState("all")
