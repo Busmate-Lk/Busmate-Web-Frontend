@@ -49,7 +49,7 @@ export function AddMotForm() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-screen-2xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">
@@ -60,13 +60,7 @@ export function AddMotForm() {
               </Link>
             </Button>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Add Ministry of Transport Official</h1>
-            <p className="text-gray-600">
-              Create a new user account for Ministry of Transport personnel with appropriate access levels and
-              permissions.
-            </p>
-          </div>
+
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
@@ -255,7 +249,7 @@ export function AddMotForm() {
                       Security Clearance Level
                     </Label>
                     <Select>
-                      <SelectTrigger className="h-11">
+                      <SelectTrigger className="h-11" >
                         <SelectValue placeholder="Select clearance level" />
                       </SelectTrigger>
                       <SelectContent>
@@ -271,7 +265,7 @@ export function AddMotForm() {
             </Card>
 
             {/* System Access & Permissions */}
-            <Card className="shadow-lg">
+            {/* <Card className="shadow-lg">
               <CardHeader className="bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-purple-100 rounded-lg">
@@ -359,7 +353,7 @@ export function AddMotForm() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* Account Setup */}
             <Card className="shadow-lg">

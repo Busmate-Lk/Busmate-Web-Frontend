@@ -6,8 +6,18 @@ import {
   SendConfirmationModal,
 } from '@/components/mot/confirmation-modals'
 
-// Import the interface from the parent page
-import { BroadcastMessage } from "@/app/mot/Sent-Messages/page"
+// Define the BroadcastMessage interface locally (or import from a shared types file)
+export interface BroadcastMessage {
+  id: string
+  title: string
+  body: string
+  targetGroups: string[]
+  priority: string
+  category: string
+  scheduledTime: string
+  status: string
+  createdAt: string
+}
 
 interface PendingMessagesTableProps {
   messages: BroadcastMessage[]

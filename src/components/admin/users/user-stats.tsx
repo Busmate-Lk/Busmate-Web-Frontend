@@ -1,10 +1,10 @@
 import { Card, CardContent } from "@/components/admin/ui/card"
-import { Users, Shield, Truck, Award } from "lucide-react"
+import { Users, Shield, Truck, Award, Clock } from "lucide-react"
 
 const stats = [
   {
     title: "Total Passengers",
-    value: "12,847",
+    value: "1,002,384",
     change: "+8.2% from last month",
     changeType: "positive",
     icon: Users,
@@ -12,7 +12,7 @@ const stats = [
   },
   {
     title: "Conductors",
-    value: "342",
+    value: "23,132",
     change: "+3.1% from last month",
     changeType: "positive",
     icon: Shield,
@@ -20,7 +20,7 @@ const stats = [
   },
   {
     title: "Fleet Operators",
-    value: "89",
+    value: "231",
     change: "-1.2% from last month",
     changeType: "negative",
     icon: Truck,
@@ -28,27 +28,40 @@ const stats = [
   },
   {
     title: "MoT Officials",
-    value: "24",
+    value: "1500",
     change: "No change",
     changeType: "neutral",
     icon: Award,
     color: "purple",
   },
+  {
+    title: "Time Keepers",
+    value: "4600",
+    change: "+2.0% from last month",
+    changeType: "positive",
+    icon: Clock,
+    color: "teal",
+  },
 ]
 
 export function UserStats() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {stats.map((stat) => (
-        <Card key={stat.title} className={`shadow-lg bg-gradient-to-br from-white to-gray-50 border-l-4 ${stat.color === "blue"
-          ? "border-l-blue-500"
-          : stat.color === "green"
-            ? "border-l-green-500"
-            : stat.color === "yellow"
-              ? "border-l-yellow-500"
-              : "border-l-purple-500"
-          }`}>
-          <CardContent className="p-6">
+        <Card
+          key={stat.title}
+          className={`shadow-sm border-l-4 ${stat.color === "blue"
+            ? "border-blue-500"
+            : stat.color === "green"
+              ? "border-green-500"
+              : stat.color === "yellow"
+                ? "border-yellow-500"
+                : stat.color === "purple"
+                  ? "border-purple-500"
+                  : "border-teal-500"
+            } bg-white`}
+        >
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>
@@ -65,13 +78,15 @@ export function UserStats() {
                 </p>
               </div>
               <div
-                className={`p-3 rounded-full ${stat.color === "blue"
+                className={`p-3 rounded-full shadow-sm ${stat.color === "blue"
                   ? "bg-blue-100 text-blue-600"
                   : stat.color === "green"
                     ? "bg-green-100 text-green-600"
                     : stat.color === "yellow"
                       ? "bg-yellow-100 text-yellow-600"
-                      : "bg-purple-100 text-purple-600"
+                      : stat.color === "purple"
+                        ? "bg-purple-100 text-purple-600"
+                        : "bg-teal-100 text-teal-600"
                   }`}
               >
                 <stat.icon className="h-6 w-6" />

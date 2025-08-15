@@ -1,6 +1,6 @@
 "use client"
 
-import { MicroserviceUptime } from "@/components/admin/monitoring"
+import { MicroserviceUptime } from "@/components/admin/monitoring/microservice-uptime"
 
 export default function MicroserviceUptimePage() {
     return (

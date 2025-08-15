@@ -1,4 +1,4 @@
-import { Settings, Calendar, MapPin, Users, Fuel } from "lucide-react"
+import { Settings, Calendar, MapPin, Users, Fuel, Route } from "lucide-react"
 
 interface Bus {
   chassisNo: string
@@ -9,8 +9,9 @@ interface Bus {
   seatingCapacity: number
   standingCapacity?: number
   registrationDate: string
-  lastInspectionDate: string
-  nextMaintenanceDate: string
+  permitValidFrom?: string
+  permitValidTo?: string
+  assignedRoute?: string
 }
 
 interface BusDetailedInfoProps {
@@ -90,10 +91,10 @@ export default function BusDetailedInfo({ bus }: BusDetailedInfoProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Calendar className="w-5 h-5 text-blue-600" />
+            <Route className="w-5 h-5 text-blue-600" />
             <div>
-              <p className="text-sm text-gray-500">Last Inspection</p>
-              <p className="font-medium">{formatDate(bus.lastInspectionDate)}</p>
+              <p className="text-sm text-gray-500">Assigned Route</p>
+              <p className="font-medium">{bus.assignedRoute || 'Not Assigned'}</p>
             </div>
           </div>
 
@@ -102,14 +103,6 @@ export default function BusDetailedInfo({ bus }: BusDetailedInfoProps) {
             <div>
               <p className="text-sm text-gray-500">Fuel Type</p>
               <p className="font-medium">{bus.fuelType}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Calendar className="w-5 h-5 text-blue-600" />
-            <div>
-              <p className="text-sm text-gray-500">Next Maintenance</p>
-              <p className="font-medium">{formatDate(bus.nextMaintenanceDate)}</p>
             </div>
           </div>
         </div>

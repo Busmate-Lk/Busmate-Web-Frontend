@@ -3,24 +3,26 @@ import { Calendar, AlertCircle } from "lucide-react"
 interface ImportantDatesFormProps {
   formData: {
     registrationDate: string
-    lastInspectionDate: string
-    nextMaintenanceDate: string
+    permitValidFrom: string
+    permitValidTo: string
+    // Add any other fields that might be passed from the parent
+    [key: string]: any
   }
   onInputChange: (field: string, value: string) => void
   errors: Record<string, string>
   showValidation: boolean
 }
 
-export default function ImportantDatesForm({ 
-  formData, 
-  onInputChange, 
-  errors, 
-  showValidation 
+export default function ImportantDatesForm({
+  formData,
+  onInputChange,
+  errors,
+  showValidation
 }: ImportantDatesFormProps) {
   const getInputClassName = (fieldName: string) => {
     const baseClass = "w-full border rounded px-3 py-2 focus:outline-none focus:ring-2"
     const hasError = showValidation && errors[fieldName]
-    
+
     if (hasError) {
       return `${baseClass} border-red-300 focus:ring-red-500 focus:border-red-500`
     }
@@ -29,7 +31,7 @@ export default function ImportantDatesForm({
 
   const ErrorMessage = ({ fieldName }: { fieldName: string }) => {
     if (!showValidation || !errors[fieldName]) return null
-    
+
     return (
       <div className="flex items-center gap-1 mt-1">
         <AlertCircle className="w-4 h-4 text-red-500" />
@@ -43,17 +45,20 @@ export default function ImportantDatesForm({
     return new Date().toISOString().split('T')[0]
   }
 
-  // Helper function to get min date (1990-01-01)
+  // Helper function to get min date (1990-01-01 to match validation)
   const getMinDate = () => {
     return '1990-01-01'
   }
 
-  // Helper function to get max future date (2 years from now)
+  // Helper function to get max future date (1 years from now for permit validity)
   const getMaxFutureDate = () => {
     const date = new Date()
-    date.setFullYear(date.getFullYear() + 2)
+    date.setFullYear(date.getFullYear() + 1)
     return date.toISOString().split('T')[0]
   }
+
+  // Debug: Log the form data to check what's being passed
+  console.log('ImportantDatesForm - formData:', formData)
 
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200">
@@ -73,7 +78,7 @@ export default function ImportantDatesForm({
               name="registrationDate"
               type="date"
               className={getInputClassName("registrationDate")}
-              value={formData.registrationDate}
+              value={formData.registrationDate || ''}
               onChange={(e) => onInputChange("registrationDate", e.target.value)}
               min={getMinDate()}
               max={getTodayDate()}
@@ -84,34 +89,37 @@ export default function ImportantDatesForm({
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Last Inspection Date
+              Permit Valid From *
             </label>
             <input
-              name="lastInspectionDate"
+              name="permitValidFrom"
               type="date"
-              className={getInputClassName("lastInspectionDate")}
-              value={formData.lastInspectionDate}
-              onChange={(e) => onInputChange("lastInspectionDate", e.target.value)}
-              max={getTodayDate()}
+              className={getInputClassName("permitValidFrom")}
+              value={formData.permitValidFrom || ''}
+              onChange={(e) => onInputChange("permitValidFrom", e.target.value)}
+              min={getMinDate()}
+              max={getMaxFutureDate()}
+              required
             />
-            <ErrorMessage fieldName="lastInspectionDate" />
-            <p className="text-xs text-gray-500 mt-1">Most recent safety inspection</p>
+            <ErrorMessage fieldName="permitValidFrom" />
+            <p className="text-xs text-gray-500 mt-1">Start date of permit validity</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Next Maintenance Date
+              Permit Valid To *
             </label>
             <input
-              name="nextMaintenanceDate"
+              name="permitValidTo"
               type="date"
-              className={getInputClassName("nextMaintenanceDate")}
-              value={formData.nextMaintenanceDate}
-              onChange={(e) => onInputChange("nextMaintenanceDate", e.target.value)}
-              min={getTodayDate()}
+              className={getInputClassName("permitValidTo")}
+              value={formData.permitValidTo || ''}
+              onChange={(e) => onInputChange("permitValidTo", e.target.value)}
+              min={formData.permitValidFrom || getTodayDate()}
               max={getMaxFutureDate()}
+              required
             />
-            <ErrorMessage fieldName="nextMaintenanceDate" />
-            <p className="text-xs text-gray-500 mt-1">Scheduled maintenance date</p>
+            <ErrorMessage fieldName="permitValidTo" />
+            <p className="text-xs text-gray-500 mt-1">End date of permit validity</p>
           </div>
         </div>
 
@@ -120,11 +128,22 @@ export default function ImportantDatesForm({
           <h4 className="text-sm font-medium text-yellow-900 mb-2">Date Guidelines:</h4>
           <ul className="text-xs text-yellow-700 space-y-1">
             <li>• Registration date cannot be in the future or before 1990</li>
-            <li>• Last inspection date cannot be before registration date</li>
-            <li>• Next maintenance should be scheduled within the next 2 years</li>
-            <li>• Regular inspections are required every 6 months for public transport</li>
+            <li>• Permit valid from date must be after or equal to registration date</li>
+            <li>• Permit valid to date must be after the permit valid from date</li>
+            <li>• Permit validity period should not exceed 1 years</li>
+            <li>• Ensure permit renewal before expiry to maintain legal operation</li>
           </ul>
         </div>
+
+        {/* Debug Information (remove in production) */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs">
+            <strong>Debug Info:</strong>
+            <div>Registration Date: {formData.registrationDate || 'empty'}</div>
+            <div>Permit Valid From: {formData.permitValidFrom || 'empty'}</div>
+            <div>Permit Valid To: {formData.permitValidTo || 'empty'}</div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -150,7 +150,7 @@ export function BusDetails({ fleetId, busId }: BusDetailsProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" asChild>
+          <Button className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md" variant="ghost" size="sm" asChild>
             <Link href={`/admin/users/fleet/${fleetId}`}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Fleet

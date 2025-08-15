@@ -15,7 +15,7 @@ export default function BusDetailsPage({
 
   return (
     <div className="p-6">
-      <NavigationBreadcrumb items={breadcrumbItems} />
+      {/* <NavigationBreadcrumb items={breadcrumbItems} /> */}
       <BusDetails fleetId={params.id} busId={params.busId} />
     </div>
   )

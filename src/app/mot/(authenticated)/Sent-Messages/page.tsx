@@ -26,8 +26,8 @@ export interface BroadcastMessage {
 const broadcastMessages: BroadcastMessage[] = [
   {
     id: "BM001",
-    title: "Route 138 Service Disruption - Colombo to Matara",
-    body: "Due to road construction on Galle Road near Kalutara, Route 138 services will be delayed by 30-45 minutes from 9:00 AM to 5:00 PM today. Alternative routes via A2 highway are recommended.",
+    title: "Route 02 Service Disruption - Colombo to Matara",
+    body: "Due to road construction on Galle Road near Kalutara, Route 02 services will be delayed by 30-45 minutes from 9:00 AM to 5:00 PM today. Alternative routes via A2 highway are recommended.",
     targetGroups: ["Bus Operators", "Drivers", "Passengers"],
     priority: "High",
     category: "Route Update",
