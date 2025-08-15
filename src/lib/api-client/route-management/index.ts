@@ -44,7 +44,6 @@ export { BusStopManagementService } from './services/BusStopManagementService';
 export { OperatorManagementService } from './services/OperatorManagementService';
 export { PermitManagementService } from './services/PermitManagementService';
 export { PermitScheduleAssignmentService } from './services/PermitScheduleAssignmentService';
-export { RouteGroupManagementService } from './services/RouteGroupManagementService';
 export { RouteManagementService } from './services/RouteManagementService';
 export { ScheduleManagementService } from './services/ScheduleManagementService';
 export { TripManagementService } from './services/TripManagementService';

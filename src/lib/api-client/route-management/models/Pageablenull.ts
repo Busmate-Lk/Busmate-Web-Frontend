@@ -4,11 +4,11 @@
 /* eslint-disable */
 import type { Sortnull } from './Sortnull';
 export type Pageablenull = {
+    paged?: boolean;
+    pageNumber?: number;
+    pageSize?: number;
     offset?: number;
     sort?: Sortnull;
-    pageSize?: number;
-    pageNumber?: number;
-    paged?: boolean;
     unpaged?: boolean;
 };
 

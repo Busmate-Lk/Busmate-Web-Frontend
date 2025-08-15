@@ -8,6 +8,7 @@ import type { StopResponse } from './StopResponse';
 export type PageStopResponse = {
     totalElements?: number;
     totalPages?: number;
+    pageable?: Pageablenull;
     size?: number;
     content?: Array<StopResponse>;
     number?: number;
@@ -15,7 +16,6 @@ export type PageStopResponse = {
     first?: boolean;
     last?: boolean;
     numberOfElements?: number;
-    pageable?: Pageablenull;
     empty?: boolean;
 };
 

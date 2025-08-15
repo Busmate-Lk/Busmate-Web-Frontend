@@ -8,6 +8,7 @@ import type { Sortnull } from './Sortnull';
 export type PageOperatorResponse = {
     totalElements?: number;
     totalPages?: number;
+    pageable?: Pageablenull;
     size?: number;
     content?: Array<OperatorResponse>;
     number?: number;
@@ -15,7 +16,6 @@ export type PageOperatorResponse = {
     first?: boolean;
     last?: boolean;
     numberOfElements?: number;
-    pageable?: Pageablenull;
     empty?: boolean;
 };
 
