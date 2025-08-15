@@ -7,15 +7,17 @@ import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
 } from '@/components/mot/confirmation-modals';
-import { BusPermitStatsCards } from '@/components/mot/bus-permit-stats-cards';
-import { BusPermitSearchFilters } from '@/components/mot/bus-permit-search-filters';
-import { BusPermitsTable, BusPermit } from '@/components/mot/bus-permits-table';
+import { BusPermitStatsCards } from '@/components/mot/bus-permits/bus-permit-stats-cards';
+import { BusPermitSearchFilters } from '@/components/mot/bus-permits/bus-permit-search-filters';
+import {
+  BusPermitsTable,
+  BusPermit,
+} from '@/components/mot/bus-permits/bus-permits-table';
 import { usePagination } from '@/components/mot/pagination';
 import { Layout } from '@/components/shared/layout';
 import { permits } from './data';
 
 export default function BusPermitManagement() {
- 
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -33,16 +35,18 @@ export default function BusPermitManagement() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Filter permits based on search term, status, and operator
-  const filteredPermits = permits.filter(permit => {
-    const matchesSearch = searchTerm === '' || 
+  const filteredPermits = permits.filter((permit) => {
+    const matchesSearch =
+      searchTerm === '' ||
       permit.routeNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       permit.routeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       permit.operator.toLowerCase().includes(searchTerm.toLowerCase()) ||
       permit.id.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === '' || permit.status === statusFilter;
-    const matchesOperator = operatorFilter === '' || permit.operator === operatorFilter;
-    
+    const matchesOperator =
+      operatorFilter === '' || permit.operator === operatorFilter;
+
     return matchesSearch && matchesStatus && matchesOperator;
   });
 
@@ -59,16 +63,22 @@ export default function BusPermitManagement() {
 
   // Calculate stats from filtered permit data (use filteredPermits for accurate stats)
   const calculateStats = () => {
-    const activeCount = filteredPermits.filter(permit => permit.status === 'Active').length;
-    const pendingCount = filteredPermits.filter(permit => permit.status === 'Pending').length;
-    const expiredCount = filteredPermits.filter(permit => permit.status === 'Expired').length;
+    const activeCount = filteredPermits.filter(
+      (permit) => permit.status === 'Active'
+    ).length;
+    const pendingCount = filteredPermits.filter(
+      (permit) => permit.status === 'Pending'
+    ).length;
+    const expiredCount = filteredPermits.filter(
+      (permit) => permit.status === 'Expired'
+    ).length;
     const totalCount = filteredPermits.length;
 
     return {
-      active: { count: activeCount, change: "+1 this month" },
+      active: { count: activeCount, change: '+1 this month' },
       pending: { count: pendingCount },
       expired: { count: expiredCount },
-      total: { count: totalCount, change: "No change from last month" },
+      total: { count: totalCount, change: 'No change from last month' },
     };
   };
 
@@ -124,7 +134,7 @@ export default function BusPermitManagement() {
       activeItem="bus-permits"
       pageTitle="Bus Permit Management"
       pageDescription="Manage and track bus route permits and approvals"
-      role = "mot"
+      role="mot"
     >
       <div className="space-y-6">
         {/* Quick Stats Cards */}
