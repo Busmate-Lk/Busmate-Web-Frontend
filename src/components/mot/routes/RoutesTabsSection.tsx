@@ -20,10 +20,9 @@ interface RouteTabType {
 
 interface RoutesTabsSectionProps {
   routes: RouteResponse[];
-  onAddRoute: () => void;
 }
 
-export function RoutesTabsSection({ routes, onAddRoute }: RoutesTabsSectionProps) {
+export function RoutesTabsSection({ routes }: RoutesTabsSectionProps) {
   const [activeRouteTab, setActiveRouteTab] = useState<string>(routes.length > 0 ? routes[0].id || '' : '');
   const [activeSubTab, setActiveSubTab] = useState<string>('details');
 
@@ -123,13 +122,13 @@ export function RoutesTabsSection({ routes, onAddRoute }: RoutesTabsSectionProps
         <p className="text-gray-600 mb-6">
           This route group doesn't have any routes yet. Create your first route to get started.
         </p>
-        <button
+        {/* <button
           onClick={onAddRoute}
           className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Add First Route
-        </button>
+        </button> */}
       </div>
     );
   }

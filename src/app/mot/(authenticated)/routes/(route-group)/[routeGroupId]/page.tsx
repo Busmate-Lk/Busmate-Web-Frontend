@@ -12,6 +12,7 @@ import {
 import { Layout } from '@/components/shared/layout';
 import { RouteGroupSummaryCard } from '@/components/mot/routes/RouteGroupSummaryCard';
 import { RoutesTabsSection } from '@/components/mot/routes/RoutesTabsSection';
+import DeleteRouteConfirmation from '@/components/mot/routes/DeleteRouteConfirmation';
 import { RouteManagementService } from '@/lib/api-client/route-management';
 import type { RouteGroupResponse, RouteResponse } from '@/lib/api-client/route-management';
 
@@ -25,6 +26,10 @@ export default function RouteGroupDetailsPage() {
   const [routes, setRoutes] = useState<RouteResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // 🔌 API INTEGRATION POINT 1: Fetch Route Group Details
   const loadRouteGroupDetails = useCallback(async () => {
@@ -59,13 +64,35 @@ export default function RouteGroupDetailsPage() {
     router.push(`/mot/routes/${routeGroupId}/edit`);
   };
 
-  const handleAddRoute = () => {
-    router.push(`/mot/route-form?groupId=${routeGroupId}`);
-  };
+  // const handleAddRoute = () => {
+  //   router.push(`/mot/route-form?groupId=${routeGroupId}`);
+  // };
 
   const handleDelete = () => {
-    // TODO: Implement delete confirmation modal
-    console.log('Delete route group:', routeGroupId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!routeGroup?.id) return;
+
+    try {
+      setIsDeleting(true);
+      await RouteManagementService.deleteRouteGroup(routeGroup.id);
+      
+      // Navigate back to route groups list after successful deletion
+      router.push('/mot/routes');
+      
+    } catch (error) {
+      console.error('Error deleting route group:', error);
+      setError('Failed to delete route group. Please try again.');
+      // Keep the modal open on error so user can see what happened
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleBack = () => {
@@ -123,6 +150,21 @@ export default function RouteGroupDetailsPage() {
       role="mot"
     >
       <div className="space-y-6">
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex">
+              <div className="text-red-600 text-sm">{error}</div>
+              <button
+                onClick={() => setError(null)}
+                className="ml-auto text-red-600 hover:text-red-800"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 1. Header Section - Breadcrumbs + Actions */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Breadcrumbs */}
@@ -157,18 +199,18 @@ export default function RouteGroupDetailsPage() {
             </button>
             <button
               onClick={handleEdit}
-              className="flex items-center gap-2 px-4 py-2 text-green-600 border border-green-300 rounded-lg hover:bg-green-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
             >
               <Edit className="w-4 h-4" />
               Edit Group
             </button>
-            <button
+            {/* <button
               onClick={handleAddRoute}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Route
-            </button>
+            </button> */}
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
@@ -183,7 +225,16 @@ export default function RouteGroupDetailsPage() {
         <RouteGroupSummaryCard routeGroup={routeGroup} routes={routes} />
 
         {/* 3. Routes Tabs Section */}
-        <RoutesTabsSection routes={routes} onAddRoute={handleAddRoute} />
+        <RoutesTabsSection routes={routes} />
+
+        {/* Delete Confirmation Modal */}
+        <DeleteRouteConfirmation
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          routeGroup={routeGroup}
+          isDeleting={isDeleting}
+        />
       </div>
     </Layout>
   );
