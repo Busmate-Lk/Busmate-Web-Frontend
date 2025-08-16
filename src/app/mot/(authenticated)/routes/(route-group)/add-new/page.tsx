@@ -267,6 +267,31 @@ export default function AddNewRouteGroupPage() {
   const handleAutoGenerateInbound = () => {
     const outbound = formData.outboundRoute;
     
+    // Build complete stops array for reversal
+    const completeOutboundStops = [
+      {
+        stopId: outbound.startStopId,
+        stopName: outbound.startStopName,
+        stopOrder: 0,
+        distanceFromStartKm: 0
+      },
+      ...outbound.routeStops,
+      {
+        stopId: outbound.endStopId,
+        stopName: outbound.endStopName,
+        stopOrder: outbound.routeStops.length + 1,
+        distanceFromStartKm: outbound.distanceKm
+      }
+    ];
+    
+    // Reverse and recalculate
+    const reversedStops = [...completeOutboundStops].reverse();
+    const inboundIntermediateStops = reversedStops.slice(1, -1).map((stop, index) => ({
+      ...stop,
+      stopOrder: index + 1,
+      distanceFromStartKm: outbound.distanceKm - stop.distanceFromStartKm
+    }));
+    
     setFormData(prev => ({
       ...prev,
       inboundRoute: {
@@ -279,11 +304,7 @@ export default function AddNewRouteGroupPage() {
         endStopName: outbound.startStopName,
         distanceKm: outbound.distanceKm,
         estimatedDurationMinutes: outbound.estimatedDurationMinutes,
-        routeStops: [...outbound.routeStops].reverse().map((stop, index) => ({
-          ...stop,
-          stopOrder: index + 1,
-          distanceFromStartKm: outbound.distanceKm - stop.distanceFromStartKm
-        }))
+        routeStops: inboundIntermediateStops // 🔥 FIXED: Only intermediate stops
       }
     }));
   };
@@ -325,6 +346,36 @@ export default function AddNewRouteGroupPage() {
       setIsLoading(true);
       setError(null);
 
+      // Helper function to build complete route stops array
+      const buildCompleteRouteStops = (routeData: RouteFormData) => {
+        const allStops = [];
+        
+        // 1. Add start stop (order 0)
+        allStops.push({
+          stopId: routeData.startStopId,
+          stopOrder: 0,
+          distanceFromStartKm: 0
+        });
+        
+        // 2. Add intermediate stops (order 1, 2, 3, ...)
+        routeData.routeStops.forEach((stop, index) => {
+          allStops.push({
+            stopId: stop.stopId,
+            stopOrder: index + 1,
+            distanceFromStartKm: stop.distanceFromStartKm
+          });
+        });
+        
+        // 3. Add end stop (final order)
+        allStops.push({
+          stopId: routeData.endStopId,
+          stopOrder: routeData.routeStops.length + 1,
+          distanceFromStartKm: routeData.distanceKm
+        });
+        
+        return allStops;
+      };
+
       // Prepare route group data for API
       const routeGroupRequest: RouteGroupRequest = {
         name: formData.name,
@@ -339,11 +390,7 @@ export default function AddNewRouteGroupPage() {
             endStopId: formData.outboundRoute.endStopId,
             distanceKm: formData.outboundRoute.distanceKm,
             estimatedDurationMinutes: formData.outboundRoute.estimatedDurationMinutes,
-            routeStops: formData.outboundRoute.routeStops.map(stop => ({
-              stopId: stop.stopId,
-              stopOrder: stop.stopOrder,
-              distanceFromStartKm: stop.distanceFromStartKm
-            }))
+            routeStops: buildCompleteRouteStops(formData.outboundRoute) // 🔥 FIXED: Now includes ALL stops
           },
           // Inbound route
           {
@@ -354,11 +401,7 @@ export default function AddNewRouteGroupPage() {
             endStopId: formData.inboundRoute.endStopId,
             distanceKm: formData.inboundRoute.distanceKm,
             estimatedDurationMinutes: formData.inboundRoute.estimatedDurationMinutes,
-            routeStops: formData.inboundRoute.routeStops.map(stop => ({
-              stopId: stop.stopId,
-              stopOrder: stop.stopOrder,
-              distanceFromStartKm: stop.distanceFromStartKm
-            }))
+            routeStops: buildCompleteRouteStops(formData.inboundRoute) // 🔥 FIXED: Now includes ALL stops
           }
         ]
       };
