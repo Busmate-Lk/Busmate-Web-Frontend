@@ -56,7 +56,7 @@ export default function RouteGroupDetailsPage() {
 
   // Handlers
   const handleEdit = () => {
-    router.push(`/mot/route-group-form?id=${routeGroupId}`);
+    router.push(`/mot/routes/${routeGroupId}/edit`);
   };
 
   const handleAddRoute = () => {
