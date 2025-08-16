@@ -17,6 +17,8 @@ export type { OperatorRequest } from './models/OperatorRequest';
 export type { OperatorResponse } from './models/OperatorResponse';
 export type { Pageablenull } from './models/Pageablenull';
 export type { PageOperatorResponse } from './models/PageOperatorResponse';
+export type { PageRouteGroupResponse } from './models/PageRouteGroupResponse';
+export type { PageRouteResponse } from './models/PageRouteResponse';
 export type { PageStopResponse } from './models/PageStopResponse';
 export type { PassengerServicePermitRequest } from './models/PassengerServicePermitRequest';
 export type { PassengerServicePermitResponse } from './models/PassengerServicePermitResponse';
