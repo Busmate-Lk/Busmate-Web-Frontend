@@ -163,7 +163,7 @@ export default function RouteGroupsPage() {
   };
 
   const handleAddNewRouteGroup = () => {
-    router.push('/mot/route-group-form');
+    router.push('/mot/routes/add-new');
   };
 
   const handleView = (routeGroupId: string) => {
@@ -171,7 +171,7 @@ export default function RouteGroupsPage() {
   };
 
   const handleEdit = (routeGroupId: string) => {
-    router.push(`/mot/route-group-form?id=${routeGroupId}`);
+    router.push(`/mot/routes/${routeGroupId}/edit`);
   };
 
   const handleDelete = (routeGroupId: string, routeGroupName: string) => {
