@@ -1,24 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, AlertTriangle, Trash2, ArrowLeft } from 'lucide-react';
-import { StopResponse } from '@/lib/api-client/route-management';
+import { X, AlertTriangle, Trash2, ArrowLeft, Route, MapPin } from 'lucide-react';
+import type { RouteGroupResponse } from '@/lib/api-client/route-management';
 
-interface DeleteBusStopModalProps {
+interface DeleteRouteConfirmationProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => Promise<void>;
-  busStop: StopResponse | null;
+  routeGroup: RouteGroupResponse | null;
   isDeleting?: boolean;
 }
 
-export default function DeleteBusStopModal({
+export default function DeleteRouteConfirmation({
   isOpen,
   onClose,
   onConfirm,
-  busStop,
+  routeGroup,
   isDeleting = false,
-}: DeleteBusStopModalProps) {
+}: DeleteRouteConfirmationProps) {
   const [confirmText, setConfirmText] = useState('');
   const [showModal, setShowModal] = useState(false);
 
@@ -72,6 +72,8 @@ export default function DeleteBusStopModal({
 
   if (!showModal) return null;
 
+  const routeCount = routeGroup?.routes?.length || 0;
+
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
@@ -99,7 +101,7 @@ export default function DeleteBusStopModal({
                   </div>
                   <div className="ml-3">
                     <h3 className="text-lg font-medium text-gray-900">
-                      Delete Bus Stop
+                      Delete Route Group
                     </h3>
                   </div>
                 </div>
@@ -124,38 +126,47 @@ export default function DeleteBusStopModal({
                         This action cannot be undone
                       </h4>
                       <p className="text-sm text-red-700 mt-1">
-                        This will permanently delete the bus stop and remove all associated data from the system.
+                        This will permanently delete the route group and all its associated routes from the system.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Bus Stop Details */}
-                {busStop && (
+                {/* Route Group Details */}
+                {routeGroup && (
                   <div className="bg-gray-50 rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-900 mb-3">
-                      Bus Stop to be deleted:
+                      Route Group to be deleted:
                     </h4>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div>
                         <span className="text-sm font-medium text-gray-700">Name:</span>
-                        <span className="ml-2 text-sm text-gray-900">{busStop.name || 'N/A'}</span>
+                        <span className="ml-2 text-sm text-gray-900">{routeGroup.name || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-sm font-medium text-gray-700">ID:</span>
-                        <span className="ml-2 text-sm font-mono text-gray-600">{busStop.id}</span>
+                        <span className="ml-2 text-sm font-mono text-gray-600">{routeGroup.id}</span>
                       </div>
-                      {busStop.location?.address && (
+                      {routeGroup.description && (
                         <div>
-                          <span className="text-sm font-medium text-gray-700">Address:</span>
-                          <span className="ml-2 text-sm text-gray-900">{busStop.location.address}</span>
+                          <span className="text-sm font-medium text-gray-700">Description:</span>
+                          <span className="ml-2 text-sm text-gray-900">{routeGroup.description}</span>
                         </div>
                       )}
-                      {busStop.location?.city && busStop.location?.state && (
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium text-gray-700">Routes:</span>
+                        <div className="flex items-center ml-2">
+                          <Route className="h-4 w-4 text-gray-400 mr-1" />
+                          <span className="text-sm text-gray-900 font-medium">
+                            {routeCount} {routeCount === 1 ? 'route' : 'routes'}
+                          </span>
+                        </div>
+                      </div>
+                      {routeGroup.createdAt && (
                         <div>
-                          <span className="text-sm font-medium text-gray-700">Location:</span>
+                          <span className="text-sm font-medium text-gray-700">Created:</span>
                           <span className="ml-2 text-sm text-gray-900">
-                            {busStop.location.city}, {busStop.location.state}
+                            {new Date(routeGroup.createdAt).toLocaleString()}
                           </span>
                         </div>
                       )}
@@ -163,18 +174,46 @@ export default function DeleteBusStopModal({
                   </div>
                 )}
 
-                {/* Potential Impact Warning */}
+                {/* Impact Warning - specific to routes */}
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-amber-800 mb-2">
                     Potential Impact
                   </h4>
                   <ul className="text-sm text-amber-700 space-y-1">
-                    <li>• Routes using this stop may be affected</li>
-                    <li>• Scheduled services will need to be updated</li>
-                    <li>• Historical data will be permanently lost</li>
-                    <li>• Passengers may be impacted if this stop is currently in use</li>
+                    <li>• All {routeCount} route{routeCount !== 1 ? 's' : ''} in this group will be permanently deleted</li>
+                    <li>• Bus schedules associated with these routes will be affected</li>
+                    <li>• Passenger service permits linked to these routes may become invalid</li>
+                    <li>• Historical trip data and analytics will be permanently lost</li>
+                    <li>• Any ongoing services using these routes will be disrupted</li>
                   </ul>
                 </div>
+
+                {/* Routes List if any */}
+                {routeGroup?.routes && routeGroup.routes.length > 0 && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-orange-800 mb-3">
+                      Routes that will be deleted:
+                    </h4>
+                    <div className="max-h-32 overflow-y-auto">
+                      <ul className="space-y-2">
+                        {routeGroup.routes.slice(0, 5).map((route, index) => (
+                          <li key={route.id || index} className="flex items-center text-sm text-orange-700">
+                            <MapPin className="h-3 w-3 mr-2 flex-shrink-0" />
+                            <span className="truncate">
+                              {route.name || `Route ${index + 1}`}
+                              {route.direction && ` (${route.direction})`}
+                            </span>
+                          </li>
+                        ))}
+                        {routeGroup.routes.length > 5 && (
+                          <li className="text-sm text-orange-600 italic">
+                            ... and {routeGroup.routes.length - 5} more routes
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                )}
 
                 {/* Confirmation Input */}
                 <div>
@@ -218,12 +257,12 @@ export default function DeleteBusStopModal({
                   {isDeleting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Deleting...
+                      Deleting Route Group...
                     </>
                   ) : (
                     <>
                       <Trash2 className="w-4 h-4 mr-2" />
-                      Delete Bus Stop
+                      Delete Route Group
                     </>
                   )}
                 </button>

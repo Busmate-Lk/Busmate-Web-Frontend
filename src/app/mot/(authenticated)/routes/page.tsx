@@ -7,9 +7,7 @@ import { BusRouteGroupSearchFilters } from '@/components/mot/bus-route-group-sea
 import { BusRouteGroupStatsCards } from '@/components/mot/bus-route-group-stats-cards';
 import { BusRouteGroupsTable } from '@/components/mot/bus-route-groups-table';
 import Pagination from '@/components/shared/Pagination';
-import {
-  DeleteConfirmationModal,
-} from '@/components/mot/confirmation-modals';
+import DeleteRouteConfirmation from '@/components/mot/routes/DeleteRouteConfirmation';
 import { RouteManagementService } from '@/lib/api-client/route-management';
 import type { RouteGroupResponse, PageRouteGroupResponse } from '@/lib/api-client/route-management';
 
@@ -43,13 +41,9 @@ export default function RouteGroupsPage() {
     pageSize: 10,
   });
 
-  // State for modals
-  const [deleteModal, setDeleteModal] = useState<{
-    isOpen: boolean;
-    routeGroupId?: string;
-    routeGroupName?: string;
-  }>({ isOpen: false });
-
+  // State for delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [routeGroupToDelete, setRouteGroupToDelete] = useState<RouteGroupResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Load route groups from API
@@ -175,27 +169,35 @@ export default function RouteGroupsPage() {
   };
 
   const handleDelete = (routeGroupId: string, routeGroupName: string) => {
-    setDeleteModal({
-      isOpen: true,
-      routeGroupId,
-      routeGroupName,
-    });
+    // Find the route group to get full details for the modal
+    const routeGroup = routeGroups.find(group => group.id === routeGroupId);
+    if (routeGroup) {
+      setRouteGroupToDelete(routeGroup);
+      setShowDeleteModal(true);
+    }
   };
 
-  const confirmDelete = async () => {
-    if (!deleteModal.routeGroupId) return;
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setRouteGroupToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!routeGroupToDelete?.id) return;
 
     try {
       setIsDeleting(true);
-      await RouteManagementService.deleteRouteGroup(deleteModal.routeGroupId);
+      await RouteManagementService.deleteRouteGroup(routeGroupToDelete.id);
       
       // Refresh the list after successful deletion
       await loadRouteGroups();
       
-      setDeleteModal({ isOpen: false });
+      setShowDeleteModal(false);
+      setRouteGroupToDelete(null);
     } catch (error) {
       console.error('Error deleting route group:', error);
       setError('Failed to delete route group. Please try again.');
+      // Keep the modal open on error so user can see what happened
     } finally {
       setIsDeleting(false);
     }
@@ -322,13 +324,12 @@ export default function RouteGroupsPage() {
         </div>
 
         {/* Delete Confirmation Modal */}
-        <DeleteConfirmationModal
-          isOpen={deleteModal.isOpen}
-          onClose={() => setDeleteModal({ isOpen: false })}
-          onConfirm={confirmDelete}
-          title="Delete Route Group"
-          itemName={deleteModal.routeGroupName || ''}
-          isLoading={isDeleting}
+        <DeleteRouteConfirmation
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          routeGroup={routeGroupToDelete}
+          isDeleting={isDeleting}
         />
       </div>
     </Layout>
