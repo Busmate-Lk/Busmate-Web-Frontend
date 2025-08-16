@@ -74,7 +74,7 @@ export function Sidebar({
       icon: Route,
       label: 'Routes Management',
       active: activeItem === 'bus-route-groups',
-      href: '/mot/bus-route-groups',
+      href: '/mot/routes',
     },
     {
       icon: Calendar,
