@@ -25,9 +25,9 @@ export default function BusStopStats({ busStops }: { busStops: StopResponse[] })
       <div className="border-l-4 border-blue-500 bg-white rounded-lg shadow">
         <div className="p-6 flex items-center justify-between">
           <div>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalStops}</p>
             <p className="text-sm font-medium text-gray-600">Total Bus Stops</p>
-            <p className="text-3xl font-bold text-gray-900">{stats.totalStops}</p>
-            <p className="text-sm text-blue-600 mt-1">{stats.uniqueCities} cities covered</p>
+            <p className="text-xs text-blue-600 mt-1">{stats.uniqueCities} cities covered</p>
           </div>
           <div className="p-3 bg-blue-100 rounded-full">
             <Bus className="w-6 h-6 text-blue-600" />
@@ -37,9 +37,9 @@ export default function BusStopStats({ busStops }: { busStops: StopResponse[] })
       <div className="border-l-4 border-green-500 bg-white rounded-lg shadow">
         <div className="p-6 flex items-center justify-between">
           <div>
+            <p className="text-2xl font-bold text-gray-900">{stats.accessibleStops}</p>
             <p className="text-sm font-medium text-gray-600">Accessible Stops</p>
-            <p className="text-3xl font-bold text-gray-900">{stats.accessibleStops}</p>
-            <p className="text-sm text-green-600 mt-1">{stats.accessibilityPercentage}% of total</p>
+            <p className="text-xs text-green-600 mt-1">{stats.accessibilityPercentage}% of total</p>
           </div>
           <div className="p-3 bg-green-100 rounded-full">
             <CheckCircle className="w-6 h-6 text-green-600" />
@@ -49,9 +49,9 @@ export default function BusStopStats({ busStops }: { busStops: StopResponse[] })
       <div className="border-l-4 border-yellow-500 bg-white rounded-lg shadow">
         <div className="p-6 flex items-center justify-between">
           <div>
+            <p className="text-2xl font-bold text-gray-900">{stats.nonAccessibleStops}</p>
             <p className="text-sm font-medium text-gray-600">Non-Accessible</p>
-            <p className="text-3xl font-bold text-gray-900">{stats.nonAccessibleStops}</p>
-            <p className="text-sm text-yellow-600 mt-1">Need improvements</p>
+            <p className="text-xs text-yellow-600 mt-1">Need improvements</p>
           </div>
           <div className="p-3 bg-yellow-100 rounded-full">
             <AlertTriangle className="w-6 h-6 text-yellow-600" />
@@ -61,9 +61,9 @@ export default function BusStopStats({ busStops }: { busStops: StopResponse[] })
       <div className="border-l-4 border-purple-500 bg-white rounded-lg shadow">
         <div className="p-6 flex items-center justify-between">
           <div>
+            <p className="text-2xl font-bold text-gray-900">{stats.uniqueStates}</p>
             <p className="text-sm font-medium text-gray-600">States Covered</p>
-            <p className="text-3xl font-bold text-gray-900">{stats.uniqueStates}</p>
-            <p className="text-sm text-purple-600 mt-1">{stats.uniqueCities} cities</p>
+            <p className="text-xs text-purple-600 mt-1">{stats.uniqueCities} cities</p>
           </div>
           <div className="p-3 bg-purple-100 rounded-full">
             <MapPin className="w-6 h-6 text-purple-600" />

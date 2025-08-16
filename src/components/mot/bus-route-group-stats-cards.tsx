@@ -68,20 +68,27 @@ function StatsCard({ title, value, change, icon, color, subtitle }: StatsCardPro
               <h3 className="text-2xl font-bold text-gray-900">
                 {value.toLocaleString()}
               </h3>
-              {change && (
+              {/* {change && (
+                <div className={`flex items-center gap-1 ${classes.trend}`}>
+                  {isPositiveChange && <ArrowUpRight className="h-3 w-3" />}
+                  {isNegativeChange && <ArrowDownRight className="h-3 w-3" />}
+                  <span className="text-xs font-medium">{change}</span>
+                </div>
+              )} */}
+            </div>
+            
+            <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
+            
+            {/* {subtitle && (
+              <p className="text-xs text-gray-500 mt-2">{subtitle}</p>
+            )} */}
+            {change && (
                 <div className={`flex items-center gap-1 ${classes.trend}`}>
                   {isPositiveChange && <ArrowUpRight className="h-3 w-3" />}
                   {isNegativeChange && <ArrowDownRight className="h-3 w-3" />}
                   <span className="text-xs font-medium">{change}</span>
                 </div>
               )}
-            </div>
-            
-            <p className="text-sm font-medium text-gray-600 mt-1">{title}</p>
-            
-            {subtitle && (
-              <p className="text-xs text-gray-500 mt-2">{subtitle}</p>
-            )}
           </div>
           
           <div className={`p-3 ${classes.bg} rounded-lg flex-shrink-0`}>
