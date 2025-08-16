@@ -60,7 +60,7 @@ function StatsCard({ title, value, change, icon, color, subtitle }: StatsCardPro
   const isNegativeChange = change?.includes('-');
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 shadow-sm ${classes.border} hover:shadow-md transition-shadow duration-200`}>
+    <div className={`bg-white rounded-lg border-l-4 border-gray-200 shadow-sm ${classes.border} hover:shadow-md transition-shadow duration-200`}>
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
