@@ -3,14 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Pageablenull } from './Pageablenull';
-import type { RouteGroupResponse } from './RouteGroupResponse';
+import type { ScheduleResponse } from './ScheduleResponse';
 import type { Sortnull } from './Sortnull';
-export type PageRouteGroupResponse = {
+export type PageScheduleResponse = {
     totalElements?: number;
     totalPages?: number;
     pageable?: Pageablenull;
     size?: number;
-    content?: Array<RouteGroupResponse>;
+    content?: Array<ScheduleResponse>;
     number?: number;
     sort?: Sortnull;
     numberOfElements?: number;

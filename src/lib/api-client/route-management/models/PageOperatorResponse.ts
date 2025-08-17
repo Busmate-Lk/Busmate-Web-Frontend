@@ -6,16 +6,16 @@ import type { OperatorResponse } from './OperatorResponse';
 import type { Pageablenull } from './Pageablenull';
 import type { Sortnull } from './Sortnull';
 export type PageOperatorResponse = {
-    totalPages?: number;
     totalElements?: number;
+    totalPages?: number;
+    pageable?: Pageablenull;
     size?: number;
     content?: Array<OperatorResponse>;
     number?: number;
     sort?: Sortnull;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
-    pageable?: Pageablenull;
     empty?: boolean;
 };
 

@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ScheduleStopRequest = {
+    id?: string;
     stopId: string;
     stopOrder: number;
     arrivalTime?: string;

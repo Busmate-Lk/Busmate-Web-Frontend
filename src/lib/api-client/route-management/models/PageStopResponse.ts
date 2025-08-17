@@ -6,16 +6,16 @@ import type { Pageablenull } from './Pageablenull';
 import type { Sortnull } from './Sortnull';
 import type { StopResponse } from './StopResponse';
 export type PageStopResponse = {
-    totalPages?: number;
     totalElements?: number;
+    totalPages?: number;
+    pageable?: Pageablenull;
     size?: number;
     content?: Array<StopResponse>;
     number?: number;
     sort?: Sortnull;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
-    pageable?: Pageablenull;
     empty?: boolean;
 };
 

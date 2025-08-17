@@ -6,16 +6,16 @@ import type { Pageablenull } from './Pageablenull';
 import type { RouteResponse } from './RouteResponse';
 import type { Sortnull } from './Sortnull';
 export type PageRouteResponse = {
-    totalPages?: number;
     totalElements?: number;
+    totalPages?: number;
+    pageable?: Pageablenull;
     size?: number;
     content?: Array<RouteResponse>;
     number?: number;
     sort?: Sortnull;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
-    pageable?: Pageablenull;
     empty?: boolean;
 };
 

@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type Sortnull = {
-    sorted?: boolean;
-    empty?: boolean;
-    unsorted?: boolean;
+export type ScheduleExceptionResponse = {
+    id?: string;
+    exceptionDate?: string;
+    exceptionType?: string;
 };
 
