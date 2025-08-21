@@ -8,6 +8,7 @@ import BusStatsCards from '@/components/mot/BusStatsCards';
 import BusFilters from '@/components/mot/BusFilters';
 import BusTable from '@/components/mot/BusTable';
 import Pagination from '@/components/shared/Pagination';
+import DeleteBusModal from '@/components/mot/buses/DeleteBusModal';
 import { 
   BusManagementService,
   BusResponse,
@@ -61,6 +62,9 @@ export default function BusesPage() {
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [busToDelete, setBusToDelete] = useState<BusResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load buses data
   const loadBuses = useCallback(async (resetPage = false) => {
@@ -181,17 +185,31 @@ export default function BusesPage() {
   }, [router]);
 
   const handleDelete = useCallback(async (bus: BusResponse) => {
-    if (!bus.id) return;
-    
-    if (window.confirm(`Are you sure you want to delete bus ${bus.plateNumber || bus.ntcRegistrationNumber}?`)) {
-      try {
-        await BusManagementService.deleteBus(bus.id);
-        await handleRefresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to delete bus');
-      }
+    setBusToDelete(bus);
+    setShowDeleteModal(true);
+  }, []);
+
+  const handleDeleteCancel = useCallback(() => {
+    setShowDeleteModal(false);
+    setBusToDelete(null);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!busToDelete?.id) return;
+
+    try {
+      setIsDeleting(true);
+      await BusManagementService.deleteBus(busToDelete.id);
+      await handleRefresh();
+      setShowDeleteModal(false);
+      setBusToDelete(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete bus');
+      // Keep modal open on error
+    } finally {
+      setIsDeleting(false);
     }
-  }, [handleRefresh]);
+  }, [busToDelete, handleRefresh]);
 
   const handleAddNew = useCallback(() => {
     router.push('/mot/buses/add-new');
@@ -434,6 +452,16 @@ export default function BusesPage() {
             </div>
           )}
         </div>
+
+        {/* Delete Bus Modal */}
+        <DeleteBusModal
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          bus={busToDelete}
+          isDeleting={isDeleting}
+          tripCount={0} // TODO: Get trip count if needed
+        />
       </div>
     </Layout>
   );
