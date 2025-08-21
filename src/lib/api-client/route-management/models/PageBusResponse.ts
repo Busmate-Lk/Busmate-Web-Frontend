@@ -2,14 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BusResponse } from './BusResponse';
 import type { Pageablenull } from './Pageablenull';
-import type { ScheduleResponse } from './ScheduleResponse';
 import type { Sortnull } from './Sortnull';
-export type PageScheduleResponse = {
+export type PageBusResponse = {
     totalElements?: number;
     totalPages?: number;
     size?: number;
-    content?: Array<ScheduleResponse>;
+    content?: Array<BusResponse>;
     number?: number;
     sort?: Sortnull;
     numberOfElements?: number;
