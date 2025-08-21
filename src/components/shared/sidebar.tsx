@@ -101,18 +101,6 @@ export function Sidebar({
       href: '/mot/bus-permits',
     },
     {
-      icon: FileText,
-      label: 'Staff Management',
-      active: activeItem === 'staff',
-      href: '/mot/staff-management',
-    },
-    {
-      icon: Navigation,
-      label: 'Track Busses',
-      active: activeItem === 'tracking',
-      href: '/mot/track-buses',
-    },
-    {
       icon: Pen,
       label: 'Schedule Assignment',
       active: activeItem === 'schedule-assignment',
@@ -123,6 +111,18 @@ export function Sidebar({
       label: 'Fare Management',
       active: activeItem === 'bus-fare',
       href: '/mot/bus-fare',
+    },
+    {
+      icon: FileText,
+      label: 'Staff Management',
+      active: activeItem === 'staff',
+      href: '/mot/staff-management',
+    },
+    {
+      icon: Navigation,
+      label: 'Track Busses',
+      active: activeItem === 'tracking',
+      href: '/mot/track-buses',
     },
     {
       icon: MessageSquare,
