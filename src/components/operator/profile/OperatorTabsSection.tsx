@@ -97,7 +97,7 @@ export function OperatorTabsSection({
   };
 
   const getStatusBadge = (status?: string) => {
-    if (!status) return null;
+    if (!status) return undefined;
     
     const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium';
     switch (status.toLowerCase()) {
