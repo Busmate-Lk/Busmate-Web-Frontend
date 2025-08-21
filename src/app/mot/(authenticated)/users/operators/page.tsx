@@ -9,6 +9,7 @@ import { StaffTable } from '@/components/shared/StaffTable';
 import Pagination from '@/components/shared/Pagination';
 import { Layout } from '@/components/shared/layout';
 import { OperatorManagementService, OperatorResponse } from '@/lib/api-client/route-management';
+import DeleteOperatorModal from '@/components/mot/users/operator/DeleteOperatorModal';
 
 interface OperatorFilters {
   search: string;
@@ -61,6 +62,11 @@ export default function OperatorsPage() {
     operatorTypes: [] as string[],
     regions: [] as string[],
   });
+
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [operatorToDelete, setOperatorToDelete] = useState<OperatorResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load operators data
   const loadOperators = useCallback(async (resetPage = false) => {
@@ -177,19 +183,37 @@ export default function OperatorsPage() {
     setPagination(prev => ({ ...prev, pageSize: size, currentPage: 0 }));
   }, []);
 
-  // Delete handler
+  // Delete handler - Updated
   const handleDelete = useCallback(async (id: string) => {
-    if (!confirm('Are you sure you want to delete this operator? This action cannot be undone.')) {
-      return;
+    const operator = operators.find(op => op.id === id);
+    if (operator) {
+      setOperatorToDelete(operator);
+      setShowDeleteModal(true);
     }
+  }, [operators]);
+
+  // Delete modal handlers
+  const handleDeleteCancel = useCallback(() => {
+    setShowDeleteModal(false);
+    setOperatorToDelete(null);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!operatorToDelete?.id) return;
 
     try {
-      await OperatorManagementService.deleteOperator(id);
+      setIsDeleting(true);
+      await OperatorManagementService.deleteOperator(operatorToDelete.id);
       await handleRefresh();
+      setShowDeleteModal(false);
+      setOperatorToDelete(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete operator');
+      // Keep modal open on error
+    } finally {
+      setIsDeleting(false);
     }
-  }, [handleRefresh]);
+  }, [operatorToDelete, handleRefresh]);
 
   // Export functionality
   const handleExport = useCallback(async () => {
@@ -444,6 +468,16 @@ export default function OperatorsPage() {
             </div>
           )}
         </div>
+
+        {/* Delete Operator Modal */}
+        <DeleteOperatorModal
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          operator={operatorToDelete}
+          isDeleting={isDeleting}
+          busCount={0} // TODO: Calculate bus count if needed
+        />
       </div>
     </Layout>
   );

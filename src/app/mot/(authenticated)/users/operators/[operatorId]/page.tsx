@@ -19,6 +19,7 @@ import {
   OperatorResponse, 
   BusResponse 
 } from '@/lib/api-client/route-management';
+import DeleteOperatorModal from '@/components/mot/users/operator/DeleteOperatorModal';
 
 export default function OperatorDetailsPage() {
   const router = useRouter();
@@ -99,6 +100,7 @@ export default function OperatorDetailsPage() {
     router.push(`/mot/buses/add-new?operatorId=${operatorId}`);
   };
 
+  // Delete modal handlers - Updated
   const handleDelete = () => {
     setShowDeleteModal(true);
   };
@@ -120,9 +122,10 @@ export default function OperatorDetailsPage() {
     } catch (error) {
       console.error('Error deleting operator:', error);
       setError('Failed to delete operator. Please try again.');
+      // Keep modal open on error
     } finally {
       setIsDeleting(false);
-      setShowDeleteModal(false);
+      // Only close modal if deletion was successful (handled by navigation)
     }
   };
 
@@ -275,39 +278,23 @@ export default function OperatorDetailsPage() {
           onRefresh={handleRefresh}
         />
 
-        {/* Delete Confirmation Modal */}
+        {/* Delete Operator Modal - Replace the simple modal */}
+        <DeleteOperatorModal
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          operator={operator}
+          isDeleting={isDeleting}
+          busCount={buses.length}
+        />
+
+        {/* Remove the old simple delete modal code:
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Delete Operator
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Are you sure you want to delete <strong>{operator.name}</strong>? 
-                This action cannot be undone and will also remove all associated buses and data.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={handleDeleteCancel}
-                  disabled={isDeleting}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteConfirm}
-                  disabled={isDeleting}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
-                >
-                  {isDeleting && (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  )}
-                  {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            </div>
+            ...
           </div>
         )}
+        */}
       </div>
     </Layout>
   );

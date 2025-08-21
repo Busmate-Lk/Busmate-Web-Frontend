@@ -86,7 +86,7 @@ export function Sidebar({
       icon: FileText,
       label: 'Operator Management',
       active: activeItem === 'operator-management',
-      href: '/mot/operator-management',
+      href: '/mot/users/operators',
     },
     {
       icon: Bus,
