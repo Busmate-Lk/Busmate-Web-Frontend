@@ -60,23 +60,52 @@ export function BusSummary({ bus, operator, onViewOperator }: BusSummaryProps) {
     }
   };
 
-  // Parse facilities if it's a JSON object
-  const parseFacilities = (facilities: any) => {
+  // Parse facilities and show only enabled ones (true values)
+  const parseFacilities = (facilities: any): string[] => {
     if (!facilities) return [];
+    
     try {
+      let facilitiesObj: { [key: string]: boolean } = {};
+      
       if (typeof facilities === 'string') {
-        return JSON.parse(facilities);
+        facilitiesObj = JSON.parse(facilities);
+      } else if (typeof facilities === 'object' && facilities !== null) {
+        facilitiesObj = facilities;
       }
-      if (typeof facilities === 'object') {
-        return Array.isArray(facilities) ? facilities : Object.values(facilities);
-      }
-    } catch {
+      
+      // Return only facilities that are true
+      return Object.entries(facilitiesObj)
+        .filter(([key, value]) => Boolean(value))
+        .map(([key, value]) => formatFacilityName(key));
+    } catch (error) {
+      console.warn('Error parsing facilities:', error);
       return [];
     }
-    return [];
   };
 
-  const facilitiesList = parseFacilities(bus.facilities);
+  // Format facility key to readable name
+  const formatFacilityName = (key: string): string => {
+    const facilityLabels: { [key: string]: string } = {
+      'ac': 'Air Conditioning',
+      'wifi': 'WiFi',
+      'cctv': 'CCTV Cameras',
+      'gps': 'GPS Tracking',
+      'audio_system': 'Audio System',
+      'charging_ports': 'Charging Ports',
+      'wheelchair_accessible': 'Wheelchair Accessible',
+      'air_suspension': 'Air Suspension',
+      'toilet': 'Toilet',
+      'tv_screens': 'TV Screens',
+      'reading_lights': 'Reading Lights',
+      'seat_belts': 'Seat Belts',
+      'emergency_exits': 'Emergency Exits',
+      'fire_extinguisher': 'Fire Extinguisher'
+    };
+    
+    return facilityLabels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const enabledFacilities = parseFacilities(bus.facilities);
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -94,16 +123,16 @@ export function BusSummary({ bus, operator, onViewOperator }: BusSummaryProps) {
                     {bus.plateNumber || 'No Plate Number'}
                   </h1>
                   {bus.status && (
-                <span className={getStatusBadge(bus.status)}>
-                  {bus.status.charAt(0).toUpperCase() + bus.status.slice(1)}
-                </span>
-              )}
-              {operator?.operatorType && (
-                <span className={getOperatorTypeBadge(operator.operatorType) || ''}>
-                  {operator.operatorType}
-                </span>
-              )}
-              </div>
+                    <span className={getStatusBadge(bus.status)}>
+                      {bus.status.charAt(0).toUpperCase() + bus.status.slice(1)}
+                    </span>
+                  )}
+                  {operator?.operatorType && (
+                    <span className={getOperatorTypeBadge(operator.operatorType) || ''}>
+                      {operator.operatorType}
+                    </span>
+                  )}
+                </div>
                 <p className="text-gray-600">
                   NTC Registration: {bus.ntcRegistrationNumber || 'Not assigned'}
                 </p>
@@ -164,19 +193,19 @@ export function BusSummary({ bus, operator, onViewOperator }: BusSummaryProps) {
             </div>
           </div>
 
-          {/* Registration Date */}
+          {/* Facilities Count */}
           <div className="bg-orange-50 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 mb-1">Registration Date</p>
-                <p className="text-lg font-bold text-orange-900">
-                  {formatDate(bus.createdAt).split(',')[0]}
+                <p className="text-sm font-medium text-orange-600 mb-1">Facilities</p>
+                <p className="text-2xl font-bold text-orange-900">
+                  {enabledFacilities.length}
                 </p>
                 <p className="text-xs text-orange-700">
-                  Created in system
+                  Available features
                 </p>
               </div>
-              <Calendar className="w-8 h-8 text-orange-600" />
+              <Settings className="w-8 h-8 text-orange-600" />
             </div>
           </div>
         </div>
@@ -263,20 +292,28 @@ export function BusSummary({ bus, operator, onViewOperator }: BusSummaryProps) {
             </div>
           </div>
 
-          {/* Facilities */}
-          {facilitiesList.length > 0 && (
+          {/* Enabled Facilities */}
+          {enabledFacilities.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="font-medium text-gray-900 mb-3">Bus Facilities</h4>
+              <h4 className="font-medium text-gray-900 mb-3">Available Facilities</h4>
               <div className="flex flex-wrap gap-2">
-                {facilitiesList.map((facility: any, index: number) => (
+                {enabledFacilities.map((facility, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
+                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
                   >
-                    {typeof facility === 'string' ? facility : JSON.stringify(facility)}
+                    {facility}
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* No Facilities Message */}
+          {enabledFacilities.length === 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h4 className="font-medium text-gray-900 mb-3">Available Facilities</h4>
+              <p className="text-gray-500 text-sm">No facilities have been configured for this bus.</p>
             </div>
           )}
         </div>
