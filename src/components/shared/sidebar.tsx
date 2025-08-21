@@ -92,7 +92,7 @@ export function Sidebar({
       icon: Bus,
       label: 'Bus Management',
       active: activeItem === 'bus-management',
-      href: '/mot/bus-infomation',
+      href: '/mot/buses',
     },
     {
       icon: FileText,
