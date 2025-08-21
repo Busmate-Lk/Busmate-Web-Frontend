@@ -66,7 +66,7 @@ export default function OperatorDetailsPage() {
       const busesResponse = await BusManagementService.getAllBuses(
         0, // page
         100, // size - get all buses for this operator
-        'ntcRegistrationNumber', // sortBy
+        'ntc_registration_number', // sortBy
         'asc', // sortDir
         undefined, // search
         operatorId, // operatorId filter
