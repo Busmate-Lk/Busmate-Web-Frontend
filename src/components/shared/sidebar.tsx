@@ -95,12 +95,6 @@ export function Sidebar({
       href: '/mot/bus-infomation',
     },
     {
-      icon: Navigation,
-      label: 'Track Busses',
-      active: activeItem === 'tracking',
-      href: '/mot/track-buses',
-    },
-    {
       icon: FileText,
       label: 'Bus Permit Management',
       active: activeItem === 'bus-permits',
@@ -111,6 +105,12 @@ export function Sidebar({
       label: 'Staff Management',
       active: activeItem === 'staff',
       href: '/mot/staff-management',
+    },
+    {
+      icon: Navigation,
+      label: 'Track Busses',
+      active: activeItem === 'tracking',
+      href: '/mot/track-buses',
     },
     {
       icon: Pen,
