@@ -44,13 +44,10 @@ export function OperatorProfile() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="Fleet" />
+                  <Label htmlFor="fullname">Full Name</Label>
+                  <Input id="fullname" defaultValue="Fleet" />
                 </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue="Operator" />
-                </div>
+            
                 <div>
                   <Label htmlFor="email">Email Address</Label>
                   <Input id="email" defaultValue="operator@busmate.lk" />
@@ -61,20 +58,13 @@ export function OperatorProfile() {
                 </div>
                 <div>
                   <Label htmlFor="company">Company Name</Label>
-                  <Input id="company" defaultValue="City Bus Services Pvt Ltd" />
+                  <Input id="organizationName" defaultValue="City Bus Services Pvt Ltd" />
                 </div>
                 <div>
                   <Label htmlFor="operatorId">Operator ID</Label>
-                  <Input id="operatorId" defaultValue="OP-2024-001" />
+                  <Input id="operatorId" placeholder="this is auto genarated" defaultValue="OP-2024-001" />
                 </div>
-                <div>
-                  <Label htmlFor="license">License Number</Label>
-                  <Input id="license" defaultValue="LIC-CBS-2024-456" />
-                </div>
-                <div>
-                  <Label htmlFor="fleetSize">Fleet Size</Label>
-                  <Input id="fleetSize" defaultValue="25 Buses" />
-                </div>
+                
               </div>
             </CardContent>
           </Card>
@@ -86,25 +76,19 @@ export function OperatorProfile() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="businessReg">Business Registration</Label>
-                  <Input id="businessReg" defaultValue="PV 12345678" />
+                  <Label htmlFor="registrationId">Business Registration</Label>
+                  <Input id="registrationId" defaultValue="PV 12345678" />
                 </div>
-                <div>
-                  <Label htmlFor="taxId">Tax ID</Label>
-                  <Input id="taxId" defaultValue="134567890V" />
-                </div>
+
                 <div className="col-span-2">
                   <Label htmlFor="address">Business Address</Label>
                   <Input id="address" defaultValue="123 Main Street, Colombo 07, Sri Lanka" />
                 </div>
                 <div>
-                  <Label htmlFor="operatingArea">Operating Area</Label>
-                  <Input id="operatingArea" defaultValue="Colombo District" />
+                  <Label htmlFor="district">Operating Area</Label>
+                  <Input id="district" defaultValue="Colombo District" />
                 </div>
-                <div>
-                  <Label htmlFor="established">Established Date</Label>
-                  <Input id="established" defaultValue="2018-03-15" type="date" />
-                </div>
+               
               </div>
             </CardContent>
           </Card>

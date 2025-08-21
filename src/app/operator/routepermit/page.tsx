@@ -6,19 +6,7 @@ import { Header } from "@/components/operator/header"
 import { MetricCard } from "@/components/operator/metric-card"
 import { PermitTable } from "@/components/operator/permit-table"
 import { FileText, MapPin, Clock, AlertTriangle, Plus, Search } from "lucide-react"
-
-interface RoutePermit {
-  id: string
-  permitId: string
-  routeId: string
-  routeName: string
-  startPoint: string
-  endPoint: string
-  operator: string
-  expiryDate: string
-  isExpired: boolean
-  intermediateStops?: string[]
-}
+import { RoutePermit } from "@/types/responsedto/busDetails-by-operator"
 
 export default function RoutePermitManagement() {
   const [searchQuery, setSearchQuery] = useState("")

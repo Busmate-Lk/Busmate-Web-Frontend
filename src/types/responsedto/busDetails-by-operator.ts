@@ -29,6 +29,7 @@ export interface BusDetailsforTraking {
     insuranceExpiryDate: string;
 }
 
+
 export interface BusDetailsByOperatorResponse {
     operatorId: string;
     operatorName: string;
@@ -53,4 +54,33 @@ export interface BusData {
   conductor: string
   conductorPhone: string
   status: "Active" | "Maintenance" | "Inactive"
+}
+
+export interface RoutePermit {
+    id: string
+    permitId: string
+    routeId: string
+    routeName: string
+    startPoint: string
+    endPoint: string
+    operator: string
+    expiryDate: string
+    isExpired: boolean
+    intermediateStops?: string[]
+}
+
+export interface RouteData {
+  id: string
+  routeName: string
+  startPoint: string
+  endPoint: string
+  stops: number
+  scheduleStart: string
+  scheduleEnd: string
+  frequency: string
+  assignedBus: string
+  status: "Active" | "Inactive"
+  scheduleDate: string
+  validFrom: string
+  validTo: string
 }

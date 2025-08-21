@@ -1,33 +1,47 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Sidebar } from "@/components/operator/sidebar"
 import { Header } from "@/components/operator/header"
 import { PageHeader } from "@/components/operator/page-header"
 import { SearchFilters } from "@/components/operator/search-filters"
 import { RouteTable } from "@/components/operator/route-table"
+import { RouteData } from "@/types/responsedto/busDetails-by-operator"
+import { getBusDetailsByOperator } from "@/lib/api/route-management/busDetailsByOperator"
+import { useAuth } from "@/context/AuthContext"
 
 
-interface RouteData {
-  id: string
-  routeName: string
-  startPoint: string
-  endPoint: string
-  stops: number
-  scheduleStart: string
-  scheduleEnd: string
-  frequency: string
-  assignedBus: string
-  status: "Active" | "Inactive"
-  scheduleDate: string
-  validFrom: string
-  validTo: string
-}
+
 
 export default function ScheduleManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("")
+
+  const [data, setData] = useState<RouteData[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const userId = user?.id;
+  // console.log("User ID:", operatorId);
+
+
+
+  useEffect(() => {
+    
+    setLoading(true);
+    getBusDetailsByOperator({ operatorId: '99080d8d-bffb-4910-8e86-e98745749406', status:'active' })
+      .then((res) => {
+        setData(res);
+        setError(null);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+
+  console.log("Data fetched:", data);
+
 
 
   const routesData: RouteData[] = [
