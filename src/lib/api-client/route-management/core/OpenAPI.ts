@@ -20,7 +20,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-    BASE: 'http://13.229.67.236:8080',
+    BASE: process.env.NEXT_PUBLIC_ROUTE_MANAGEMENT_API_URL || 'http://localhost:8080',
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',

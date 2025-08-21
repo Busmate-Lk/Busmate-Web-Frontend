@@ -68,6 +68,7 @@ export default function BusesPage() {
 
   // Load buses data
   const loadBuses = useCallback(async (resetPage = false) => {
+    console.log('Loading buses with filters:', filters, 'Pagination:', pagination, 'Sort:', sortBy, sortDir);
     setLoading(true);
     setError(null);
 
