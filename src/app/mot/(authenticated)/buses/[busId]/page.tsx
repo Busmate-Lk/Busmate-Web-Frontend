@@ -10,7 +10,9 @@ import {
   BusManagementService, 
   BusResponse,
   OperatorManagementService,
-  OperatorResponse
+  OperatorResponse,
+  TripManagementService,
+  TripResponse
 } from '@/lib/api-client/route-management';
 
 export default function BusDetailsPage() {
@@ -21,7 +23,9 @@ export default function BusDetailsPage() {
   // State
   const [bus, setBus] = useState<BusResponse | null>(null);
   const [operator, setOperator] = useState<OperatorResponse | null>(null);
+  const [trips, setTrips] = useState<TripResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [tripsLoading, setTripsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Delete modal states
@@ -58,9 +62,26 @@ export default function BusDetailsPage() {
     }
   }, [busId]);
 
+  // Load bus trips
+  const loadBusTrips = useCallback(async () => {
+    if (!busId) return;
+
+    try {
+      setTripsLoading(true);
+      const tripsData = await TripManagementService.getTripsByBus(busId);
+      setTrips(tripsData || []);
+    } catch (err) {
+      console.error('Error loading bus trips:', err);
+      // Don't set main error for trips loading failure
+    } finally {
+      setTripsLoading(false);
+    }
+  }, [busId]);
+
   useEffect(() => {
     loadBusDetails();
-  }, [loadBusDetails]);
+    loadBusTrips();
+  }, [loadBusDetails, loadBusTrips]);
 
   // Handlers
   const handleEdit = () => {
@@ -99,7 +120,7 @@ export default function BusDetailsPage() {
   };
 
   const handleRefresh = async () => {
-    await loadBusDetails();
+    await Promise.all([loadBusDetails(), loadBusTrips()]);
   };
 
   const handleViewOperator = () => {
@@ -171,23 +192,6 @@ export default function BusDetailsPage() {
       <div className="space-y-6">
         {/* Header with Navigation and Actions */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          {/* <div className="flex items-center gap-3">
-            <button
-              onClick={handleBack}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </button>
-            <div className="h-6 w-px bg-gray-300" />
-            <button
-              onClick={handleRefresh}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-              title="Refresh data"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-          </div> */}
           {/* Breadcrumbs */}
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <button 
@@ -198,14 +202,14 @@ export default function BusDetailsPage() {
             </button>
             <ChevronRight className="w-4 h-4" />
             <button 
-              onClick={() => router.push('/mot/users/operators')}
+              onClick={() => router.push('/mot/buses')}
               className="hover:text-blue-600 transition-colors"
             >
               Bus Management
             </button>
             <ChevronRight className="w-4 h-4" />
             <span className="text-gray-900 font-medium">
-              {bus.id || 'Bus Details'}
+              {bus.plateNumber || bus.ntcRegistrationNumber || 'Bus Details'}
             </span>
           </div>
 
@@ -253,6 +257,8 @@ export default function BusDetailsPage() {
         <BusTabsSection 
           bus={bus} 
           operator={operator}
+          trips={trips}
+          tripsLoading={tripsLoading}
           onRefresh={handleRefresh}
         />
 
