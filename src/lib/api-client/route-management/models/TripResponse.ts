@@ -5,9 +5,16 @@
 export type TripResponse = {
     id?: string;
     assignmentId?: string;
+    scheduleId?: string;
+    routeId?: string;
+    permitId?: string;
+    operatorId?: string;
+    routeGroupId?: string;
     permitNumber?: string;
     scheduleName?: string;
     routeName?: string;
+    operatorName?: string;
+    routeGroupName?: string;
     tripDate?: string;
     scheduledDepartureTime?: string;
     actualDepartureTime?: string;

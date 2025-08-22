@@ -3,6 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PageStopResponse } from '../models/PageStopResponse';
+import type { RouteStopDetailResponse } from '../models/RouteStopDetailResponse';
+import type { ScheduleStopDetailResponse } from '../models/ScheduleStopDetailResponse';
 import type { StopRequest } from '../models/StopRequest';
 import type { StopResponse } from '../models/StopResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -98,6 +100,50 @@ export class BusStopManagementService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/stops/filter-options/states',
+        });
+    }
+    /**
+     * Get stops along a route
+     * Retrieve all stops in correct order for a specific route with details including distances.
+     * @param routeId Route ID
+     * @returns RouteStopDetailResponse Route stops retrieved successfully
+     * @throws ApiError
+     */
+    public static getStopsByRoute(
+        routeId: string,
+    ): CancelablePromise<Array<RouteStopDetailResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/stops/route/{routeId}',
+            path: {
+                'routeId': routeId,
+            },
+            errors: {
+                400: `Invalid route ID format`,
+                404: `Route not found`,
+            },
+        });
+    }
+    /**
+     * Get stops with schedule timings
+     * Retrieve all stops in correct order for a specific schedule with arrival/departure times and details.
+     * @param scheduleId Schedule ID
+     * @returns ScheduleStopDetailResponse Schedule stops retrieved successfully
+     * @throws ApiError
+     */
+    public static getStopsWithScheduleBySchedule(
+        scheduleId: string,
+    ): CancelablePromise<Array<ScheduleStopDetailResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/stops/schedule/{scheduleId}',
+            path: {
+                'scheduleId': scheduleId,
+            },
+            errors: {
+                400: `Invalid schedule ID format`,
+                404: `Schedule not found`,
+            },
         });
     }
     /**

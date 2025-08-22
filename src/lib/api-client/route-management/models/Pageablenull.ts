@@ -6,9 +6,9 @@ import type { Sortnull } from './Sortnull';
 export type Pageablenull = {
     offset?: number;
     sort?: Sortnull;
-    pageSize?: number;
-    pageNumber?: number;
     paged?: boolean;
+    pageNumber?: number;
+    pageSize?: number;
     unpaged?: boolean;
 };
 
