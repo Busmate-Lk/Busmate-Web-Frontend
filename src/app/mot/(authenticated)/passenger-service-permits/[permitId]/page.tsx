@@ -23,6 +23,7 @@ import {
   RouteGroupResponse,
   BusResponse
 } from '@/lib/api-client/route-management';
+import { DeletePermitModal } from '@/components/mot/passenger-service-permits/DeletePermitModal';
 
 export default function PermitDetailsPage() {
   const router = useRouter();
@@ -150,11 +151,11 @@ export default function PermitDetailsPage() {
     setShowDeleteModal(true);
   };
 
-  const handleDeleteCancel = () => {
+  const handleDeleteCancel = useCallback(() => {
     setShowDeleteModal(false);
-  };
+  }, []);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (!permit?.id) return;
 
     try {
@@ -167,10 +168,11 @@ export default function PermitDetailsPage() {
     } catch (error) {
       console.error('Error deleting permit:', error);
       setError('Failed to delete permit. Please try again.');
+      // Keep modal open on error
     } finally {
       setIsDeleting(false);
     }
-  };
+  }, [permit, router]);
 
   const handleBack = () => {
     router.back();
@@ -340,38 +342,16 @@ export default function PermitDetailsPage() {
         />
 
         {/* Delete Permit Modal */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-md w-full p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Delete Permit
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Are you sure you want to delete permit "{permit.permitNumber}"? 
-                This action cannot be undone and will remove all associated data.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={handleDeleteCancel}
-                  disabled={isDeleting}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteConfirm}
-                  disabled={isDeleting}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
-                >
-                  {isDeleting && (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  )}
-                  {isDeleting ? 'Deleting...' : 'Delete Permit'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <DeletePermitModal
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          permit={permit}
+          operator={operator}
+          routeGroup={routeGroup}
+          assignedBuses={assignedBuses}
+          isDeleting={isDeleting}
+        />
       </div>
     </Layout>
   );

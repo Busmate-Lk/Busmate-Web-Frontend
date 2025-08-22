@@ -18,6 +18,7 @@ import {
   PermitManagementService,
   PassengerServicePermitResponse 
 } from '@/lib/api-client/route-management';
+import { DeletePermitModal } from '@/components/mot/passenger-service-permits/DeletePermitModal';
 
 interface PermitFilters {
   search: string;
@@ -59,6 +60,9 @@ export default function PassengerServicePermitsPage() {
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [permitToDelete, setPermitToDelete] = useState<PassengerServicePermitResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Apply filters to permits
   const applyFilters = useCallback((permitsData: PassengerServicePermitResponse[]) => {
@@ -215,21 +219,31 @@ export default function PassengerServicePermitsPage() {
   }, [router]);
 
   const handleDelete = useCallback(async (permit: PassengerServicePermitResponse) => {
-    if (!permit.id) return;
-    
-    const confirmed = window.confirm(
-      `Are you sure you want to delete permit "${permit.permitNumber}"?\n\nThis action cannot be undone.`
-    );
-    
-    if (confirmed) {
-      try {
-        await PermitManagementService.deletePermit(permit.id);
-        await handleRefresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to delete permit');
-      }
+    setPermitToDelete(permit);
+    setShowDeleteModal(true);
+  }, []);
+
+  const handleDeleteCancel = useCallback(() => {
+    setShowDeleteModal(false);
+    setPermitToDelete(null);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!permitToDelete?.id) return;
+
+    try {
+      setIsDeleting(true);
+      await PermitManagementService.deletePermit(permitToDelete.id);
+      await handleRefresh();
+      setShowDeleteModal(false);
+      setPermitToDelete(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete permit');
+      // Keep modal open on error
+    } finally {
+      setIsDeleting(false);
     }
-  }, [handleRefresh]);
+  }, [permitToDelete, handleRefresh]);
 
   const handleAddNew = useCallback(() => {
     router.push('/mot/passenger-service-permits/add-new');
@@ -512,6 +526,15 @@ export default function PassengerServicePermitsPage() {
             </div>
           )}
         </div>
+
+        {/* Delete Permit Modal */}
+        <DeletePermitModal
+          isOpen={showDeleteModal}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          permit={permitToDelete}
+          isDeleting={isDeleting}
+        />
       </div>
     </Layout>
   );
