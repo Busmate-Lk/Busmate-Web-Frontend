@@ -96,9 +96,9 @@ export function Sidebar({
     },
     {
       icon: FileText,
-      label: 'Bus Permit Management',
-      active: activeItem === 'bus-permits',
-      href: '/mot/bus-permits',
+      label: 'Permit Management',
+      active: activeItem === 'passenger-service-permits',
+      href: '/mot/passenger-service-permits',
     },
     {
       icon: Pen,
