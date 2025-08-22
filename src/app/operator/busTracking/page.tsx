@@ -1,26 +1,39 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Sidebar } from "@/components/operator/sidebar"
 import { Header } from "@/components/operator/header"
 import { PageHeader } from "@/components/operator/page-header"
 import { BusCard } from "@/components/operator/bus-card"
 import { Tabs } from "@/components/operator/tabs"
 import Link from "next/link"
+import {BusData} from "@/types/responsedto/busDetails-by-operator"
+import { getBusDetailsByOperator } from "@/lib/api/route-management/busDetailsByOperator"
+import { useAuth } from "@/context/AuthContext"
 
-interface BusData {
-  id: string
-  busNumber: string
-  busName: string
-  route: string
-  driver: string
-  conductor: string
-  conductorPhone: string
-  status: "Active" | "Maintenance" | "Inactive"
-}
+
 
 export default function FleetManagement() {
   const [activeTab, setActiveTab] = useState("all")
+  const [data, setData] = useState<BusData[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const operatorId = user?.id;
+
+  useEffect(() => {
+    setLoading(true);
+    getBusDetailsByOperator({ 
+      operatorId: operatorId
+     })
+      .then((res) => {
+        setData(res);
+        setError(null);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [operatorId]);
 
   const busesData: BusData[] = [
     {
