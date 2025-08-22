@@ -70,7 +70,7 @@ export function FleetProfile({ userId }: FleetProfileProps) {
           <Button variant="ghost" size="sm" asChild className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md">
             <Link href="/admin/users">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+              Back to Users
             </Link>
           </Button>
           <div>

@@ -10,7 +10,7 @@ export default function PassengerProfilePage({ params }: { params: { id: string 
 
   return (
     <div className="p-6">
-      <NavigationBreadcrumb items={breadcrumbItems} />
+      {/* <NavigationBreadcrumb items={breadcrumbItems} /> */}
       <PassengerProfile userId={params.id} />
     </div>
   )

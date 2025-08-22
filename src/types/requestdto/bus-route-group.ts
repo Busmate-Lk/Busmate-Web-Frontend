@@ -1,22 +1,22 @@
 export interface BusRouteGroupRequest {
-  name: String;
-  description: String;
+  name: string;
+  description: string;
   category: 'expressway' | 'normal';
-  routeNumber: String;
+  routeNumber: string;
   routes: [
     {
-      id: String;
-      name: String;
-      description: String;
-      startStopId: String;
-      endStopId: String;
+      id: string;
+      name: string;
+      description: string;
+      startStopId: string;
+      endStopId: string;
       distanceKm: number;
       estimatedDurationMinutes: number;
       direction: 'forward' | 'backward';
       routeStops: [
         {
-          id: String;
-          stopId: String;
+          id: string;
+          stopId: string;
           stopOrder: number;
           distanceFromStartKm: number;
         }

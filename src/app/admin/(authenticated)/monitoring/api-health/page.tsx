@@ -1,6 +1,6 @@
 "use client"
 
-import { ApiHealth } from "@/components/admin/monitoring"
+import { ApiHealth } from "@/components/admin/monitoring/api-health"
 
 export default function ApiHealthPage() {
     return (

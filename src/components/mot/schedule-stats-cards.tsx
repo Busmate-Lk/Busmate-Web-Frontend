@@ -1,129 +1,176 @@
 "use client";
 
-import { TrendingUp, Calendar, Clock, MapPin, Bus } from "lucide-react";
+import { TrendingUp, Calendar, Clock, MapPin, Bus, Activity } from "lucide-react";
 
 interface ScheduleStats {
-  activeTimeTables?: number;
-  totalRoutes?: number;
-  totalTimeTables?: number;
-  totalAssignedBuses?: number;
-  // Legacy support for old structure
   activeSchedules?: number;
+  totalRoutes?: number;
+  totalSchedules?: number;
+  totalAssignedBuses?: number;
+  // Additional optional stats
+  pendingSchedules?: number;
+  inactiveSchedules?: number;
   onTimePerformance?: number;
-  routesCovered?: number;
-  scheduleSlots?: number;
 }
 
 interface ScheduleStatsCardsProps {
   stats?: ScheduleStats;
+  isLoading?: boolean;
 }
 
-export function ScheduleStatsCards({ stats }: ScheduleStatsCardsProps) {
+export function ScheduleStatsCards({ stats, isLoading = false }: ScheduleStatsCardsProps) {
   // Default values if no stats provided
   const defaultStats = {
-    activeTimeTables: 8,
-    totalRoutes: 12,
-    totalTimeTables: 12,
-    totalAssignedBuses: 56,
+    activeSchedules: 0,
+    totalRoutes: 0,
+    totalSchedules: 0,
+    totalAssignedBuses: 0,
   };
 
   const displayStats = stats || defaultStats;
 
-  // Support both new and old data structures
-  const activeCount = displayStats.activeTimeTables ?? (displayStats as any).activeSchedules ?? defaultStats.activeTimeTables;
-  const routesCount = displayStats.totalRoutes ?? (displayStats as any).routesCovered ?? defaultStats.totalRoutes;
-  const timeTables = displayStats.totalTimeTables ?? (displayStats as any).scheduleSlots ?? defaultStats.totalTimeTables;
-  const assignedBuses = displayStats.totalAssignedBuses ?? defaultStats.totalAssignedBuses;
+  // Calculate derived statistics
+  const inactiveSchedules = (displayStats.totalSchedules || 0) - (displayStats.activeSchedules || 0);
+  const utilizationRate = displayStats.totalSchedules 
+    ? Math.round((displayStats.activeSchedules! / displayStats.totalSchedules) * 100)
+    : 0;
+
+  const cards = [
+    {
+      title: "Active Schedules",
+      value: displayStats.activeSchedules || 0,
+      icon: Activity,
+      color: "blue",
+      trend: "+3 this month",
+      trendDirection: "up" as const,
+      description: "Currently operational",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
+      borderColor: "border-l-blue-500",
+      textColor: "text-blue-600",
+    },
+    {
+      title: "Total Routes",
+      value: displayStats.totalRoutes || 0,
+      icon: MapPin,
+      color: "green",
+      trend: "+2 new routes",
+      trendDirection: "up" as const,
+      description: "Routes with schedules",
+      bgColor: "bg-green-50",
+      iconColor: "text-green-600",
+      borderColor: "border-l-green-500",
+      textColor: "text-green-600",
+    },
+    {
+      title: "Total Schedules",
+      value: displayStats.totalSchedules || 0,
+      icon: Calendar,
+      color: "purple",
+      trend: "+5 this week",
+      trendDirection: "up" as const,
+      description: "All schedule configurations",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600",
+      borderColor: "border-l-purple-500",
+      textColor: "text-purple-600",
+    },
+    {
+      title: "Assigned Buses",
+      value: displayStats.totalAssignedBuses || 0,
+      icon: Bus,
+      color: "orange",
+      trend: "+12 assignments",
+      trendDirection: "up" as const,
+      description: "Buses in service",
+      bgColor: "bg-orange-50",
+      iconColor: "text-orange-600",
+      borderColor: "border-l-orange-500",
+      textColor: "text-orange-600",
+    },
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="p-6 animate-pulse">
+              <div className="flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-blue-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">{activeCount}</h3>
-              <p className="text-sm font-medium text-gray-600">
-                Active Timetables
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-blue-600" />
-                <span className="text-xs font-medium text-blue-600">
-                  +3 this month
-                </span>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {cards.map((card, index) => {
+        const Icon = card.icon;
+        
+        return (
+          <div
+            key={index}
+            className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 ${card.borderColor}`}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {card.value.toLocaleString()}
+                    </h3>
+                    <div className={`p-2 ${card.bgColor} rounded-lg`}>
+                      <Icon className={`h-5 w-5 ${card.iconColor}`} />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-gray-600">
+                      {card.title}
+                    </p>
+                    
+                    <p className="text-xs text-gray-500">
+                      {card.description}
+                    </p>
+                    
+                    <div className="flex items-center gap-1 mt-2">
+                      <TrendingUp className={`h-3 w-3 ${card.textColor}`} />
+                      <span className={`text-xs font-medium ${card.textColor}`}>
+                        {card.trend}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-green-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">{routesCount}</h3>
-              <p className="text-sm font-medium text-gray-600">
-                Total Routes
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-green-600" />
-                <span className="text-xs font-medium text-green-600">
-                  +2 new routes
-                </span>
+            
+            {/* Progress indicator for utilization */}
+            {card.title === "Active Schedules" && displayStats.totalSchedules && (
+              <div className="px-6 pb-4">
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                  <span>Utilization</span>
+                  <span>{utilizationRate}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div
+                    className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(utilizationRate, 100)}%` }}
+                  ></div>
+                </div>
               </div>
-            </div>
-            <div className="p-2 bg-green-50 rounded-lg">
-              <MapPin className="h-5 w-5 text-green-600" />
-            </div>
+            )}
           </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-purple-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">{timeTables}</h3>
-              <p className="text-sm font-medium text-gray-600">
-                Total Timetables
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-purple-600" />
-                <span className="text-xs font-medium text-purple-600">
-                  +4 this week
-                </span>
-              </div>
-            </div>
-            <div className="p-2 bg-purple-50 rounded-lg">
-              <Clock className="h-5 w-5 text-purple-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-orange-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">{assignedBuses}</h3>
-              <p className="text-sm font-medium text-gray-600">
-                Assigned Buses
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-orange-600" />
-                <span className="text-xs font-medium text-orange-600">
-                  +8 assignments
-                </span>
-              </div>
-            </div>
-            <div className="p-2 bg-orange-50 rounded-lg">
-              <Bus className="h-5 w-5 text-orange-600" />
-            </div>
-          </div>
-        </div>
-      </div>
+        );
+      })}
     </div>
   );
 }

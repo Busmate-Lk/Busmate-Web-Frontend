@@ -1,6 +1,6 @@
 "use client"
 
-import { UserActivityLogs } from "@/components/admin/logs"
+import { UserActivityLogs } from "@/components/admin/logs/user-activity"
 
 export default function UserActivityPage() {
     return (

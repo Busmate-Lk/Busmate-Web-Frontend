@@ -15,22 +15,9 @@ export default function BusPhotoDisplay({ photo, onViewFullSize, onChangePhoto }
             alt="Bus"
             className="w-full h-64 object-cover rounded-lg"
           />
-          <div className="absolute bottom-4 left-4 flex gap-2">
-            <button 
-              onClick={onViewFullSize}
-              className="px-3 py-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-100"
-            >
-              View Full Size
-            </button>
-            <button 
-              onClick={onChangePhoto}
-              className="px-3 py-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-100"
-            >
-              Change Photo
-            </button>
+          
           </div>
         </div>
       </div>
-    </div>
   )
 }

@@ -65,10 +65,16 @@ export function Sidebar({
       href: '/mot/dashboard',
     },
     {
+      icon: MapPin,
+      label: 'Bus Stops',
+      active: activeItem === 'bus-stops',
+      href: '/mot/bus-stops',
+    },
+    {
       icon: Route,
       label: 'Routes Management',
       active: activeItem === 'bus-route-groups',
-      href: '/mot/bus-route-groups',
+      href: '/mot/routes',
     },
     {
       icon: Calendar,
@@ -77,28 +83,28 @@ export function Sidebar({
       href: '/mot/schedule-management',
     },
     {
+      icon: FileText,
+      label: 'Operator Management',
+      active: activeItem === 'operator-management',
+      href: '/mot/users/operators',
+    },
+    {
+      icon: Bus,
+      label: 'Bus Management',
+      active: activeItem === 'bus-management',
+      href: '/mot/buses',
+    },
+    {
+      icon: FileText,
+      label: 'Permit Management',
+      active: activeItem === 'passenger-service-permits',
+      href: '/mot/passenger-service-permits',
+    },
+    {
       icon: Pen,
       label: 'Schedule Assignment',
       active: activeItem === 'schedule-assignment',
       href: '/mot/schedule-assign-form',
-    },
-    {
-      icon: FileText,
-      label: 'Bus Permit Management',
-      active: activeItem === 'bus-permits',
-      href: '/mot/bus-permits',
-    },
-    {
-      icon: MapPin,
-      label: 'Bus Stops',
-      active: activeItem === 'bus-stops',
-      href: '/mot/bus-stops',
-    },
-    {
-      icon: Bus,
-      label: 'Bus Information',
-      active: activeItem === 'bus-information',
-      href: '/mot/bus-infomation',
     },
     {
       icon: DollarSign,
@@ -107,16 +113,10 @@ export function Sidebar({
       href: '/mot/bus-fare',
     },
     {
-      icon: BarChart3,
-      label: 'Insights & Analytics',
-      active: activeItem === 'dataInsights',
-      href: '/mot/insights-analytics',
-    },
-    {
-      icon: MessageSquare,
-      label: 'Broadcast Messages',
-      active: activeItem === 'broadcast',
-      href: '/mot/broadcast-messages',
+      icon: FileText,
+      label: 'Staff Management',
+      active: activeItem === 'staff',
+      href: '/mot/staff-management',
     },
     {
       icon: Navigation,
@@ -125,16 +125,22 @@ export function Sidebar({
       href: '/mot/track-buses',
     },
     {
+      icon: MessageSquare,
+      label: 'Broadcast Messages',
+      active: activeItem === 'broadcast',
+      href: '/mot/broadcast-messages',
+    },
+    {
+      icon: BarChart3,
+      label: 'Insights & Analytics',
+      active: activeItem === 'dataInsights',
+      href: '/mot/insights-analytics',
+    },
+    {
       icon: FileText,
       label: 'Policy Update',
       active: activeItem === 'policy',
       href: '/mot/policy-update',
-    },
-    {
-      icon: FileText,
-      label: 'Staff Management',
-      active: activeItem === 'staff',
-      href: '/mot/staff-management',
     },
   ];
 

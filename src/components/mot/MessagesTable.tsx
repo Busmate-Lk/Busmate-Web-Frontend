@@ -1,7 +1,8 @@
-import { Filter, Search, Eye, Edit, Clock, Trash2, Send } from "lucide-react"
+import { Filter, Search, Eye, Edit, Trash2, Send } from "lucide-react"
 import { useState } from "react"
 import type { BroadcastMessage } from "./MessageBox"
 import { SendConfirmationModal } from './confirmation-modals'
+import { usePagination, Pagination } from './pagination'
 
 interface MessagesTableProps {
   messages: BroadcastMessage[]
@@ -12,17 +13,28 @@ interface MessagesTableProps {
   onSend?: (message: BroadcastMessage) => void
 }
 
-export default function MessagesTable({ 
-  messages, 
-  onEdit, 
-  onView, 
-  onDelete, 
+export default function MessagesTable({
+  messages,
+  onEdit,
+  onView,
+  onDelete,
   onSchedule,
-  onSend 
+  onSend
 }: MessagesTableProps) {
   const [showSendModal, setShowSendModal] = useState(false)
   const [selectedMessage, setSelectedMessage] = useState<BroadcastMessage | null>(null)
   const [isSending, setIsSending] = useState(false)
+
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedMessages,
+    handlePageChange,
+    handlePageSizeChange,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(messages, 10) // 10 items per page by default
 
   const getTargetGroupBadge = (groups: string[]) => {
     const group = groups[0]
@@ -34,7 +46,7 @@ export default function MessagesTable({
       "Conductors": "bg-orange-100 text-orange-800",
       "Passengers": "bg-indigo-100 text-indigo-800",
     }
-    
+
     return (
       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeClasses[group as keyof typeof badgeClasses] || "bg-gray-100 text-gray-800"}`}>
         {group}
@@ -48,7 +60,7 @@ export default function MessagesTable({
       "Medium": "bg-yellow-100 text-yellow-800",
       "Low": "bg-green-100 text-green-800",
     }
-    
+
     return (
       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeClasses[priority as keyof typeof badgeClasses] || "bg-gray-100 text-gray-800"}`}>
         {priority}
@@ -66,7 +78,7 @@ export default function MessagesTable({
       "Technology": "bg-cyan-100 text-cyan-800",
       "General": "bg-gray-100 text-gray-800",
     }
-    
+
     return (
       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeClasses[category as keyof typeof badgeClasses] || "bg-gray-100 text-gray-800"}`}>
         {category}
@@ -99,18 +111,18 @@ export default function MessagesTable({
     if (!selectedMessage) return
 
     setIsSending(true)
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
+
       if (onSend) {
         onSend(selectedMessage)
       }
-      
+
       setShowSendModal(false)
       setSelectedMessage(null)
-      
+
       console.log("Message sent successfully:", selectedMessage.id)
     } catch (error) {
       console.error("Error sending message:", error)
@@ -125,12 +137,18 @@ export default function MessagesTable({
     setSelectedMessage(null)
   }
 
+  const startIndex = (currentPage - 1) * itemsPerPage + 1
+  const endIndex = Math.min(currentPage * itemsPerPage, totalItems)
+
   return (
     <>
       <div className="bg-white rounded-lg shadow border border-gray-200">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">All Broadcast Messages</h3>
+            <div className="text-sm text-gray-500">
+              Total: {totalItems} messages
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -148,7 +166,7 @@ export default function MessagesTable({
                 </tr>
               </thead>
               <tbody>
-                {messages.map((message) => (
+                {paginatedMessages.map((message) => (
                   <tr key={message.id} className="hover:bg-gray-50 transition-colors">
                     <td className="py-4 px-4 text-sm text-gray-900">{message.id}</td>
                     <td className="py-4 px-4">
@@ -187,17 +205,17 @@ export default function MessagesTable({
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <button 
+                        <button
                           onClick={() => onView?.(message)}
                           className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded"
                           title="View message"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        
+
                         {/* Only show edit button for pending messages */}
                         {message.status === "Pending" && (
-                          <button 
+                          <button
                             onClick={() => handleEdit(message)}
                             className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded"
                             title="Edit message"
@@ -205,10 +223,10 @@ export default function MessagesTable({
                             <Edit className="w-4 h-4" />
                           </button>
                         )}
-                        
+
                         {/* Only show send button for pending messages */}
                         {message.status === "Pending" && (
-                          <button 
+                          <button
                             onClick={() => handleSendClick(message)}
                             className="p-1 text-green-600 hover:text-green-700 hover:bg-green-50 rounded"
                             title="Send message now"
@@ -216,15 +234,9 @@ export default function MessagesTable({
                             <Send className="w-4 h-4" />
                           </button>
                         )}
-                        
-                        <button 
-                          onClick={() => onSchedule?.(message)}
-                          className="p-1 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded"
-                          title="Schedule message"
-                        >
-                          <Clock className="w-4 h-4" />
-                        </button>
-                        <button 
+
+
+                        <button
                           onClick={() => onDelete?.(message)}
                           className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded"
                           title="Delete message"
@@ -237,27 +249,27 @@ export default function MessagesTable({
                 ))}
               </tbody>
             </table>
-          </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
-              Showing 1 to {messages.length} of {messages.length} messages
-            </p>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400" disabled>
-                Previous
-              </button>
-              <button className="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded text-sm">
-                1
-              </button>
-              <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400" disabled>
-                Next
-              </button>
-            </div>
+            {/* Empty state */}
+            {paginatedMessages.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No messages found</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Pagination Component */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[5, 10, 20, 50]}
+      />
 
       {/* Send Confirmation Modal */}
       <SendConfirmationModal
@@ -267,8 +279,8 @@ export default function MessagesTable({
         isLoading={isSending}
         title="Send Broadcast Message"
         itemName={
-          selectedMessage 
-            ? `"${selectedMessage.title}"` 
+          selectedMessage
+            ? `"${selectedMessage.title}"`
             : "this message"
         }
       />

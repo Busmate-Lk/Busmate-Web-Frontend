@@ -24,18 +24,20 @@ interface Bus {
   regionAssigned: string
   depotName: string
   registrationDate: string
-  lastInspectionDate: string
-  nextMaintenanceDate: string
+  permitValidFrom?: string
+  permitValidTo?: string
+  assignedRoute?: string
+  notes?: string
   photo?: string
 }
 
-// Sample bus data - replace with real data fetching
+// Updated sample bus data with correct photo paths
 const sampleBus: Bus[] = [
   {
     id: "1",
-    busNumber: "NB-1234",
+    busNumber: "ND-4536",
     busType: "AC",
-    operator: "Ceylon Transport Board",
+    operator: "Southern Transport Board",
     operatorType: "SLTB",
     seatingCapacity: 45,
     standingCapacity: 15,
@@ -43,103 +45,116 @@ const sampleBus: Bus[] = [
     chassisNo: "CH789456123",
     engineNo: "EN987654321",
     fuelType: "Diesel",
-    regionAssigned: "Western Province",
-    depotName: "Colombo Central Depot",
+    regionAssigned: "Southern Province",
+    depotName: "Matara Depot",
     registrationDate: "2022-03-15",
-    lastInspectionDate: "2024-11-20",
-    nextMaintenanceDate: "2025-01-15",
-    photo: "/placeholder.svg?height=300&width=400",
+    permitValidFrom: "2024-11-20",
+    permitValidTo: "2026-11-15",
+    photo: "/images/buses/bus1.png", // ✅ Fixed path
+    assignedRoute: "MATARA-GALLE",
+    notes: "",
   },
   {
     id: "2",
-    busNumber: "PV-5678",
-    busType: "Non-AC",
-    operator: "Lanka Private Bus",
-    operatorType: "Private",
+    busNumber: "ND-7892",
+    busType: "AC",
+    operator: "Ceylon Transport Board",
+    operatorType: "SLTB",
     seatingCapacity: 52,
+    standingCapacity: 20,
     status: "Active",
     chassisNo: "CH456789012",
     engineNo: "EN123456789",
     fuelType: "Diesel",
-    regionAssigned: "Western Province",
-    depotName: "Pettah Depot",
+    regionAssigned: "Southern Province",
+    depotName: "Matara Depot",
     registrationDate: "2021-08-10",
-    lastInspectionDate: "2024-10-15",
-    nextMaintenanceDate: "2025-02-20",
-    photo: "/placeholder.svg?height=300&width=400",
+    permitValidFrom: "2024-10-15",
+    permitValidTo: "2026-10-20",
+    photo: "/images/buses/bus2.png", // ✅ Fixed path
+    assignedRoute: "MATARA-COLOMBO",
+    notes: "",
   },
   {
     id: "3",
-    busNumber: "SL-9012",
-    busType: "Sleeper",
-    operator: "Express Lanka",
+    busNumber: "ND-3421",
+    busType: "Non-AC",
+    operator: "Southern Express",
     operatorType: "Private",
-    seatingCapacity: 32,
-    status: "Maintenance",
+    seatingCapacity: 48,
+    status: "Active",
     chassisNo: "CH123456789",
     engineNo: "EN456789012",
     fuelType: "Diesel",
-    regionAssigned: "Central Province",
-    depotName: "Kandy Depot",
+    regionAssigned: "Southern Province",
+    depotName: "Matara Depot",
     registrationDate: "2020-12-05",
-    lastInspectionDate: "2024-09-30",
-    nextMaintenanceDate: "2024-12-15",
-    photo: "/placeholder.svg?height=300&width=400",
+    permitValidFrom: "2024-09-30",
+    permitValidTo: "2027-01-15",
+    photo: "/images/buses/bus3.png", // ✅ Fixed path
+    assignedRoute: "MATARA-TANGALLE",
+    notes: "",
   },
   {
     id: "4",
-    busNumber: "NB-3456",
-    busType: "AC",
-    operator: "SLTB Western",
-    operatorType: "SLTB",
-    seatingCapacity: 48,
+    busNumber: "ND-8765",
+    busType: "Semi-Luxury",
+    operator: "Ruhunu Transport",
+    operatorType: "Private",
+    seatingCapacity: 40,
     status: "Active",
     chassisNo: "CH987654321",
     engineNo: "EN789012345",
     fuelType: "Diesel",
     regionAssigned: "Southern Province",
-    depotName: "Galle Depot",
+    depotName: "Hambantota Depot",
     registrationDate: "2023-01-20",
-    lastInspectionDate: "2024-11-05",
-    nextMaintenanceDate: "2025-03-10",
-    photo: "/placeholder.svg?height=300&width=400",
+    permitValidFrom: "2024-11-05",
+    permitValidTo: "2027-07-10",
+    photo: "/images/buses/bus4.png", // ✅ Fixed path
+    assignedRoute: "MATARA-HAMBANTOTA",
+    notes: "",
   },
   {
     id: "5",
-    busNumber: "WP-7890",
-    busType: "AC",
-    operator: "Kurunegala Express",
+    busNumber: "ND-5234",
+    busType: "Non-AC",
+    operator: "Akuressa Transport",
     operatorType: "Private",
     seatingCapacity: 50,
     status: "Active",
     chassisNo: "CH654321098",
     engineNo: "EN321098765",
     fuelType: "Diesel",
-    regionAssigned: "North Western Province",
-    depotName: "Kurunegala Depot",
+    regionAssigned: "Southern Province",
+    depotName: "Akuressa Depot",
     registrationDate: "2019-06-15",
-    lastInspectionDate: "2024-08-20",
-    nextMaintenanceDate: "2024-11-30",
-    photo: "/placeholder.svg?height=300&width=400",
+    permitValidFrom: "2024-08-20",
+    permitValidTo: "2027-11-30",
+    photo: "/images/buses/bus5.png", // ✅ Fixed path
+    assignedRoute: "MATARA-AKURESSA",
+    notes: "",
   },
   {
     id: "6",
-    busNumber: "UP-2468",
-    busType: "Semi-Luxury",
-    operator: "Hill Country Transport",
+    busNumber: "ND-9876",
+    busType: "AC",
+    operator: "Weligama Bay Transport",
     operatorType: "SLTB",
-    seatingCapacity: 40,
-    status: "Active",
+    seatingCapacity: 42,
+    status: "Inactive",
     chassisNo: "CH135792468",
     engineNo: "EN246813579",
     fuelType: "Diesel",
-    regionAssigned: "Uva Province",
-    depotName: "Badulla Depot",
+    regionAssigned: "Southern Province",
+    depotName: "Weligama Depot",
     registrationDate: "2022-07-12",
-    lastInspectionDate: "2024-10-25",
-    nextMaintenanceDate: "2025-01-25",
-    photo: "/placeholder.svg?height=300&width=400",
-  },
+    permitValidFrom: "2024-10-25",
+    permitValidTo: "2027-01-25",
+    photo: "/images/buses/bus6.png", // ✅ Fixed path
+    assignedRoute: "MATARA-WELIGAMA",
+    notes: "",
+  }
 ]
 
 export default function ViewBus() {
@@ -174,11 +189,11 @@ export default function ViewBus() {
         pageDescription="The requested bus information could not be found"
         role="mot"
       >
-        <div className="text-center">
-          <p className="text-gray-500">Bus not found</p>
+        <div className="text-center py-12">
+          <p className="text-gray-500 mb-4">Bus not found</p>
           <button
             onClick={() => router.push("/mot/bus-infomation")}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
             Back to Bus List
           </button>
@@ -193,28 +208,13 @@ export default function ViewBus() {
   }
 
   const handleViewFullSize = () => {
-    // Handle view full size photo
     console.log("View full size photo")
+    // You can implement a modal or new page to show full size image
   }
 
   const handleChangePhoto = () => {
-    // Handle change photo
     console.log("Change photo")
-  }
-
-  const handleMarkMaintenance = () => {
-    // Handle mark for maintenance
-    console.log("Mark for maintenance")
-  }
-
-  const handleViewDocument = (document: any) => {
-    // Handle view document
-    console.log("View document:", document)
-  }
-
-  const handleDownloadDocument = (document: any) => {
-    // Handle download document
-    console.log("Download document:", document)
+    // You can implement photo upload functionality
   }
 
   const breadcrumbs = getBreadcrumbs()
@@ -255,7 +255,6 @@ export default function ViewBus() {
           </nav>
         </div>
 
-
         <BusHeaderInfo bus={bus} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -267,14 +266,8 @@ export default function ViewBus() {
           <BusDetailedInfo bus={bus} />
         </div>
 
-        <BusDocuments
-          onViewDocument={handleViewDocument}
-          onDownloadDocument={handleDownloadDocument}
-        />
-
         <BusActionButtons
           onEdit={handleEdit}
-          onMarkMaintenance={handleMarkMaintenance}
         />
       </div>
     </Layout>

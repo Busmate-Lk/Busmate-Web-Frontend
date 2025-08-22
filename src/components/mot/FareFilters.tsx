@@ -61,7 +61,6 @@ export default function FareFilters({
               <option value="Non-AC">Non-AC</option>
               <option value="Semi-Luxury">Semi-Luxury</option>
               <option value="Luxury">Luxury</option>
-              <option value="Sleeper">Sleeper</option>
             </select>
             <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
           </div>
@@ -75,7 +74,6 @@ export default function FareFilters({
             >
               <option value="">All Statuses</option>
               <option value="Active">Active</option>
-              <option value="Pending">Pending</option>
               <option value="Expired">Expired</option>
               <option value="Inactive">Inactive</option>
             </select>

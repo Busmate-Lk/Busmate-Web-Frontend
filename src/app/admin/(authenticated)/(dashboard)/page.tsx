@@ -1,5 +1,6 @@
 import { Header } from "@/components/admin/shared"
 import { StatsCards, QuickActions, ActivityFeed } from "@/components/admin/dashboard"
+import { UserGrowthTrendsChart } from "@/components/admin/dashboard/user-growth-trends-chart"
 
 export default function DashboardPage() {
   return (
@@ -13,7 +14,9 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-white p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">User Growth Trends</h3>
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center shadow-inner">
-              <p className="text-gray-500">Chart placeholder - User growth over time</p>
+              <div className="w-full h-full flex items-center justify-center">
+                <UserGrowthTrendsChart />
+              </div>
             </div>
           </div>
         </div>

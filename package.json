@@ -7,7 +7,8 @@
     "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "generate:api-route": "npx openapi-typescript-codegen --input http://13.229.67.236:8080/v3/api-docs  --output ./src/lib/api-client/route-management"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -39,11 +40,8 @@
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
     "@react-google-maps/api": "^2.20.7",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.55.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.10.0",
-    "browser-image-compression": "^2.0.2",
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -66,7 +64,6 @@
     "sonner": "^1.7.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^11.1.0",
     "vaul": "^0.9.6",
     "zod": "^3.24.1"
   },
@@ -78,6 +75,7 @@
     "@types/react-dom": "^19",
     "eslint": "9.31.0",
     "eslint-config-next": "15.4.2",
+    "openapi-typescript-codegen": "^0.29.0",
     "postcss": "^8.5",
     "tailwindcss": "^4",
     "typescript": "^5"

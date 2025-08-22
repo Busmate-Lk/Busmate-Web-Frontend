@@ -38,7 +38,7 @@ const users = [
   },
   {
     id: 4,
-    name: "Chaminda Perera",
+    name: "Chaminda Bandara",
     email: "chaminda.p@busmate.lk",
     type: "Time Keeper",
     status: "Active",
@@ -47,7 +47,7 @@ const users = [
   },
   {
     id: 5,
-    name: "Dr. Samantha Perera",
+    name: "Sunimal Nimantha",
     email: "samantha.perera@mot.lk",
     type: "MOT",
     status: "Active",
@@ -126,18 +126,7 @@ export function UserTable() {
                 <Checkbox />
               </TableCell>
               <TableCell>
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar || "/placeholder.svg"} />
-                    <AvatarFallback>
-                      {user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium">{user.name}</span>
-                </div>
+                <span className="font-medium">{user.name}</span>
               </TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>

@@ -10,7 +10,7 @@ export default function TimekeeperProfilePage({ params }: { params: { id: string
 
   return (
     <div className="p-6">
-      <NavigationBreadcrumb items={breadcrumbItems} />
+      {/* <NavigationBreadcrumb items={breadcrumbItems} /> */}
       <TimekeeperProfile userId={params.id} />
     </div>
   )

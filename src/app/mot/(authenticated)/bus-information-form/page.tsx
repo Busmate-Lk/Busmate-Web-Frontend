@@ -7,7 +7,7 @@ import { Layout } from "@/components/shared/layout"
 import BasicInformationForm from "@/components/mot/Bus-InformationForm"
 import TechnicalSpecsForm from "@/components/mot/TechnicalSpecsForm"
 import LocationAssignmentForm from "@/components/mot/LocationAssignmentForm"
-import ImportantDatesForm from "@/components/mot/ImportantDatesForm"
+/*import ImportantDatesForm from "@/components/mot/ImportantDatesForm"*/
 import BusPhotoUpload from "@/components/mot/BusPhotoUpload"
 import AdditionalNotesForm from "@/components/mot/AdditionalNotesForm"
 
@@ -39,8 +39,8 @@ export default function BusInformationForm() {
     primaryRoute: "",
     secondaryRoute: "",
     registrationDate: "",
-    lastInspectionDate: "",
-    nextMaintenanceDate: "",
+    permitValidFrom: "",
+    permitValidTo: "",
     status: "Active",
     notes: "",
   })
@@ -51,130 +51,122 @@ export default function BusInformationForm() {
   const existingBuses = [
     {
       id: "1",
-      busNumber: "NB-1234",
+      busNumber: "ND-4536",
       busType: "AC",
-      operator: "Ceylon Transport Board",
+      operator: "Southern Transport Board",
       operatorType: "SLTB",
-      seatingCapacity: "45",
-      standingCapacity: "15",
+      seatingCapacity: 45,
+      standingCapacity: 15,
+      status: "Active",
       chassisNo: "CH789456123",
       engineNo: "EN987654321",
       fuelType: "Diesel",
-      regionAssigned: "Western Province",
-      depotName: "Colombo Central Depot",
-      primaryRoute: "Colombo - Kandy",
-      secondaryRoute: "Colombo - Gampaha",
+      regionAssigned: "Southern Province",
+      depotName: "Matara Depot",
       registrationDate: "2022-03-15",
-      lastInspectionDate: "2024-11-20",
-      nextMaintenanceDate: "2025-01-15",
-      status: "Active",
-      notes: "Main bus terminal in Colombo Fort area",
+      permitValidFrom: "2024-11-20",
+      permitValidTo: "2026-11-15",
+      photo: "/placeholder.svg?height=300&width=400",
+      assignedRoute: "MATARA-GALLE",
+      notes: "",
     },
+
     {
       id: "2",
-      busNumber: "PV-5678",
-      busType: "Non-AC",
-      operator: "Lanka Private Bus",
-      operatorType: "Private",
-      seatingCapacity: "52",
-      standingCapacity: "",
+      busNumber: "ND-7892",
+      busType: "AC",
+      operator: "Ceylon Transport Board",
+      operatorType: "SLTB",
+      seatingCapacity: 52,
+      standingCapacity: 20,
+      status: "Active",
       chassisNo: "CH456789012",
       engineNo: "EN123456789",
       fuelType: "Diesel",
-      regionAssigned: "Western Province",
-      depotName: "Pettah Depot",
-      primaryRoute: "Colombo - Negombo",
-      secondaryRoute: "",
+      regionAssigned: "Southern Province",
+      depotName: "Matara Depot",
       registrationDate: "2021-08-10",
-      lastInspectionDate: "2024-10-15",
-      nextMaintenanceDate: "2025-02-20",
-      status: "Active",
-      notes: "Regular service to airport route",
+      permitValidFrom: "2024-10-15",
+      permitValidTo: "2026-10-20",
+      assignedRoute: "MATARA-COLOMBO",
+      notes: "",
     },
     {
       id: "3",
-      busNumber: "SL-9012",
-      busType: "Sleeper",
-      operator: "Express Lanka",
+      busNumber: "ND-3421",
+      busType: "Non-AC",
+      operator: "Southern Express",
       operatorType: "Private",
-      seatingCapacity: "32",
-      standingCapacity: "",
+      seatingCapacity: 48,
+      status: "Active",
       chassisNo: "CH123456789",
       engineNo: "EN456789012",
       fuelType: "Diesel",
-      regionAssigned: "Central Province",
-      depotName: "Kandy Depot",
-      primaryRoute: "Colombo - Kandy",
-      secondaryRoute: "Kandy - Nuwara Eliya",
+      regionAssigned: "Southern Province",
+      depotName: "Matara Depot",
       registrationDate: "2020-12-05",
-      lastInspectionDate: "2024-09-30",
-      nextMaintenanceDate: "2024-12-15",
-      status: "Active",
-      notes: "Currently under maintenance - engine overhaul required",
+      permitValidFrom: "2024-09-30",
+      permitValidTo: "2027-01-15",
+      assignedRoute: "MATARA-TANGALLE",
+      notes: "",
     },
     {
       id: "4",
-      busNumber: "NB-3456",
-      busType: "AC",
-      operator: "SLTB Western",
-      operatorType: "SLTB",
-      seatingCapacity: "48",
-      standingCapacity: "",
+      busNumber: "ND-8765",
+      busType: "Semi-Luxury",
+      operator: "Ruhunu Transport",
+      operatorType: "Private",
+      seatingCapacity: 40,
+      status: "Active",
       chassisNo: "CH987654321",
       engineNo: "EN789012345",
       fuelType: "Diesel",
       regionAssigned: "Southern Province",
-      depotName: "Galle Depot",
-      primaryRoute: "Colombo - Galle",
-      secondaryRoute: "Galle - Matara",
+      depotName: "Hambantota Depot",
       registrationDate: "2023-01-20",
-      lastInspectionDate: "2024-11-05",
-      nextMaintenanceDate: "2025-03-10",
-      status: "Active",
-      notes: "Express service to southern provinces",
+      permitValidFrom: "2024-11-05",
+      permitValidTo: "2027-07-10",
+      assignedRoute: "MATARA-HAMBANTOTA",
+      notes: "",
     },
     {
       id: "5",
-      busNumber: "WP-7890",
-      busType: "AC",
-      operator: "Kurunegala Express",
+      busNumber: "ND-5234",
+      busType: "Non-AC",
+      operator: "Akuressa Transport",
       operatorType: "Private",
-      seatingCapacity: "50",
-      standingCapacity: "",
+      seatingCapacity: 50,
+      status: "Active",
       chassisNo: "CH654321098",
       engineNo: "EN321098765",
       fuelType: "Diesel",
-      regionAssigned: "North Western Province",
-      depotName: "Kurunegala Depot",
-      primaryRoute: "Colombo - Kurunegala",
-      secondaryRoute: "",
+      regionAssigned: "Southern Province",
+      depotName: "Akuressa Depot",
       registrationDate: "2019-06-15",
-      lastInspectionDate: "2024-08-20",
-      nextMaintenanceDate: "2024-11-30",
-      status: "Active",
-      notes: "Popular route connecting North Western province",
+      permitValidFrom: "2024-08-20",
+      permitValidTo: "2027-11-30",
+      assignedRoute: "MATARA-AKURESSA",
+      notes: "",
     },
     {
       id: "6",
-      busNumber: "UP-2468",
-      busType: "Semi-Luxury",
-      operator: "Hill Country Transport",
+      busNumber: "ND-9876",
+      busType: "AC",
+      operator: "Weligama Bay Transport",
       operatorType: "SLTB",
-      seatingCapacity: "40",
-      standingCapacity: "",
+      seatingCapacity: 42,
+      status: "Inactive",
       chassisNo: "CH135792468",
       engineNo: "EN246813579",
       fuelType: "Diesel",
-      regionAssigned: "Uva Province",
-      depotName: "Badulla Depot",
-      primaryRoute: "Colombo - Badulla",
-      secondaryRoute: "Badulla - Ella",
+      regionAssigned: "Southern Province",
+      depotName: "Weligama Depot",
       registrationDate: "2022-07-12",
-      lastInspectionDate: "2024-10-25",
-      nextMaintenanceDate: "2025-01-25",
-      status: "Active",
-      notes: "Hill country scenic route service",
-    },
+      permitValidFrom: "2024-10-25",
+      permitValidTo: "2027-01-25",
+      assignedRoute: "MATARA-WELIGAMA",
+      notes: "",
+    }
   ]
 
   // Breadcrumb configuration
@@ -199,7 +191,7 @@ export default function BusInformationForm() {
     ]
   }
 
-  // Validation rules (keeping your existing validation logic)
+  // Validation rules (updated with permit validation)
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
@@ -281,28 +273,51 @@ export default function BusInformationForm() {
       }
     }
 
-    if (formData.lastInspectionDate) {
-      const inspectionDate = new Date(formData.lastInspectionDate)
+    // Permit Valid From validation
+    if (!formData.permitValidFrom) {
+      newErrors.permitValidFrom = "Permit valid from date is required"
+    } else {
+      const permitFromDate = new Date(formData.permitValidFrom)
       const regDate = new Date(formData.registrationDate)
       const today = new Date()
+      const maxDate = new Date()
+      maxDate.setFullYear(maxDate.getFullYear() + 5)
+      const minDate = new Date('2024-07-23')
 
-      if (inspectionDate > today) {
-        newErrors.lastInspectionDate = "Last inspection date cannot be in the future"
-      } else if (formData.registrationDate && inspectionDate < regDate) {
-        newErrors.lastInspectionDate = "Last inspection date cannot be before registration date"
+      if (permitFromDate < minDate) {
+        newErrors.permitValidFrom = "Permit valid from date cannot be before 2024"
+      } else if (permitFromDate > maxDate) {
+        newErrors.permitValidFrom = "Permit valid from date cannot be more than 5 years from today"
+      } else if (formData.registrationDate && permitFromDate < regDate) {
+        newErrors.permitValidFrom = "Permit valid from date cannot be before registration date"
       }
     }
 
-    if (formData.nextMaintenanceDate) {
-      const maintenanceDate = new Date(formData.nextMaintenanceDate)
-      const today = new Date()
+    // Permit Valid To validation
+    if (!formData.permitValidTo) {
+      newErrors.permitValidTo = "Permit valid to date is required"
+    } else {
+      const permitToDate = new Date(formData.permitValidTo)
+      const permitFromDate = new Date(formData.permitValidFrom)
       const maxDate = new Date()
-      maxDate.setFullYear(today.getFullYear() + 2)
+      maxDate.setFullYear(maxDate.getFullYear() + 5)
+      const minDate = new Date('1990-01-01')
 
-      if (maintenanceDate < today) {
-        newErrors.nextMaintenanceDate = "Next maintenance date should be in the future"
-      } else if (maintenanceDate > maxDate) {
-        newErrors.nextMaintenanceDate = "Next maintenance date cannot be more than 2 years from now"
+      if (permitToDate < minDate) {
+        newErrors.permitValidTo = "Permit valid to date cannot be before 1990"
+      } else if (permitToDate > maxDate) {
+        newErrors.permitValidTo = "Permit valid to date cannot be more than 5 years from today"
+      } else if (formData.permitValidFrom && permitToDate <= permitFromDate) {
+        newErrors.permitValidTo = "Permit valid to date must be after permit valid from date"
+      } else if (formData.permitValidFrom) {
+        // Check if permit duration is reasonable (at least 6 months, max 5 years)
+        const monthsDiff = (permitToDate.getTime() - permitFromDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+
+        if (monthsDiff < 6) {
+          newErrors.permitValidTo = "Permit validity period must be at least 6 months"
+        } else if (monthsDiff > 60) { // 5 years = 60 months
+          newErrors.permitValidTo = "Permit validity period cannot exceed 5 years"
+        }
       }
     }
 
@@ -319,25 +334,24 @@ export default function BusInformationForm() {
   useEffect(() => {
     if (isEditing && busId) {
       const existingBus = existingBuses.find(bus => bus.id === busId)
-
       if (existingBus) {
         setFormData({
           busNumber: existingBus.busNumber || "",
           busType: existingBus.busType || "",
           operator: existingBus.operator || "",
           operatorType: existingBus.operatorType || "",
-          seatingCapacity: existingBus.seatingCapacity || "",
-          standingCapacity: existingBus.standingCapacity || "",
+          seatingCapacity: existingBus.seatingCapacity !== undefined && existingBus.seatingCapacity !== null ? String(existingBus.seatingCapacity) : "",
+          standingCapacity: existingBus.standingCapacity !== undefined && existingBus.standingCapacity !== null ? String(existingBus.standingCapacity) : "",
           chassisNo: existingBus.chassisNo || "",
           engineNo: existingBus.engineNo || "",
           fuelType: existingBus.fuelType || "",
           regionAssigned: existingBus.regionAssigned || "",
           depotName: existingBus.depotName || "",
-          primaryRoute: existingBus.primaryRoute || "",
-          secondaryRoute: existingBus.secondaryRoute || "",
+          primaryRoute: existingBus.assignedRoute || "",
+          secondaryRoute: "",
           registrationDate: existingBus.registrationDate || "",
-          lastInspectionDate: existingBus.lastInspectionDate || "",
-          nextMaintenanceDate: existingBus.nextMaintenanceDate || "",
+          permitValidFrom: "",
+          permitValidTo: "",
           status: existingBus.status || "Active",
           notes: existingBus.notes || "",
         })
@@ -462,7 +476,7 @@ export default function BusInformationForm() {
           </nav>
         </div>
 
-      
+
 
         {/* Validation Summary */}
         {showValidation && hasErrors && (
@@ -518,12 +532,12 @@ export default function BusInformationForm() {
             errors={errors}
             showValidation={showValidation}
           />
-          <ImportantDatesForm
+          {/*<ImportantDatesForm
             formData={formData}
             onInputChange={handleInputChange}
             errors={errors}
             showValidation={showValidation}
-          />
+          />*/}
           <BusPhotoUpload />
           <AdditionalNotesForm
             notes={formData.notes}

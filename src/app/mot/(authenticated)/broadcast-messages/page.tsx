@@ -8,7 +8,7 @@ import CreateMessageForm from "@/components/mot/CreateMessageForm"
 import MessageBox, { BroadcastMessage } from "@/components/mot/MessageBox"
 import BroadcastFilters from "@/components/mot/BroadcastFilters"
 import MessagesTable from "@/components/mot/MessagesTable"
-import QuickTemplates from "@/components/mot/QuickTemplates"
+/*import QuickTemplates from "@/components/mot/QuickTemplates"*/
 import {
   DeleteConfirmationModal,
 } from '@/components/mot/confirmation-modals'
@@ -17,8 +17,8 @@ import {
 const initialBroadcastMessages: BroadcastMessage[] = [
     {
         id: "BM001",
-        title: "Route 138 Service Disruption - Colombo to Matara",
-        body: "Due to road construction on Galle Road near Kalutara, Route 138 services will be delayed by 30-45 minutes from 9:00 AM to 5:00 PM today. Alternative routes via A2 highway are recommended. Passengers are advised to plan accordingly.",
+        title: "Route 02 Service Disruption - Colombo to Matara",
+        body: "Due to road construction on Galle Road near Kalutara, Route 02 services will be delayed by 30-45 minutes from 9:00 AM to 5:00 PM today. Alternative routes via A2 highway are recommended. Passengers are advised to plan accordingly.",
         targetGroups: ["Bus Operators", "Drivers", "Passengers"],
         priority: "High",
         category: "Route Update",
@@ -303,9 +303,9 @@ export default function Broadcast() {
                     />
                 </div>
 
-                <div className="mt-6">
+               {/* <div className="mt-6">
                     <QuickTemplates />
-                </div>
+                </div> */}
             </div>
 
             {/* Delete Confirmation Modal */}
