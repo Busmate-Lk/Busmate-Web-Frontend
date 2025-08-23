@@ -17,6 +17,19 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/user-management/:path*',
+        destination: 'http://18.140.161.237:8081/:path*' // Vercel will proxy server-side
+      },
+      {
+        source: '/api/route-management/:path*',
+        destination: 'http://18.140.161.237:8080/:path*'
+      }
+    ]
+  }
 };
 
 export default nextConfig;
