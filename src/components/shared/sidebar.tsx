@@ -239,7 +239,13 @@ export function Sidebar({
       </div>
 
       {/* Navigation Section */}
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
         <nav className="p-4 space-y-2">
           {sidebarItems.map((item, index) => (
             <Link
