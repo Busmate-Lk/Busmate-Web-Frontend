@@ -1,3 +1,5 @@
+"use client"
+import { ChangeEvent, useRef, useState } from "react"
 import { Button } from "@/components/operator/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/operator/ui/card"
 import { Badge } from "@/components/operator/ui/badge"
@@ -6,9 +8,30 @@ import { Input } from "@/components/operator/ui/input"
 import { Label } from "@/components/operator/ui/label"
 import { Switch } from "@/components/operator/ui/switch"
 import { ArrowLeft, Edit, Save, Shield, Clock, Activity, Settings, Bus, Users, Route } from "lucide-react"
-import Link from "next/link"
+import { uploadImage } from "@/supabase/storage/clients"
+
+
 
 export function OperatorProfile() {
+  const [avatarUrl, setAvatarUrl] = useState<string>("/placeholder.svg");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoChange =async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploading(true);
+      // Replace 'avatars' with your Supabase bucket name, and 'profile' with your folder if needed
+      const { imageUrl, error } = await uploadImage({ file, bucket: "profile-photos", folder: "profile_photo" });
+      setUploading(false);
+      if (imageUrl) {
+        console.log("Avatar image URL:", imageUrl);
+        setAvatarUrl(imageUrl);
+      } else {
+        alert(error || "Upload failed");
+      }
+    }
+  };
   return (
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -21,13 +44,10 @@ export function OperatorProfile() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="Fleet" />
+                  <Label htmlFor="fullname">Full Name</Label>
+                  <Input id="fullname" defaultValue="Fleet" />
                 </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue="Operator" />
-                </div>
+            
                 <div>
                   <Label htmlFor="email">Email Address</Label>
                   <Input id="email" defaultValue="operator@busmate.lk" />
@@ -38,20 +58,13 @@ export function OperatorProfile() {
                 </div>
                 <div>
                   <Label htmlFor="company">Company Name</Label>
-                  <Input id="company" defaultValue="City Bus Services Pvt Ltd" />
+                  <Input id="organizationName" defaultValue="City Bus Services Pvt Ltd" />
                 </div>
                 <div>
                   <Label htmlFor="operatorId">Operator ID</Label>
-                  <Input id="operatorId" defaultValue="OP-2024-001" />
+                  <Input id="operatorId" placeholder="this is auto genarated" defaultValue="OP-2024-001" />
                 </div>
-                <div>
-                  <Label htmlFor="license">License Number</Label>
-                  <Input id="license" defaultValue="LIC-CBS-2024-456" />
-                </div>
-                <div>
-                  <Label htmlFor="fleetSize">Fleet Size</Label>
-                  <Input id="fleetSize" defaultValue="25 Buses" />
-                </div>
+                
               </div>
             </CardContent>
           </Card>
@@ -63,25 +76,19 @@ export function OperatorProfile() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="businessReg">Business Registration</Label>
-                  <Input id="businessReg" defaultValue="PV 12345678" />
+                  <Label htmlFor="registrationId">Business Registration</Label>
+                  <Input id="registrationId" defaultValue="PV 12345678" />
                 </div>
-                <div>
-                  <Label htmlFor="taxId">Tax ID</Label>
-                  <Input id="taxId" defaultValue="134567890V" />
-                </div>
+
                 <div className="col-span-2">
                   <Label htmlFor="address">Business Address</Label>
                   <Input id="address" defaultValue="123 Main Street, Colombo 07, Sri Lanka" />
                 </div>
                 <div>
-                  <Label htmlFor="operatingArea">Operating Area</Label>
-                  <Input id="operatingArea" defaultValue="Colombo District" />
+                  <Label htmlFor="district">Operating Area</Label>
+                  <Input id="district" defaultValue="Colombo District" />
                 </div>
-                <div>
-                  <Label htmlFor="established">Established Date</Label>
-                  <Input id="established" defaultValue="2018-03-15" type="date" />
-                </div>
+               
               </div>
             </CardContent>
           </Card>
@@ -127,10 +134,18 @@ export function OperatorProfile() {
 
         {/* Profile Summary */}
         <div className="space-y-6">
+          
           <Card>
             <CardContent className="p-6 text-center">
+              {uploading ? (
+                <div className="flex flex-col items-center justify-center h-32">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+                  <span className="text-blue-600 font-medium">Uploading...</span>
+                </div>
+              ) : (
+                <>
               <Avatar className="w-24 h-24 mx-auto mb-4">
-                <AvatarImage src="/placeholder.svg" />
+                <AvatarImage src={avatarUrl} key={avatarUrl} />
                 <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">FO</AvatarFallback>
               </Avatar>
               <h3 className="text-xl font-semibold mb-2">Fleet Operator</h3>
@@ -140,9 +155,23 @@ export function OperatorProfile() {
                 <Badge className="bg-blue-100 text-blue-800">Verified</Badge>
                 {/* <Badge className="bg-orange-100 text-orange-800">Premium</Badge> */}
               </div>
-              <Button variant="outline" className="w-full bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                ref={fileInputRef}
+                className="mb-2"
+                hidden
+              />
+              <Button
+                variant="outline"
+                className="w-full bg-blue-500/20 text-blue-600 border-blue-200 hover:bg-blue-500/30 shadow-md"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 Change Avatar
               </Button>
+                </>
+              )}
             </CardContent>
           </Card>
 

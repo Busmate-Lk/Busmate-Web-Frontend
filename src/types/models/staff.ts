@@ -35,3 +35,14 @@ export interface StaffFormData {
   licenseNumber?: string; // Only for Operator
   experienceYears?: number; // Only for Operator
 }
+
+export interface StaffResponse {
+  name: string;
+  role:string;
+  nic: string;
+  dateOfBirth: string;
+  contactNo: string;
+  address: string;
+  AssignBus: string;
+  status: 'assigned' | 'unassigned' | 'suspended';
+}

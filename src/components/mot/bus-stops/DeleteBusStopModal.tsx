@@ -91,14 +91,14 @@ export default function DeleteBusStopModal({
         >
           <div className="flex h-full flex-col bg-white shadow-xl">
             {/* Header */}
-            <div className="bg-red-50 px-6 py-4 border-b border-red-200">
+            <div className="bg-white px-8 py-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <AlertTriangle className="h-6 w-6 text-red-600" />
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-medium text-red-800">
+                    <h3 className="text-lg font-medium text-gray-900">
                       Delete Bus Stop
                     </h3>
                   </div>
@@ -106,7 +106,7 @@ export default function DeleteBusStopModal({
                 <button
                   onClick={onClose}
                   disabled={isDeleting}
-                  className="rounded-md text-red-400 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
+                  className="rounded-md text-gray-800 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -114,12 +114,11 @@ export default function DeleteBusStopModal({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-6">
+            <div className="flex-1 overflow-y-auto px-8 py-8">
               <div className="space-y-6">
                 {/* Warning Message */}
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex">
-                    <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
                     <div className="ml-3">
                       <h4 className="text-sm font-medium text-red-800">
                         This action cannot be undone

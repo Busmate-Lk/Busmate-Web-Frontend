@@ -1,6 +1,14 @@
 "use client";
 
-import { TrendingUp, AlertTriangle, BarChart3, FileText } from "lucide-react";
+import {
+  TrendingUp,
+  AlertTriangle,
+  BarChart3,
+  FileText,
+  CheckCircle,
+  Clock,
+  XCircle,
+} from "lucide-react";
 
 interface BusPermitStatsCardsProps {
   stats?: {
@@ -13,109 +21,106 @@ interface BusPermitStatsCardsProps {
 
 export function BusPermitStatsCards({ stats }: BusPermitStatsCardsProps) {
   const defaultStats = {
-    active: { count: 3, change: "+1 this month" },
-    pending: { count: 1 },
-    expired: { count: 1 },
-    total: { count: 5, change: "No change from last month" },
+    active: { count: 0, change: "No change this month" },
+    pending: { count: 0 },
+    expired: { count: 0 },
+    total: { count: 0, change: "No change from last month" },
   };
 
   const currentStats = stats || defaultStats;
 
+  const statsCards = [
+    {
+      title: "Active Permits",
+      value: currentStats.active.count,
+      icon: CheckCircle,
+      bgColor: "bg-green-100",
+      iconColor: "text-green-600",
+      borderColor: "border-green-500",
+      change: currentStats.active.change,
+      subtitle: "Currently valid permits",
+    },
+    {
+      title: "Pending Approval",
+      value: currentStats.pending.count,
+      icon: Clock,
+      bgColor: "bg-yellow-100",
+      iconColor: "text-yellow-600",
+      borderColor: "border-yellow-500",
+      change: "Awaiting review",
+      subtitle: "Pending applications",
+    },
+    {
+      title: "Expired Permits",
+      value: currentStats.expired.count,
+      icon: XCircle,
+      bgColor: "bg-red-100",
+      iconColor: "text-red-600",
+      borderColor: "border-red-500",
+      change: "Need renewal",
+      subtitle: "Require immediate attention",
+    },
+    {
+      title: "Total Permits",
+      value: currentStats.total.count,
+      icon: BarChart3,
+      bgColor: "bg-blue-100",
+      iconColor: "text-blue-600",
+      borderColor: "border-blue-500",
+      change: currentStats.total.change,
+      subtitle: "All permits in system",
+    },
+  ];
+
+  const getChangeIcon = (change: string) => {
+    if (change.includes("+")) return <TrendingUp className="h-3 w-3" />;
+    if (change.includes("-")) return (
+      <TrendingUp className="h-3 w-3 rotate-180" />
+    );
+    return <AlertTriangle className="h-3 w-3" />;
+  };
+
+  const getChangeColor = (change: string) => {
+    if (change.includes("+")) return "text-green-600";
+    if (change.includes("-")) return "text-red-600";
+    return "text-gray-600";
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-green-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                {currentStats.active.count}
-              </h3>
-              <p className="text-sm font-medium text-gray-600">
-                Active Permits
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {statsCards.map((stat, index) => (
+        <div
+          key={index}
+          className={`border-l-4 ${stat.borderColor} bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200`}
+        >
+          <div className="p-6 flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 mb-1">
+                {stat.title}
               </p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-green-600" />
-                <span className="text-xs font-medium text-green-600">
-                  {currentStats.active.change}
-                </span>
-              </div>
-            </div>
-            <div className="p-2 bg-green-50 rounded-lg">
-              <FileText className="h-5 w-5 text-green-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-yellow-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                {currentStats.pending.count}
-              </h3>
-              <p className="text-sm font-medium text-gray-600">
-                Pending Approval
+              <p className={`text-2xl font-bold ${stat.iconColor} mb-1`}>
+                {stat.value.toLocaleString()}
               </p>
-              <div className="flex items-center gap-1 mt-1">
-                <AlertTriangle className="h-3 w-3 text-yellow-600" />
-                <span className="text-xs font-medium text-yellow-600">
-                  Awaiting review
-                </span>
+              <div
+                className={`flex items-center gap-1 mb-1 ${getChangeColor(
+                  stat.change
+                )}`}
+              >
+                {getChangeIcon(stat.change)}
+                <span className="text-xs font-medium">{stat.change}</span>
               </div>
+              {stat.subtitle && (
+                <p className="text-xs text-gray-500">{stat.subtitle}</p>
+              )}
             </div>
-            <div className="p-2 bg-yellow-50 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div
+              className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}
+            >
+              <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-red-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                {currentStats.expired.count}
-              </h3>
-              <p className="text-sm font-medium text-gray-600">
-                Expired Permits
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                <AlertTriangle className="h-3 w-3 text-red-600" />
-                <span className="text-xs font-medium text-red-600">
-                  Need renewal
-                </span>
-              </div>
-            </div>
-            <div className="p-2 bg-red-50 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm border-l-4 border-l-blue-500">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                {currentStats.total.count}
-              </h3>
-              <p className="text-sm font-medium text-gray-600">Total Permits</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-3 w-3 text-blue-600" />
-                <span className="text-xs font-medium text-blue-600">
-                  {currentStats.total.change}
-                </span>
-              </div>
-            </div>
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
-            </div>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 }

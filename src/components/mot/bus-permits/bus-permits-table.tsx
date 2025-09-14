@@ -1,30 +1,20 @@
 'use client';
 
-import { Eye, Edit, Trash2, Power, Filter } from 'lucide-react';
-import { Pagination } from '../pagination';
-
-export interface BusPermit {
-  id: string;
-  routeNo: string;
-  routeName: string;
-  operator: string;
-  validFrom: string;
-  validUntil: string;
-  status: string;
-}
+import { Eye, Edit2, Trash2, Filter, FileText, Calendar, Building2, MapPin } from 'lucide-react';
+import type { PassengerServicePermitResponse } from '@/lib/api-client/route-management';
 
 interface BusPermitsTableProps {
-  permits: BusPermit[];
+  permits: PassengerServicePermitResponse[];
   currentPage: number;
   totalPages: number;
   totalItems: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
-  onView: (permitId: string) => void;
-  onEdit: (permitId: string) => void;
-  onDelete: (permitId: string, routeName: string) => void;
-  onDeactivate: (permitId: string, routeName: string) => void;
+  onView: (permit: PassengerServicePermitResponse) => void;
+  onEdit: (permit: PassengerServicePermitResponse) => void;
+  onDelete: (permit: PassengerServicePermitResponse) => void;
+  loading?: boolean;
   activeFilters?: {
     status?: string;
     operator?: string;
@@ -43,179 +33,295 @@ export function BusPermitsTable({
   onView,
   onEdit,
   onDelete,
-  onDeactivate,
+  loading = false,
   activeFilters = {},
 }: BusPermitsTableProps) {
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status?: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800';
+    
+    const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium';
     switch (status.toLowerCase()) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return `${baseClasses} bg-green-100 text-green-800`;
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return `${baseClasses} bg-yellow-100 text-yellow-800`;
       case 'expired':
-        return 'bg-red-100 text-red-800';
+        return `${baseClasses} bg-red-100 text-red-800`;
+      case 'suspended':
+        return `${baseClasses} bg-orange-100 text-orange-800`;
+      case 'cancelled':
+        return `${baseClasses} bg-red-100 text-red-800`;
       default:
-        return 'bg-gray-100 text-gray-800';
+        return `${baseClasses} bg-gray-100 text-gray-800`;
     }
   };
 
+  const getPermitTypeBadge = (permitType?: string) => {
+    if (!permitType) return '';
+    
+    const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium';
+    switch (permitType.toUpperCase()) {
+      case 'REGULAR':
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      case 'EXPRESS':
+        return `${baseClasses} bg-purple-100 text-purple-800`;
+      case 'INTERCITY':
+        return `${baseClasses} bg-indigo-100 text-indigo-800`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  const isExpired = (expiryDate?: string) => {
+    if (!expiryDate) return false;
+    return new Date(expiryDate) < new Date();
+  };
+
+  const isExpiringSoon = (expiryDate?: string) => {
+    if (!expiryDate) return false;
+    const expiry = new Date(expiryDate);
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000));
+    return expiry > now && expiry <= thirtyDaysFromNow;
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  const isExpired = (expiryDate?: string) => {
+    if (!expiryDate) return false;
+    return new Date(expiryDate) < new Date();
+  };
+
+  const isExpiringSoon = (expiryDate?: string) => {
+    if (!expiryDate) return false;
+    const expiry = new Date(expiryDate);
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000));
+    return expiry > now && expiry <= thirtyDaysFromNow;
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-      <div className="p-6 pb-0 flex flex-row items-center justify-between">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Route Permits</h3>
-          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border">
-            {permits.length} permits
-          </span>
-        </div>
-        <button className="p-0 h-auto text-gray-400 hover:text-gray-600">
-          <div className="flex items-center gap-1">
-            <span className="text-xs">...</span>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Passenger Service Permits</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              {totalItems} permits found
+            </p>
           </div>
-        </button>
+          
+          {/* Active Filters Indicator */}
+          {Object.values(activeFilters).some(Boolean) && (
+            <div className="flex items-center gap-2 text-sm">
+              <Filter className="w-4 h-4 text-blue-500" />
+              <span className="text-gray-600">Filters active</span>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="p-6">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-2">
-                    Route No.
-                    {activeFilters.search && (
-                      <div title="Filtered by search">
-                        <Filter className="h-3 w-3 text-blue-500" />
-                      </div>
-                    )}
+      
+      <div className="overflow-x-auto">
+        <table className="w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <div className="flex items-center gap-2">
+                  Permit Details
+                  {activeFilters.search && (
+                    <Filter className="h-3 w-3 text-blue-500" title="Filtered by search" />
+                  )}
+                </div>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <div className="flex items-center gap-2">
+                  Operator Info
+                  {activeFilters.operator && (
+                    <Filter className="h-3 w-3 text-blue-500" title={`Filtered by: ${activeFilters.operator}`} />
+                  )}
+                </div>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Route & Assignment
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Validity Period
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <div className="flex items-center gap-2">
+                  Status
+                  {activeFilters.status && (
+                    <Filter className="h-3 w-3 text-blue-500" title={`Filtered by: ${activeFilters.status}`} />
+                  )}
+                </div>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-2 text-gray-500">Loading permits...</span>
                   </div>
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-2">
-                    Route Name
-                    {activeFilters.search && (
-                      <div title="Filtered by search">
-                        <Filter className="h-3 w-3 text-blue-500" />
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-2">
-                    Operator
-                    {activeFilters.operator && (
-                      <div title={`Filtered by: ${activeFilters.operator}`}>
-                        <Filter className="h-3 w-3 text-blue-500" />
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Valid From
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Valid Until
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-2">
-                    Status
-                    {activeFilters.status && (
-                      <div title={`Filtered by: ${activeFilters.status}`}>
-                        <Filter className="h-3 w-3 text-blue-500" />
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">
-                  Actions
-                </th>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {permits.map((permit) => (
-                <tr
-                  key={permit.id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="py-3 px-4">
-                    <span className="font-medium text-gray-900">
-                      {permit.routeNo}
+            ) : permits.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="text-gray-500">
+                    <FileText className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                    <div className="text-lg font-medium">No permits found</div>
+                    <div className="text-sm">
+                      Try adjusting your search criteria or add a new permit.
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              permits.map((permit) => (
+                <tr key={permit.id} className="hover:bg-gray-50 transition-colors">
+                  {/* Permit Details */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-gray-400" />
+                        <span className="font-medium text-gray-900">
+                          {permit.permitNumber || 'No Permit Number'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        ID: {permit.id?.slice(-8) || 'N/A'}
+                      </div>
+                      {permit.permitType && (
+                        <span className={getPermitTypeBadge(permit.permitType)}>
+                          {permit.permitType}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Operator Info */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-gray-400" />
+                        <span className="font-medium text-gray-900">
+                          {permit.operatorName || 'Unknown Operator'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        ID: {permit.operatorId?.slice(-8) || 'N/A'}
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Route & Assignment */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-900">
+                          {permit.routeGroupName || 'No Route Group'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Max Buses: {permit.maximumBusAssigned || 0}
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Validity Period */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        <div className="text-sm">
+                          <div className="text-gray-900">
+                            {formatDate(permit.issueDate)} - {formatDate(permit.expiryDate)}
+                          </div>
+                          {permit.expiryDate && (
+                            <div className={`text-xs ${
+                              isExpired(permit.expiryDate) ? 'text-red-600' :
+                              isExpiringSoon(permit.expiryDate) ? 'text-yellow-600' :
+                              'text-green-600'
+                            }`}>
+                              {isExpired(permit.expiryDate) ? 'Expired' :
+                               isExpiringSoon(permit.expiryDate) ? 'Expires soon' :
+                               'Valid'}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-6 py-4">
+                    <span className={getStatusBadge(permit.status)}>
+                      {permit.status?.charAt(0).toUpperCase() + (permit.status?.slice(1) || '')}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="font-medium text-gray-900">
-                      {permit.routeName}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border">
-                      {permit.operator}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {permit.validFrom}
-                  </td>
-                  <td className="py-3 px-4 text-gray-700">
-                    {permit.validUntil}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                        permit.status
-                      )}`}
-                    >
-                      {permit.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
+
+                  {/* Actions */}
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
-                        className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
-                        onClick={() => onView(permit.id)}
-                        title="View Permit"
+                        onClick={() => onView(permit)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                        title="View Details"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="w-4 h-4" />
                       </button>
                       <button
-                        className="p-1.5 text-green-600 hover:text-green-800 hover:bg-green-50 rounded transition-colors"
-                        onClick={() => onEdit(permit.id)}
-                        title="Edit Permit"
+                        onClick={() => onEdit(permit)}
+                        className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition-colors"
+                        title="Edit"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit2 className="w-4 h-4" />
                       </button>
                       <button
-                        className="p-1.5 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded transition-colors"
-                        onClick={() =>
-                          onDeactivate(permit.id, permit.routeName)
-                        }
-                        title="Deactivate Permit"
+                        onClick={() => onDelete(permit)}
+                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                        title="Delete"
                       >
-                        <Power className="h-4 w-4" />
-                      </button>
-                      <button
-                        className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
-                        onClick={() => onDelete(permit.id, permit.routeName)}
-                        title="Delete Permit"
-                      >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-            onPageChange={onPageChange}
-            onPageSizeChange={onPageSizeChange}
-            pageSizeOptions={[5, 10, 15, 20]}
-          />
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

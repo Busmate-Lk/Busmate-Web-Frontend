@@ -12,10 +12,10 @@ export type PageStopResponse = {
     content?: Array<StopResponse>;
     number?: number;
     sort?: Sortnull;
-    first?: boolean;
-    last?: boolean;
     numberOfElements?: number;
     pageable?: Pageablenull;
+    first?: boolean;
+    last?: boolean;
     empty?: boolean;
 };
 

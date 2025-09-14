@@ -2,6 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ScheduleCalendarRequest } from './ScheduleCalendarRequest';
+import type { ScheduleExceptionRequest } from './ScheduleExceptionRequest';
 import type { ScheduleStopRequest } from './ScheduleStopRequest';
 export type ScheduleRequest = {
     name: string;
@@ -10,6 +12,9 @@ export type ScheduleRequest = {
     effectiveStartDate: string;
     effectiveEndDate?: string;
     status?: string;
+    description?: string;
     scheduleStops?: Array<ScheduleStopRequest>;
+    calendar?: ScheduleCalendarRequest;
+    exceptions?: Array<ScheduleExceptionRequest>;
 };
 
