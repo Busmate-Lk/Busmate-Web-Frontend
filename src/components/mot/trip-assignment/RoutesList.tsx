@@ -36,7 +36,7 @@ export function RoutesList({
   );
 
   return (
-    <div className="w-1/4 bg-white p-6 border-r border-gray-100 overflow-y-auto">
+    <div className="w-1/5 bg-white p-6 border-r border-gray-100 overflow-y-auto">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Routes</h2>
         <p className="text-sm text-gray-500">Select a route to view available trips</p>

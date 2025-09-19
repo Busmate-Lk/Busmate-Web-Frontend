@@ -66,7 +66,7 @@ export function TripsCalendar({
   };
 
   return (
-    <div className="w-2/4 bg-white p-6 border-r border-gray-100 overflow-y-auto">
+    <div className="w-3/5 bg-white p-6 border-r border-gray-100 overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Trip Schedule</h2>
