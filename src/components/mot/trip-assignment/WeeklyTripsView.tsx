@@ -242,9 +242,9 @@ const formattedDate = `Week ${currentWeekNumber}, ${weekDates[0].toLocaleDateStr
 
       {/* Weekly Trips Grid */}
       {selectedRoute ? (
-        <div className="grid grid-cols-7 gap-4 h-[calc(100vh-350px)]">
+        <div className="grid grid-cols-7 h-[calc(100vh-350px)]">
           {weekDates.map((date, dayIndex) => (
-            <div key={dayIndex} className="flex flex-col">
+            <div key={dayIndex} className={`flex flex-col px-2 ${dayIndex === 6 ? '' : 'border-r border-gray-200'}`}>
               <div className="text-center mb-4 sticky top-0 bg-white z-10 pb-2">
                 <div className="text-xs text-gray-500 font-medium">
                   {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
