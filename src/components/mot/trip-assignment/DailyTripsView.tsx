@@ -55,7 +55,7 @@ export function DailyTripsView({
     const dates = [];
     const baseDate = new Date(selectedDate);
     
-    for (let i = -7; i <= 7; i++) {
+    for (let i = -6; i <= 6; i++) {
       const date = new Date(baseDate);
       date.setDate(baseDate.getDate() + i);
       dates.push(date);
@@ -163,7 +163,7 @@ export function DailyTripsView({
       <div className="mb-8">
         <div 
           ref={dateScrollRef}
-          className="flex space-x-3 overflow-x-auto scrollbar-hide pb-3"
+          className="flex justify-between overflow-x-auto scrollbar-hide pb-3"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
