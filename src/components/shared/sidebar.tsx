@@ -107,6 +107,12 @@ export function Sidebar({
       href: '/mot/schedule-assign-form',
     },
     {
+      icon: Bus,
+      label: 'Trip Assignment',
+      active: activeItem === 'trip-assignment',
+      href: '/mot/trip-assignment',
+    },
+    {
       icon: DollarSign,
       label: 'Fare Management',
       active: activeItem === 'bus-fare',
