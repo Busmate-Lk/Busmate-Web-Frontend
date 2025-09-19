@@ -154,6 +154,23 @@ const formattedDate = `Week ${currentWeekNumber}, ${weekDates[0].toLocaleDateStr
     return filteredTrips;
   };
 
+  // Create unique trip identifier for weekly view (combines date and trip ID)
+  const createWeeklyTripId = (date: Date, tripId: string) => {
+    return `${date.toDateString()}-${tripId}`;
+  };
+
+  // Check if a specific day's trip is selected
+  const isWeeklyTripSelected = (date: Date, tripId: string) => {
+    const weeklyTripId = createWeeklyTripId(date, tripId);
+    return selectedTrip === weeklyTripId;
+  };
+
+  // Handle trip selection for weekly view
+  const handleWeeklyTripSelect = (date: Date, tripId: string) => {
+    const weeklyTripId = createWeeklyTripId(date, tripId);
+    onTripSelect(weeklyTripId);
+  };
+
   const isCurrentWeek = (weekStart: Date) => {
     return weekStart.toDateString() === weekDates[0].toDateString();
   };
@@ -258,11 +275,11 @@ const formattedDate = `Week ${currentWeekNumber}, ${weekDates[0].toLocaleDateStr
                       key={`${dayIndex}-${trip.id}`}
                       className={`
                         border rounded-lg p-3 cursor-pointer transition-all duration-300 text-sm
-                        ${selectedTrip === trip.id ? 'border-blue-500 ring-2 ring-blue-100 shadow-md' : 'border-gray-200 hover:border-gray-300'} 
+                        ${isWeeklyTripSelected(date, trip.id) ? 'border-blue-500 ring-2 ring-blue-100 shadow-md' : 'border-gray-200 hover:border-gray-300'} 
                         ${trip.assigned ? 'bg-gradient-to-r from-blue-50 to-indigo-50' : 'bg-white hover:bg-gray-50'}
                         shadow-sm hover:shadow-md
                       `}
-                      onClick={() => onTripSelect(trip.id)}
+                      onClick={() => handleWeeklyTripSelect(date, trip.id)}
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
