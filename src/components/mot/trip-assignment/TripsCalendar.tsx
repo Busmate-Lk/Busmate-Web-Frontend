@@ -1,7 +1,7 @@
 'use client';
 
 import { Calendar, ChevronLeft, ChevronRight, Bus } from 'lucide-react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 interface Trip {
   id: string;
@@ -39,6 +39,8 @@ export function TripsCalendar({
   selectedRoute,
 }: TripsCalendarProps) {
   const dateScrollRef = useRef<HTMLDivElement>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const datePickerRef = useRef<HTMLInputElement>(null);
 
   // Generate dates for the horizontal bar (7 days before and after selected date)
   const generateDates = () => {
@@ -97,10 +99,31 @@ export function TripsCalendar({
     onDateChange(nextDate);
   };
 
+  // Handle date picker
+  const handleDatePickerClick = () => {
+    setShowDatePicker(true);
+    setTimeout(() => {
+      if (datePickerRef.current) {
+        datePickerRef.current.showPicker();
+      }
+    }, 0);
+  };
+
+  const handleDatePickerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = new Date(e.target.value);
+    onDateChange(newDate);
+    setShowDatePicker(false);
+  };
+
+  // Format date for input value (YYYY-MM-DD)
+  const formatDateForInput = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
   // Filter trips based on selected route
-  const filteredTrips = trips.filter(trip => 
-    !selectedRoute || trip.routeId === selectedRoute
-  );
+  const filteredTrips = selectedRoute 
+    ? trips.filter(trip => trip.routeId === selectedRoute)
+    : [];
 
   const isToday = (date: Date) => {
     const today = new Date();
@@ -125,9 +148,23 @@ export function TripsCalendar({
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <div className="flex items-center space-x-2 px-3 py-1">
+          <div className="flex items-center space-x-2 px-3 py-1 relative">
             <Calendar className="h-5 w-5 text-blue-600" />
-            <span className="font-semibold text-gray-800 min-w-[200px] text-center">{formattedDate}</span>
+            <span 
+              className="font-semibold text-gray-800 min-w-[200px] text-center cursor-pointer hover:text-blue-600 transition-colors duration-200"
+              onClick={handleDatePickerClick}
+              title="Click to open date picker"
+            >
+              {formattedDate}
+            </span>
+            <input
+              ref={datePickerRef}
+              type="date"
+              value={formatDateForInput(selectedDate)}
+              onChange={handleDatePickerChange}
+              className="absolute opacity-0 pointer-events-none"
+              style={{ visibility: showDatePicker ? 'visible' : 'hidden' }}
+            />
           </div>
           <button
             onClick={goToNextDay}
@@ -152,24 +189,18 @@ export function TripsCalendar({
             <div
               key={index}
               className={`
-                flex-shrink-0 min-w-[90px] p-4 rounded-xl cursor-pointer text-center transition-all duration-300 shadow-sm hover:shadow-md
+                flex-shrink-0 w-12 h-12 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md
                 ${isSelected(date) 
-                  ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg transform scale-105' 
+                  ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg transform scale-110' 
                   : isToday(date)
                   ? 'bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 border-2 border-blue-200'
-                  : 'bg-white hover:bg-gray-50 border border-gray-200 text-gray-700'
+                  : 'bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:border-gray-300'
                 }
               `}
               onClick={() => onDateChange(date)}
             >
-              <div className={`text-xs font-semibold ${isSelected(date) ? 'text-blue-100' : 'text-gray-500'}`}>
-                {date.toLocaleDateString('en-US', { weekday: 'short' })}
-              </div>
-              <div className="text-xl font-bold mt-1">
+              <div className="text-lg font-bold">
                 {date.getDate()}
-              </div>
-              <div className={`text-xs mt-1 ${isSelected(date) ? 'text-blue-100' : 'text-gray-500'}`}>
-                {date.toLocaleDateString('en-US', { month: 'short' })}
               </div>
             </div>
           ))}

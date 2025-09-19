@@ -50,19 +50,20 @@ export function PSPList({
   onAssignPsp,
 }: PSPListProps) {
   // Filter PSPs based on search input and selected route
-  const filteredPSPs = psps.filter(psp => {
-    const matchesSearch = psp.permitNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                         psp.operator.toLowerCase().includes(searchValue.toLowerCase());
-    
-    // If route is selected, only show PSPs for that route group
-    const matchesRoute = !selectedRoute || 
-                         routeGroups.find(group => 
-                           group.routes.some(route => route.id === selectedRoute) && 
-                           group.id === psp.routeGroupId
-                         );
-    
-    return matchesSearch && matchesRoute;
-  });
+  const filteredPSPs = selectedRoute 
+    ? psps.filter(psp => {
+        const matchesSearch = psp.permitNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
+                             psp.operator.toLowerCase().includes(searchValue.toLowerCase());
+        
+        // Only show PSPs for the selected route group
+        const matchesRoute = routeGroups.find(group => 
+          group.routes.some(route => route.id === selectedRoute) && 
+          group.id === psp.routeGroupId
+        );
+        
+        return matchesSearch && matchesRoute;
+      })
+    : [];
 
   // Determine if a PSP is assignable to the selected trip
   const isPspAssignable = (psp: PSP) => {
@@ -200,11 +201,15 @@ export function PSPList({
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="h-8 w-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No permits found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {!selectedRoute ? "Select a route first" : "No permits found"}
+            </h3>
             <p className="text-gray-500">
-              {selectedRoute 
-                ? "No PSPs are available for the selected route"
-                : "No PSPs match your search criteria"}
+              {!selectedRoute 
+                ? "Choose a route from the left panel to view available passenger service permits"
+                : filteredPSPs.length === 0 && searchValue
+                ? "No PSPs match your search criteria"
+                : "No PSPs are available for the selected route"}
             </p>
           </div>
         )}

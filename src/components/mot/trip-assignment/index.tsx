@@ -98,6 +98,12 @@ export function TripAssignment() {
     setSelectedTrip(tripId === selectedTrip ? null : tripId);
   };
 
+  // Handle route selection - clear selected trip when route changes
+  const handleRouteSelect = (routeId: string) => {
+    setSelectedRoute(routeId);
+    setSelectedTrip(null); // Clear selected trip when route changes
+  };
+
   // Handle PSP assignment
   const handleAssignPsp = (pspId: string) => {
     if (!selectedTrip) return;
@@ -113,10 +119,10 @@ export function TripAssignment() {
   return (
     <div className="flex h-[90vh] bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="flex w-full max-w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-        <RoutesList
+                <RoutesList 
           routeGroups={routeGroups}
           selectedRoute={selectedRoute}
-          onRouteSelect={setSelectedRoute}
+          onRouteSelect={handleRouteSelect}
           searchValue={routeSearch}
           onSearchChange={setRouteSearch}
         />
