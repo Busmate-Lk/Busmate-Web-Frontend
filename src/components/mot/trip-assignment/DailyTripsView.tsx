@@ -2,6 +2,7 @@
 
 import { Calendar, ChevronLeft, ChevronRight, Bus } from 'lucide-react';
 import { useRef, useEffect } from 'react';
+import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
 
 interface Trip {
   id: string;
@@ -13,17 +14,11 @@ interface Trip {
   assigned: boolean;
 }
 
-interface RouteGroup {
-  id: string;
-  name: string;
-  routes: Array<{ id: string; name: string; direction: string }>;
-}
-
 interface DailyTripsViewProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   trips: Trip[];
-  routeGroups: RouteGroup[];
+  routeGroups: RouteGroupResponse[];
   selectedTrip: string | null;
   onTripSelect: (tripId: string) => void;
   selectedRoute: string | null;
@@ -236,7 +231,11 @@ export function DailyTripsView({
                   )}
                   
                   <div className="text-sm text-gray-500">
-                    <span className="font-medium">Route:</span> {routeGroups.find(g => g.routes.some(r => r.id === trip.routeId))?.routes.find(r => r.id === trip.routeId)?.name}
+                    <span className="font-medium">Route:</span> {
+                      routeGroups
+                        .find(g => g.routes?.some(r => r.id === trip.routeId))
+                        ?.routes?.find(r => r.id === trip.routeId)?.name || 'Unknown Route'
+                    }
                   </div>
                 </div>
                 

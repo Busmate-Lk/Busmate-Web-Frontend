@@ -4,6 +4,7 @@ import { Grid, List } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DailyTripsView } from './DailyTripsView';
 import { WeeklyTripsView } from './WeeklyTripsView';
+import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
 
 interface Trip {
   id: string;
@@ -15,17 +16,11 @@ interface Trip {
   assigned: boolean;
 }
 
-interface RouteGroup {
-  id: string;
-  name: string;
-  routes: Array<{ id: string; name: string; direction: string }>;
-}
-
 interface TripsCalendarProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   trips: Trip[];
-  routeGroups: RouteGroup[];
+  routeGroups: RouteGroupResponse[];
   selectedTrip: string | null;
   onTripSelect: (tripId: string) => void;
   selectedRoute: string | null;

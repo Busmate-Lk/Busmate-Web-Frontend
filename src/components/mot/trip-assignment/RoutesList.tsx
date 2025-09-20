@@ -1,25 +1,16 @@
 'use client';
 
 import { Search } from 'lucide-react';
-
-interface Route {
-  id: string;
-  name: string;
-  direction: 'OUTBOUND' | 'INBOUND';
-}
-
-interface RouteGroup {
-  id: string;
-  name: string;
-  routes: Route[];
-}
+import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
 
 interface RoutesListProps {
-  routeGroups: RouteGroup[];
+  routeGroups: RouteGroupResponse[];
   selectedRoute: string | null;
   onRouteSelect: (routeId: string) => void;
   searchValue: string;
   onSearchChange: (value: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export function RoutesList({
@@ -28,12 +19,44 @@ export function RoutesList({
   onRouteSelect,
   searchValue,
   onSearchChange,
+  isLoading = false,
+  error = null,
 }: RoutesListProps) {
   // Filter routes based on search input
   const filteredRouteGroups = routeGroups.filter(group => 
-    group.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    group.routes.some(route => route.name.toLowerCase().includes(searchValue.toLowerCase()))
+    group.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+    group.routes?.some(route => route.name?.toLowerCase().includes(searchValue.toLowerCase()))
   );
+
+  if (isLoading) {
+    return (
+      <div className="w-1/5 bg-white p-6 border-r border-gray-100 overflow-y-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Routes</h2>
+          <p className="text-sm text-gray-500">Select a route to view available trips</p>
+        </div>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-2 text-gray-600">Loading routes...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-1/5 bg-white p-6 border-r border-gray-100 overflow-y-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Routes</h2>
+          <p className="text-sm text-gray-500">Select a route to view available trips</p>
+        </div>
+        <div className="text-center py-8">
+          <div className="text-red-600 mb-2">⚠️ Error</div>
+          <p className="text-sm text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-1/5 bg-white p-6 border-r border-gray-100 overflow-y-auto">
@@ -63,7 +86,7 @@ export function RoutesList({
               {group.name}
             </div>
             <div className="ml-5 space-y-2">
-              {group.routes.map((route) => (
+              {group.routes?.map((route) => (
                 <div
                   key={route.id}
                   className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
@@ -71,7 +94,7 @@ export function RoutesList({
                       ? 'bg-blue-600 text-white shadow-md transform scale-[1.02]'
                       : 'bg-white hover:bg-blue-50 hover:shadow-sm border border-gray-100'
                   }`}
-                  onClick={() => onRouteSelect(route.id)}
+                  onClick={() => route.id && onRouteSelect(route.id)}
                 >
                   <div className="font-medium">{route.name}</div>
                   <div className={`text-xs mt-1 flex items-center ${
@@ -88,7 +111,11 @@ export function RoutesList({
                     </span>
                   </div>
                 </div>
-              ))}
+              )) || (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  No routes available
+                </div>
+              )}
             </div>
           </div>
         ))}

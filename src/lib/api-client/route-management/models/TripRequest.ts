@@ -3,7 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type TripRequest = {
-    assignmentId: string;
+    /**
+     * Passenger Service Permit ID - Optional, can be assigned later
+     */
+    passengerServicePermitId?: string;
+    scheduleId: string;
     tripDate: string;
     scheduledDepartureTime: string;
     scheduledArrivalTime: string;

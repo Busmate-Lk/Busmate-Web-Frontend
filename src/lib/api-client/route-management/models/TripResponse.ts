@@ -4,7 +4,8 @@
 /* eslint-disable */
 export type TripResponse = {
     id?: string;
-    assignmentId?: string;
+    passengerServicePermitId?: string;
+    passengerServicePermitNumber?: string;
     scheduleId?: string;
     routeId?: string;
     permitId?: string;

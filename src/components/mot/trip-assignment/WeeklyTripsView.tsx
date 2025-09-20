@@ -2,6 +2,7 @@
 
 import { Calendar, ChevronLeft, ChevronRight, Bus } from 'lucide-react';
 import { useRef, useEffect } from 'react';
+import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
 
 interface Trip {
   id: string;
@@ -13,17 +14,11 @@ interface Trip {
   assigned: boolean;
 }
 
-interface RouteGroup {
-  id: string;
-  name: string;
-  routes: Array<{ id: string; name: string; direction: string }>;
-}
-
 interface WeeklyTripsViewProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   trips: Trip[];
-  routeGroups: RouteGroup[];
+  routeGroups: RouteGroupResponse[];
   selectedTrip: string | null;
   onTripSelect: (tripId: string) => void;
   selectedRoute: string | null;

@@ -1,9 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { RoutesList } from './RoutesList';
 import { TripsCalendar } from './TripsCalendar';
 import { PSPList } from './PSPList';
+import { RouteManagementService } from '@/lib/api-client/route-management/services/RouteManagementService';
+import { PermitManagementService } from '@/lib/api-client/route-management/services/PermitManagementService';
+import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
+import type { PassengerServicePermitResponse } from '@/lib/api-client/route-management/models/PassengerServicePermitResponse';
 
 export function TripAssignment() {
   // State management
@@ -13,26 +17,50 @@ export function TripAssignment() {
   const [routeSearch, setRouteSearch] = useState('');
   const [pspSearch, setPspSearch] = useState('');
   
-  // Dummy data for UI development
-  const routeGroups = [
-    {
-      id: 'rg1',
-      name: 'Colombo - Kandy',
-      routes: [
-        { id: 'r1', name: 'Colombo - Kandy UP', direction: 'OUTBOUND' as const },
-        { id: 'r2', name: 'Kandy - Colombo DOWN', direction: 'INBOUND' as const }
-      ]
-    },
-    {
-      id: 'rg2',
-      name: 'Colombo - Galle',
-      routes: [
-        { id: 'r3', name: 'Colombo - Galle UP', direction: 'OUTBOUND' as const },
-        { id: 'r4', name: 'Galle - Colombo DOWN', direction: 'INBOUND' as const }
-      ]
-    }
-  ];
+  // API data state
+  const [routeGroups, setRouteGroups] = useState<RouteGroupResponse[]>([]);
+  const [psps, setPsps] = useState<PassengerServicePermitResponse[]>([]);
+  const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
+  const [isLoadingPsps, setIsLoadingPsps] = useState(true);
+  const [routesError, setRoutesError] = useState<string | null>(null);
+  const [pspsError, setPspsError] = useState<string | null>(null);
+  // Load data from APIs
+  useEffect(() => {
+    // Load route groups
+    const loadRouteGroups = async () => {
+      try {
+        setIsLoadingRoutes(true);
+        setRoutesError(null);
+        const response = await RouteManagementService.getAllRouteGroupsAsList();
+        setRouteGroups(response);
+      } catch (error) {
+        console.error('Error loading route groups:', error);
+        setRoutesError('Failed to load routes. Please try again.');
+      } finally {
+        setIsLoadingRoutes(false);
+      }
+    };
 
+    // Load PSPs
+    const loadPsps = async () => {
+      try {
+        setIsLoadingPsps(true);
+        setPspsError(null);
+        const response = await PermitManagementService.getAllPermits();
+        setPsps(response);
+      } catch (error) {
+        console.error('Error loading PSPs:', error);
+        setPspsError('Failed to load permits. Please try again.');
+      } finally {
+        setIsLoadingPsps(false);
+      }
+    };
+
+    loadRouteGroups();
+    loadPsps();
+  }, []);
+
+  // Dummy data for UI development (keeping trips for now as requested)
   const trips = [
     { 
       id: 't1', 
@@ -60,36 +88,6 @@ export function TripAssignment() {
       pspId: 'PSP002', 
       busNumber: 'BUS-456',
       assigned: true
-    }
-  ];
-
-  const psps = [
-    { 
-      id: 'PSP001', 
-      permitNumber: 'PSP/2025/001',
-      routeGroupId: 'rg1',
-      operator: 'ABC Travels',
-      maxBusAssigned: 5,
-      currentlyAssigned: 3,
-      expiryDate: '2026-12-31'
-    },
-    { 
-      id: 'PSP002', 
-      permitNumber: 'PSP/2025/002',
-      routeGroupId: 'rg1',
-      operator: 'XYZ Bus Lines',
-      maxBusAssigned: 3,
-      currentlyAssigned: 1,
-      expiryDate: '2026-10-15'
-    },
-    { 
-      id: 'PSP003', 
-      permitNumber: 'PSP/2025/003',
-      routeGroupId: 'rg2',
-      operator: '123 Express',
-      maxBusAssigned: 4,
-      currentlyAssigned: 2,
-      expiryDate: '2026-11-20'
     }
   ];
 
@@ -125,6 +123,8 @@ export function TripAssignment() {
           onRouteSelect={handleRouteSelect}
           searchValue={routeSearch}
           onSearchChange={setRouteSearch}
+          isLoading={isLoadingRoutes}
+          error={routesError}
         />
         
         <TripsCalendar
@@ -146,6 +146,8 @@ export function TripAssignment() {
           searchValue={pspSearch}
           onSearchChange={setPspSearch}
           onAssignPsp={handleAssignPsp}
+          isLoading={isLoadingPsps}
+          error={pspsError}
         />
       </div>
     </div>

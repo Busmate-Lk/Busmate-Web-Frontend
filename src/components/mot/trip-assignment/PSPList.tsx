@@ -1,16 +1,8 @@
 'use client';
 
 import { Search } from 'lucide-react';
-
-interface PSP {
-  id: string;
-  permitNumber: string;
-  routeGroupId: string;
-  operator: string;
-  maxBusAssigned: number;
-  currentlyAssigned: number;
-  expiryDate: string;
-}
+import type { PassengerServicePermitResponse } from '@/lib/api-client/route-management/models/PassengerServicePermitResponse';
+import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
 
 interface Trip {
   id: string;
@@ -22,21 +14,17 @@ interface Trip {
   assigned: boolean;
 }
 
-interface RouteGroup {
-  id: string;
-  name: string;
-  routes: Array<{ id: string; name: string; direction: string }>;
-}
-
 interface PSPListProps {
-  psps: PSP[];
+  psps: PassengerServicePermitResponse[];
   trips: Trip[];
-  routeGroups: RouteGroup[];
+  routeGroups: RouteGroupResponse[];
   selectedTrip: string | null;
   selectedRoute: string | null;
   searchValue: string;
   onSearchChange: (value: string) => void;
   onAssignPsp: (pspId: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export function PSPList({
@@ -48,16 +36,18 @@ export function PSPList({
   searchValue,
   onSearchChange,
   onAssignPsp,
+  isLoading = false,
+  error = null,
 }: PSPListProps) {
   // Filter PSPs based on search input and selected route
   const filteredPSPs = selectedRoute 
     ? psps.filter(psp => {
-        const matchesSearch = psp.permitNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                             psp.operator.toLowerCase().includes(searchValue.toLowerCase());
+        const matchesSearch = psp.permitNumber?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                             psp.operatorName?.toLowerCase().includes(searchValue.toLowerCase());
         
         // Only show PSPs for the selected route group
         const matchesRoute = routeGroups.find(group => 
-          group.routes.some(route => route.id === selectedRoute) && 
+          group.routes?.some(route => route.id === selectedRoute) && 
           group.id === psp.routeGroupId
         );
         
@@ -66,23 +56,53 @@ export function PSPList({
     : [];
 
   // Determine if a PSP is assignable to the selected trip
-  const isPspAssignable = (psp: PSP) => {
+  const isPspAssignable = (psp: PassengerServicePermitResponse) => {
     if (!selectedTrip) return true;
     
     const selectedTripObj = trips.find(trip => trip.id === selectedTrip);
     if (!selectedTripObj) return false;
     
-    // Check if the PSP is already at max capacity
-    if (psp.currentlyAssigned >= psp.maxBusAssigned) return false;
+    // Check if the PSP is already at max capacity (assuming 0 current assignments for demo)
+    if ((psp.maximumBusAssigned || 0) <= 0) return false;
     
     // Check if the PSP is for the right route group
     const tripRoute = selectedTripObj.routeId;
     const routeGroup = routeGroups.find(group => 
-      group.routes.some(route => route.id === tripRoute)
+      group.routes?.some(route => route.id === tripRoute)
     );
     
     return routeGroup && routeGroup.id === psp.routeGroupId;
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-1/5 bg-white p-6 overflow-y-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Service Permits</h2>
+          <p className="text-sm text-gray-500">Available passenger service permits</p>
+        </div>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-2 text-gray-600">Loading permits...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-1/5 bg-white p-6 overflow-y-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Service Permits</h2>
+          <p className="text-sm text-gray-500">Available passenger service permits</p>
+        </div>
+        <div className="text-center py-8">
+          <div className="text-red-600 mb-2">⚠️ Error</div>
+          <p className="text-sm text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-1/5 bg-white p-6 overflow-y-auto">
@@ -120,7 +140,10 @@ export function PSPList({
         {filteredPSPs.length > 0 ? (
           filteredPSPs.map((psp) => {
             const assignable = isPspAssignable(psp);
-            const utilizationPercentage = (psp.currentlyAssigned / psp.maxBusAssigned) * 100;
+            // For demo purposes, show as 0 current assignments since API doesn't provide this
+            const currentAssigned = 0; // This would come from a separate API call in real implementation
+            const maxAssigned = psp.maximumBusAssigned || 0;
+            const utilizationPercentage = maxAssigned > 0 ? (currentAssigned / maxAssigned) * 100 : 0;
             
             return (
               <div
@@ -133,7 +156,7 @@ export function PSPList({
                   shadow-sm
                 `}
                 onClick={() => {
-                  if (selectedTrip && assignable) {
+                  if (selectedTrip && assignable && psp.id) {
                     onAssignPsp(psp.id);
                   }
                 }}
@@ -141,7 +164,7 @@ export function PSPList({
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <div className="font-bold text-gray-900 text-lg">{psp.permitNumber}</div>
-                    <div className="text-sm text-gray-600 font-medium">{psp.operator}</div>
+                    <div className="text-sm text-gray-600 font-medium">{psp.operatorName || 'Unknown Operator'}</div>
                   </div>
                   {selectedTrip && (
                     <div className={`text-xs px-3 py-1 rounded-full font-semibold ${
@@ -160,7 +183,7 @@ export function PSPList({
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm font-medium text-gray-700">Bus Capacity</span>
                       <span className="text-sm text-gray-600">
-                        {psp.currentlyAssigned}/{psp.maxBusAssigned}
+                        {currentAssigned}/{maxAssigned}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -181,15 +204,15 @@ export function PSPList({
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700">Expires</span>
                     <span className={`text-sm px-2 py-1 rounded-lg ${
-                      new Date(psp.expiryDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                      psp.expiryDate && new Date(psp.expiryDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                         ? 'bg-red-100 text-red-700'
                         : 'bg-gray-100 text-gray-700'
                     }`}>
-                      {new Date(psp.expiryDate).toLocaleDateString('en-US', { 
+                      {psp.expiryDate ? new Date(psp.expiryDate).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'short', 
                         day: 'numeric' 
-                      })}
+                      }) : 'Not specified'}
                     </span>
                   </div>
                 </div>

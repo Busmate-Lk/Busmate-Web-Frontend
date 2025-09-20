@@ -7,6 +7,9 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { AssignmentResult } from './models/AssignmentResult';
+export type { BulkPspAssignmentRequest } from './models/BulkPspAssignmentRequest';
+export type { BulkPspAssignmentResponse } from './models/BulkPspAssignmentResponse';
 export type { BusPassengerServicePermitAssignmentRequest } from './models/BusPassengerServicePermitAssignmentRequest';
 export type { BusPassengerServicePermitAssignmentResponse } from './models/BusPassengerServicePermitAssignmentResponse';
 export type { BusRequest } from './models/BusRequest';
@@ -24,8 +27,7 @@ export type { PageScheduleResponse } from './models/PageScheduleResponse';
 export type { PageStopResponse } from './models/PageStopResponse';
 export type { PassengerServicePermitRequest } from './models/PassengerServicePermitRequest';
 export type { PassengerServicePermitResponse } from './models/PassengerServicePermitResponse';
-export type { PassengerServicePermitScheduleAssignmentRequest } from './models/PassengerServicePermitScheduleAssignmentRequest';
-export type { PassengerServicePermitScheduleAssignmentResponse } from './models/PassengerServicePermitScheduleAssignmentResponse';
+export type { PspTripAssignment } from './models/PspTripAssignment';
 export type { RouteGroupRequest } from './models/RouteGroupRequest';
 export type { RouteGroupResponse } from './models/RouteGroupResponse';
 export type { RouteRequest } from './models/RouteRequest';
@@ -53,7 +55,6 @@ export { BusPermitAssignmentService } from './services/BusPermitAssignmentServic
 export { BusStopManagementService } from './services/BusStopManagementService';
 export { OperatorManagementService } from './services/OperatorManagementService';
 export { PermitManagementService } from './services/PermitManagementService';
-export { PermitScheduleAssignmentService } from './services/PermitScheduleAssignmentService';
 export { RouteManagementService } from './services/RouteManagementService';
 export { ScheduleManagementService } from './services/ScheduleManagementService';
 export { TripManagementService } from './services/TripManagementService';
