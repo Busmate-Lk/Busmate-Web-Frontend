@@ -208,7 +208,7 @@ export default function SchedulesPage() {
   }, [router]);
 
   const handleEdit = useCallback((scheduleId: string) => {
-    router.push(`/mot/schedules/edit/${scheduleId}`);
+    router.push(`/mot/schedules/${scheduleId}/edit`);
   }, [router]);
 
   const handleAssignBuses = useCallback((scheduleId: string, routeName: string) => {
@@ -266,7 +266,7 @@ export default function SchedulesPage() {
 
   const handleAddNew = useCallback(() => {
     console.log('Add new schedule clicked');
-    router.push('/mot/schedules/create');
+    router.push('/mot/schedules/add-new');
   }, [router]);
 
   const handleExportAll = useCallback(async () => {
