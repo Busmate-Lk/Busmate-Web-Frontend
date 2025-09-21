@@ -6,8 +6,23 @@ import { TripsCalendar } from './TripsCalendar';
 import { PSPList } from './PSPList';
 import { RouteManagementService } from '@/lib/api-client/route-management/services/RouteManagementService';
 import { PermitManagementService } from '@/lib/api-client/route-management/services/PermitManagementService';
+import { TripManagementService } from '@/lib/api-client/route-management/services/TripManagementService';
 import type { RouteGroupResponse } from '@/lib/api-client/route-management/models/RouteGroupResponse';
 import type { PassengerServicePermitResponse } from '@/lib/api-client/route-management/models/PassengerServicePermitResponse';
+import type { TripResponse } from '@/lib/api-client/route-management/models/TripResponse';
+
+// Update Trip interface to match TripResponse structure
+interface Trip {
+  id: string;
+  routeId: string;
+  tripDate: string;
+  departureTime: string;
+  arrivalTime: string;
+  busPlateNumber?: string;
+  status: string;
+  passengerServicePermitId?: string;
+  assigned: boolean;
+}
 
 export function TripAssignment() {
   // State management
@@ -20,10 +35,13 @@ export function TripAssignment() {
   // API data state
   const [routeGroups, setRouteGroups] = useState<RouteGroupResponse[]>([]);
   const [psps, setPsps] = useState<PassengerServicePermitResponse[]>([]);
+  const [trips, setTrips] = useState<Trip[]>([]);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
   const [isLoadingPsps, setIsLoadingPsps] = useState(true);
+  const [isLoadingTrips, setIsLoadingTrips] = useState(true);
   const [routesError, setRoutesError] = useState<string | null>(null);
   const [pspsError, setPspsError] = useState<string | null>(null);
+  const [tripsError, setTripsError] = useState<string | null>(null);
   // Load data from APIs
   useEffect(() => {
     // Load route groups
@@ -56,40 +74,127 @@ export function TripAssignment() {
       }
     };
 
+    // Load trips
+    const loadTrips = async () => {
+      try {
+        setIsLoadingTrips(true);
+        setTripsError(null);
+        const response = await TripManagementService.getAllTrips();
+        
+        // Transform TripResponse to Trip interface
+        const transformedTrips: Trip[] = response.map((tripResponse: TripResponse) => ({
+          id: tripResponse.id || '',
+          routeId: tripResponse.routeId || '',
+          tripDate: tripResponse.tripDate || '',
+          departureTime: tripResponse.scheduledDepartureTime || '',
+          arrivalTime: tripResponse.scheduledArrivalTime || '',
+          busPlateNumber: tripResponse.busPlateNumber,
+          status: tripResponse.status || 'Unknown',
+          passengerServicePermitId: tripResponse.passengerServicePermitId,
+          assigned: !!tripResponse.passengerServicePermitId
+        }));
+        
+        setTrips(transformedTrips);
+      } catch (error) {
+        console.error('Error loading trips:', error);
+        setTripsError('Failed to load trips. Please try again.');
+      } finally {
+        setIsLoadingTrips(false);
+      }
+    };
+
     loadRouteGroups();
     loadPsps();
+    loadTrips();
   }, []);
 
-  // Dummy data for UI development (keeping trips for now as requested)
-  const trips = [
-    { 
-      id: 't1', 
-      routeId: 'r1', 
-      departureTime: '08:30', 
-      arrivalTime: '12:00', 
-      pspId: 'PSP001', 
-      busNumber: 'BUS-123',
-      assigned: true
-    },
-    { 
-      id: 't2', 
-      routeId: 'r1', 
-      departureTime: '10:30', 
-      arrivalTime: '14:00', 
-      pspId: null, 
-      busNumber: null,
-      assigned: false
-    },
-    { 
-      id: 't3', 
-      routeId: 'r2', 
-      departureTime: '09:00', 
-      arrivalTime: '12:30', 
-      pspId: 'PSP002', 
-      busNumber: 'BUS-456',
-      assigned: true
+  // Load trips by date range for better performance (reload when date changes)
+  useEffect(() => {
+    const loadTripsByDateRange = async () => {
+      try {
+        setIsLoadingTrips(true);
+        setTripsError(null);
+        
+        // Calculate date range based on selected date (±7 days for daily view context)
+        const startDate = new Date(selectedDate);
+        startDate.setDate(startDate.getDate() - 7);
+        const endDate = new Date(selectedDate);
+        endDate.setDate(endDate.getDate() + 7);
+        
+        const response = await TripManagementService.getTripsByDateRange(
+          startDate.toISOString().split('T')[0],
+          endDate.toISOString().split('T')[0]
+        );
+        
+        // Transform TripResponse to Trip interface
+        const transformedTrips: Trip[] = response.map((tripResponse: TripResponse) => ({
+          id: tripResponse.id || '',
+          routeId: tripResponse.routeId || '',
+          tripDate: tripResponse.tripDate || '',
+          departureTime: tripResponse.scheduledDepartureTime || '',
+          arrivalTime: tripResponse.scheduledArrivalTime || '',
+          busPlateNumber: tripResponse.busPlateNumber,
+          status: tripResponse.status || 'Unknown',
+          passengerServicePermitId: tripResponse.passengerServicePermitId,
+          assigned: !!tripResponse.passengerServicePermitId
+        }));
+        
+        setTrips(transformedTrips);
+      } catch (error) {
+        console.error('Error loading trips by date range:', error);
+        setTripsError('Failed to load trips for selected date range. Please try again.');
+      } finally {
+        setIsLoadingTrips(false);
+      }
+    };
+
+    // Only load trips by date range after initial load, when date changes, and when no specific route is selected
+    if (routeGroups.length > 0 && !selectedRoute) {
+      loadTripsByDateRange();
     }
-  ];
+  }, [selectedDate, routeGroups, selectedRoute]);
+
+  // Load trips by route when a specific route is selected
+  useEffect(() => {
+    const loadTripsByRoute = async () => {
+      if (!selectedRoute) return;
+      
+      try {
+        setIsLoadingTrips(true);
+        setTripsError(null);
+        
+        const response = await TripManagementService.getTripsByRoute(selectedRoute);
+        
+        // Transform TripResponse to Trip interface
+        const transformedTrips: Trip[] = response.map((tripResponse: TripResponse) => ({
+          id: tripResponse.id || '',
+          routeId: tripResponse.routeId || '',
+          tripDate: tripResponse.tripDate || '',
+          departureTime: tripResponse.scheduledDepartureTime || '',
+          arrivalTime: tripResponse.scheduledArrivalTime || '',
+          busPlateNumber: tripResponse.busPlateNumber,
+          status: tripResponse.status || 'Unknown',
+          passengerServicePermitId: tripResponse.passengerServicePermitId,
+          assigned: !!tripResponse.passengerServicePermitId
+        }));
+        
+        setTrips(transformedTrips);
+      } catch (error) {
+        console.error('Error loading trips by route:', error);
+        setTripsError('Failed to load trips for selected route. Please try again.');
+      } finally {
+        setIsLoadingTrips(false);
+      }
+    };
+
+    // Load trips by route when a specific route is selected
+    if (selectedRoute && routeGroups.length > 0) {
+      loadTripsByRoute();
+    } else if (!selectedRoute) {
+      // Clear trips when no route is selected
+      setTrips([]);
+    }
+  }, [selectedRoute, routeGroups]);
 
   // Handle trip selection
   const handleTripSelect = (tripId: string) => {
@@ -135,6 +240,8 @@ export function TripAssignment() {
           selectedTrip={selectedTrip}
           onTripSelect={handleTripSelect}
           selectedRoute={selectedRoute}
+          isLoadingTrips={isLoadingTrips}
+          tripsError={tripsError}
         />
         
         <PSPList

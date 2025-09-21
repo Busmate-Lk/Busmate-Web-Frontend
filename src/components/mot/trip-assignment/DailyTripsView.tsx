@@ -7,10 +7,12 @@ import type { RouteGroupResponse } from '@/lib/api-client/route-management/model
 interface Trip {
   id: string;
   routeId: string;
+  tripDate: string;
   departureTime: string;
   arrivalTime: string;
-  pspId: string | null;
-  busNumber: string | null;
+  busPlateNumber?: string;
+  status: string;
+  passengerServicePermitId?: string;
   assigned: boolean;
 }
 
@@ -27,6 +29,8 @@ interface DailyTripsViewProps {
   handleDatePickerClick: () => void;
   handleDatePickerChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formatDateForInput: (date: Date) => string;
+  isLoadingTrips?: boolean;
+  tripsError?: string | null;
 }
 
 export function DailyTripsView({
@@ -42,6 +46,8 @@ export function DailyTripsView({
   handleDatePickerClick,
   handleDatePickerChange,
   formatDateForInput,
+  isLoadingTrips,
+  tripsError,
 }: DailyTripsViewProps) {
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
@@ -102,9 +108,14 @@ export function DailyTripsView({
     onDateChange(nextDate);
   };
 
-  // Filter trips based on selected route
+  // Filter trips based on selected route and date
   const filteredTrips = selectedRoute 
-    ? trips.filter(trip => trip.routeId === selectedRoute)
+    ? trips.filter(trip => {
+        // Filter by date if tripDate is available
+        const tripDate = trip.tripDate ? new Date(trip.tripDate) : null;
+        const isSameDate = tripDate ? tripDate.toDateString() === selectedDate.toDateString() : true;
+        return isSameDate;
+      })
     : [];
 
   const isToday = (date: Date) => {
@@ -188,7 +199,44 @@ export function DailyTripsView({
 
       {/* Trips List */}
       <div className="space-y-4">
-        {filteredTrips.length > 0 ? (
+        {isLoadingTrips ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="border rounded-xl p-5 bg-white shadow-sm animate-pulse">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="h-6 bg-gray-200 rounded w-16"></div>
+                      <div className="h-4 bg-gray-200 rounded w-4"></div>
+                      <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-4 bg-gray-200 rounded w-28"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : tripsError ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="h-8 w-8 text-red-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Failed to load trips
+            </h3>
+            <p className="text-red-600 mb-4">{tripsError}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : filteredTrips.length > 0 ? (
           filteredTrips.map((trip) => (
             <div
               key={trip.id}
@@ -216,10 +264,10 @@ export function DailyTripsView({
                     <div className="flex items-center space-x-2 mb-2">
                       <div className="flex items-center space-x-2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                         <Bus className="h-4 w-4" />
-                        <span>{trip.busNumber}</span>
+                        <span>{trip.busPlateNumber}</span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        <span className="font-medium">PSP:</span> {trip.pspId}
+                        <span className="font-medium">PSP:</span> {trip.passengerServicePermitId}
                       </div>
                     </div>
                   ) : (

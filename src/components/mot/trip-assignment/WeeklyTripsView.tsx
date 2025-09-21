@@ -7,10 +7,12 @@ import type { RouteGroupResponse } from '@/lib/api-client/route-management/model
 interface Trip {
   id: string;
   routeId: string;
+  tripDate: string;
   departureTime: string;
   arrivalTime: string;
-  pspId: string | null;
-  busNumber: string | null;
+  busPlateNumber?: string;
+  status: string;
+  passengerServicePermitId?: string;
   assigned: boolean;
 }
 
@@ -27,6 +29,8 @@ interface WeeklyTripsViewProps {
   handleDatePickerClick: () => void;
   handleDatePickerChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formatDateForInput: (date: Date) => string;
+  isLoadingTrips?: boolean;
+  tripsError?: string | null;
 }
 
 export function WeeklyTripsView({
@@ -42,6 +46,8 @@ export function WeeklyTripsView({
   handleDatePickerClick,
   handleDatePickerChange,
   formatDateForInput,
+  isLoadingTrips,
+  tripsError,
 }: WeeklyTripsViewProps) {
   const weekScrollRef = useRef<HTMLDivElement>(null);
 
@@ -134,19 +140,19 @@ const formattedDate = `Week ${currentWeekNumber}, ${weekDates[0].toLocaleDateStr
     onDateChange(nextDate);
   };
 
-  // Filter trips based on selected route
-  const filteredTrips = selectedRoute 
-    ? trips.filter(trip => trip.routeId === selectedRoute)
-    : [];
+  // Filter trips based on selected route (no need for route filtering since API handles this)
+  const filteredTrips = selectedRoute ? trips : [];
 
   // Group trips by date for weekly view
   const getTripsForDate = (date: Date) => {
     // Only show trips if a route is selected
     if (!selectedRoute) return [];
     
-    // For demo purposes, we'll show the same trips for all dates
-    // In a real app, you would filter by actual trip dates
-    return filteredTrips;
+    // Filter trips by the specific date
+    return filteredTrips.filter(trip => {
+      const tripDate = trip.tripDate ? new Date(trip.tripDate) : null;
+      return tripDate ? tripDate.toDateString() === date.toDateString() : false;
+    });
   };
 
   // Create unique trip identifier for weekly view (combines date and trip ID)
@@ -253,7 +259,46 @@ const formattedDate = `Week ${currentWeekNumber}, ${weekDates[0].toLocaleDateStr
       </div>
 
       {/* Weekly Trips Grid */}
-      {selectedRoute ? (
+      {isLoadingTrips ? (
+        <div className="grid grid-cols-7 h-[calc(100vh-350px)]">
+          {[...Array(7)].map((_, dayIndex) => (
+            <div key={dayIndex} className={`flex flex-col px-2 ${dayIndex === 6 ? '' : 'border-r border-gray-200'}`}>
+              <div className="text-center mb-4 sticky top-0 bg-white z-10 pb-2">
+                <div className="h-4 bg-gray-200 rounded w-16 mx-auto animate-pulse"></div>
+              </div>
+              <div className="flex-1 space-y-3">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="border rounded-lg p-3 bg-white shadow-sm animate-pulse">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="h-4 bg-gray-200 rounded w-12"></div>
+                        <div className="h-3 bg-gray-200 rounded w-8"></div>
+                      </div>
+                      <div className="h-6 bg-gray-200 rounded w-20"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : tripsError ? (
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Calendar className="h-8 w-8 text-red-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Failed to load trips
+          </h3>
+          <p className="text-red-600 mb-4">{tripsError}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : selectedRoute ? (
         <div className="grid grid-cols-7 h-[calc(100vh-350px)]">
           {weekDates.map((date, dayIndex) => (
             <div key={dayIndex} className={`flex flex-col px-2 ${dayIndex === 6 ? '' : 'border-r border-gray-200'}`}>
@@ -290,7 +335,7 @@ const formattedDate = `Week ${currentWeekNumber}, ${weekDates[0].toLocaleDateStr
                           <div className="flex items-center space-x-1">
                             <div className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-medium flex items-center space-x-1">
                               <Bus className="h-3 w-3" />
-                              <span>{trip.busNumber}</span>
+                              <span>{trip.busPlateNumber}</span>
                             </div>
                           </div>
                         ) : (

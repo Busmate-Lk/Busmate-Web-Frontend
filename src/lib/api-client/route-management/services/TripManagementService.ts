@@ -204,6 +204,24 @@ export class TripManagementService {
         });
     }
     /**
+     * Get trips by Route
+     * Retrieve all trips associated with a specific route ID. This includes trips from all schedules that belong to the specified route.
+     * @param routeId
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static getTripsByRoute(
+        routeId: string,
+    ): CancelablePromise<Array<TripResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/route/{routeId}',
+            path: {
+                'routeId': routeId,
+            },
+        });
+    }
+    /**
      * Get trips by Schedule
      * @param scheduleId
      * @returns TripResponse OK

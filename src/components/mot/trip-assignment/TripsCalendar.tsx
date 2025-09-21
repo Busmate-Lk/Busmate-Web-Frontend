@@ -9,10 +9,12 @@ import type { RouteGroupResponse } from '@/lib/api-client/route-management/model
 interface Trip {
   id: string;
   routeId: string;
+  tripDate: string;
   departureTime: string;
   arrivalTime: string;
-  pspId: string | null;
-  busNumber: string | null;
+  busPlateNumber?: string;
+  status: string;
+  passengerServicePermitId?: string;
   assigned: boolean;
 }
 
@@ -24,6 +26,8 @@ interface TripsCalendarProps {
   selectedTrip: string | null;
   onTripSelect: (tripId: string) => void;
   selectedRoute: string | null;
+  isLoadingTrips?: boolean;
+  tripsError?: string | null;
 }
 
 export function TripsCalendar({
@@ -34,6 +38,8 @@ export function TripsCalendar({
   selectedTrip,
   onTripSelect,
   selectedRoute,
+  isLoadingTrips,
+  tripsError,
 }: TripsCalendarProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const datePickerRef = useRef<HTMLInputElement>(null);
@@ -112,6 +118,8 @@ export function TripsCalendar({
           handleDatePickerClick={handleDatePickerClick}
           handleDatePickerChange={handleDatePickerChange}
           formatDateForInput={formatDateForInput}
+          isLoadingTrips={isLoadingTrips}
+          tripsError={tripsError}
         />
       ) : (
         <WeeklyTripsView
@@ -127,6 +135,8 @@ export function TripsCalendar({
           handleDatePickerClick={handleDatePickerClick}
           handleDatePickerChange={handleDatePickerChange}
           formatDateForInput={formatDateForInput}
+          isLoadingTrips={isLoadingTrips}
+          tripsError={tripsError}
         />
       )}
     </div>

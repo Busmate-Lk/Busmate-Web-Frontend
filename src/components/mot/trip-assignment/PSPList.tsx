@@ -7,10 +7,12 @@ import type { RouteGroupResponse } from '@/lib/api-client/route-management/model
 interface Trip {
   id: string;
   routeId: string;
+  tripDate: string;
   departureTime: string;
   arrivalTime: string;
-  pspId: string | null;
-  busNumber: string | null;
+  busPlateNumber?: string;
+  status: string;
+  passengerServicePermitId?: string;
   assigned: boolean;
 }
 
