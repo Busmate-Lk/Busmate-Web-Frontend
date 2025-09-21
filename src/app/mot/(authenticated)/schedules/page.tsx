@@ -1,8 +1,9 @@
 'use client';
 
 import { ScheduleStatsCards } from '@/components/mot/schedule-stats-cards';
-import { ScheduleSearchFilters } from '@/components/mot/schedule-search-filters';
-import { TimetablesTable } from '@/components/mot/timetables-table';
+import { ScheduleFilters } from '@/components/mot/schedule-filters';
+import { ScheduleActions } from '@/components/mot/schedule-actions';
+import { SchedulesTable } from '@/components/mot/schedules-table';
 import {
   DeleteConfirmationModal,
   DeactivationConfirmationModal,
@@ -10,7 +11,7 @@ import {
 import Pagination from '@/components/shared/Pagination';
 import { Layout } from '@/components/shared/layout';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { QueryParams } from '@/types/requestdto/pagination';
 import { 
   ScheduleManagementService, 
@@ -207,7 +208,7 @@ export default function SchedulesPage() {
   }, [router]);
 
   const handleEdit = useCallback((scheduleId: string) => {
-    router.push(`/mot/schedules/edit/${scheduleId}`);
+    router.push(`/mot/schedules/${scheduleId}/edit`);
   }, [router]);
 
   const handleAssignBuses = useCallback((scheduleId: string, routeName: string) => {
@@ -264,57 +265,60 @@ export default function SchedulesPage() {
   }, [deleteModal, fetchSchedules, fetchStatistics]);
 
   const handleAddNew = useCallback(() => {
-    router.push('/mot/schedules/create');
+    console.log('Add new schedule clicked');
+    router.push('/mot/schedules/add-new');
   }, [router]);
 
   const handleExportAll = useCallback(async () => {
+    console.log('Export all schedules clicked');
     try {
       toast.info('Preparing export...');
-      // Implement export functionality
+      // TODO: Implement actual export functionality
       // This could involve calling an export API endpoint
+      console.log('Exporting', schedules.length, 'schedules');
       toast.success('Export completed');
     } catch (error) {
       console.error('Error exporting schedules:', error);
       toast.error('Failed to export schedules');
     }
-  }, []);
+  }, [schedules.length]);
 
-  // Transform schedule data for display
-  const transformedSchedules = useMemo(() => {
-    return schedules.map(schedule => ({
-      id: schedule.id || '',
-      routeId: schedule.routeId || '',
-      routeName: schedule.routeName || '',
-      routeGroup: schedule.routeGroupName || '',
-      daysOfWeek: getDaysOfWeekFromCalendar(schedule.scheduleCalendars?.[0]),
-      numberOfDays: getDaysOfWeekFromCalendar(schedule.scheduleCalendars?.[0]).length,
-      status: schedule.status || 'PENDING',
-      totalTimeSlots: schedule.scheduleStops?.length || 0,
-      assignedBuses: 0, // This would come from bus assignment data
-      createdDate: schedule.createdAt || '',
-      lastModified: schedule.updatedAt || '',
-      scheduleType: schedule.scheduleType || 'REGULAR',
-      effectiveStartDate: schedule.effectiveStartDate || '',
-      effectiveEndDate: schedule.effectiveEndDate || '',
-      description: schedule.description || '',
-    }));
-  }, [schedules]);
+  // Remove transformation since we're now using the raw ScheduleResponse directly
+  // const transformedSchedules = useMemo(() => {
+  //   return schedules.map(schedule => ({
+  //     id: schedule.id || '',
+  //     routeId: schedule.routeId || '',
+  //     routeName: schedule.routeName || '',
+  //     routeGroup: schedule.routeGroupName || '',
+  //     daysOfWeek: getDaysOfWeekFromCalendar(schedule.scheduleCalendars?.[0]),
+  //     numberOfDays: getDaysOfWeekFromCalendar(schedule.scheduleCalendars?.[0]).length,
+  //     status: schedule.status || 'PENDING',
+  //     totalTimeSlots: schedule.scheduleStops?.length || 0,
+  //     assignedBuses: 0, // This would come from bus assignment data
+  //     createdDate: schedule.createdAt || '',
+  //     lastModified: schedule.updatedAt || '',
+  //     scheduleType: schedule.scheduleType || 'REGULAR',
+  //     effectiveStartDate: schedule.effectiveStartDate || '',
+  //     effectiveEndDate: schedule.effectiveEndDate || '',
+  //     description: schedule.description || '',
+  //   }));
+  // }, [schedules]);
 
-  // Helper function to extract days of week from calendar
-  function getDaysOfWeekFromCalendar(calendar: any): string[] {
-    if (!calendar) return [];
-    
-    const days: string[] = [];
-    if (calendar.monday) days.push('Monday');
-    if (calendar.tuesday) days.push('Tuesday');
-    if (calendar.wednesday) days.push('Wednesday');
-    if (calendar.thursday) days.push('Thursday');
-    if (calendar.friday) days.push('Friday');
-    if (calendar.saturday) days.push('Saturday');
-    if (calendar.sunday) days.push('Sunday');
-    
-    return days;
-  }
+  // Helper function to extract days of week from calendar (kept for reference but not used)
+  // function getDaysOfWeekFromCalendar(calendar: any): string[] {
+  //   if (!calendar) return [];
+  //   
+  //   const days: string[] = [];
+  //   if (calendar.monday) days.push('Monday');
+  //   if (calendar.tuesday) days.push('Tuesday');
+  //   if (calendar.wednesday) days.push('Wednesday');
+  //   if (calendar.thursday) days.push('Thursday');
+  //   if (calendar.friday) days.push('Friday');
+  //   if (calendar.saturday) days.push('Saturday');
+  //   if (calendar.sunday) days.push('Sunday');
+  //   
+  //   return days;
+  // }
 
   if (isInitialLoading) {
     return (
@@ -340,10 +344,18 @@ export default function SchedulesPage() {
     >
       <div className="space-y-6">
         {/* Statistics Cards */}
-        <ScheduleStatsCards stats={stats} />
+        <ScheduleStatsCards stats={stats} isLoading={isInitialLoading} />
+        
+        {/* Page Header with Actions */}
+        <ScheduleActions
+          onAddNew={handleAddNew}
+          onExportAll={handleExportAll}
+          isLoading={isLoading}
+          totalSchedules={totalElements}
+        />
 
         {/* Search and Filters */}
-        <ScheduleSearchFilters
+        <ScheduleFilters
           searchTerm={queryParams.search || ''}
           setSearchTerm={handleSearch}
           statusFilter={statusFilter}
@@ -353,9 +365,8 @@ export default function SchedulesPage() {
           scheduleTypeFilter={scheduleTypeFilter}
           setScheduleTypeFilter={handleScheduleTypeFilterChange}
           filterOptions={filterOptions}
-          onAddNew={handleAddNew}
-          onExportAll={handleExportAll}
           onClearFilters={clearAllFilters}
+          isLoading={isLoading}
         />
 
         {/* Results Summary */}
@@ -364,33 +375,31 @@ export default function SchedulesPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-blue-900">
-                  Showing {totalElements} of {totalElements} schedules
+                  Showing {totalElements} schedule{totalElements !== 1 ? 's' : ''}
                 </span>
-                {(statusFilter || routeFilter || scheduleTypeFilter || queryParams.search) && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-blue-700">Active filters:</span>
-                    {queryParams.search && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Search: "{queryParams.search}"
-                      </span>
-                    )}
-                    {statusFilter && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Status: {statusFilter}
-                      </span>
-                    )}
-                    {scheduleTypeFilter && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        Type: {scheduleTypeFilter}
-                      </span>
-                    )}
-                    {routeFilter && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                        Route: {routeFilter}
-                      </span>
-                    )}
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-blue-700">Active filters:</span>
+                  {queryParams.search && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Search: "{queryParams.search}"
+                    </span>
+                  )}
+                  {statusFilter && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Status: {statusFilter}
+                    </span>
+                  )}
+                  {scheduleTypeFilter && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      Type: {scheduleTypeFilter}
+                    </span>
+                  )}
+                  {routeFilter && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      Route: {routeFilter}
+                    </span>
+                  )}
+                </div>
               </div>
               <button
                 onClick={clearAllFilters}
@@ -404,8 +413,8 @@ export default function SchedulesPage() {
 
         {/* Schedules Table */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <TimetablesTable
-            schedules={transformedSchedules}
+          <SchedulesTable
+            schedules={schedules}
             onView={handleView}
             onEdit={handleEdit}
             onAssignBuses={handleAssignBuses}
@@ -418,18 +427,21 @@ export default function SchedulesPage() {
           {totalElements > 0 && (
             <div className="border-t border-gray-200">
               <Pagination
-                currentPage={queryParams.page! || 0}
+                currentPage={queryParams.page! + 1} // Convert from 0-based to 1-based for display
                 totalPages={totalPages}
                 totalElements={totalElements}
                 pageSize={queryParams.size!}
                 onPageChange={handlePageChange}
                 onPageSizeChange={handlePageSizeChange}
+                loading={isLoading}
+                searchActive={!!(queryParams.search || statusFilter || routeFilter || scheduleTypeFilter)}
+                filterCount={[queryParams.search, statusFilter, routeFilter, scheduleTypeFilter].filter(Boolean).length}
               />
             </div>
           )}
 
           {/* Empty State */}
-          {/* {totalElements === 0 && !isLoading && (
+          {totalElements === 0 && !isLoading && (
             <div className="text-center py-12">
               <div className="text-gray-400 text-lg mb-2">No schedules found</div>
               <div className="text-gray-500 text-sm">
@@ -446,7 +458,7 @@ export default function SchedulesPage() {
                 </button>
               )}
             </div>
-          )} */}
+          )}
         </div>
 
         {/* Confirmation Modals */}

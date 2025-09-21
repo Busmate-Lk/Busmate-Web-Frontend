@@ -19,21 +19,25 @@ interface ScheduleStatsCardsProps {
 }
 
 export function ScheduleStatsCards({ stats, isLoading = false }: ScheduleStatsCardsProps) {
-  // Default values if no stats provided
-  const defaultStats = {
-    activeSchedules: 0,
-    totalRoutes: 0,
-    totalSchedules: 0,
-    totalAssignedBuses: 0,
+  // Dummy data for demonstration - replace with real API data later
+  const dummyStats = {
+    activeSchedules: 45,
+    totalRoutes: 28,
+    totalSchedules: 52,
+    totalAssignedBuses: 156,
+    pendingSchedules: 7,
+    inactiveSchedules: 5,
+    onTimePerformance: 92,
   };
 
-  const displayStats = stats || defaultStats;
+  // Use dummy data instead of real stats for now
+  const displayStats = dummyStats;
 
   // Calculate derived statistics
-  const inactiveSchedules = (displayStats.totalSchedules || 0) - (displayStats.activeSchedules || 0);
+  const inactiveSchedules = displayStats.inactiveSchedules || 0;
   const utilizationRate = displayStats.totalSchedules 
     ? Math.round((displayStats.activeSchedules! / displayStats.totalSchedules) * 100)
-    : 0;
+    : 87; // Dummy utilization rate
 
   const cards = [
     {
@@ -41,7 +45,7 @@ export function ScheduleStatsCards({ stats, isLoading = false }: ScheduleStatsCa
       value: displayStats.activeSchedules || 0,
       icon: Activity,
       color: "blue",
-      trend: "+3 this month",
+      trend: "+3 this week",
       trendDirection: "up" as const,
       description: "Currently operational",
       bgColor: "bg-blue-50",
@@ -67,7 +71,7 @@ export function ScheduleStatsCards({ stats, isLoading = false }: ScheduleStatsCa
       value: displayStats.totalSchedules || 0,
       icon: Calendar,
       color: "purple",
-      trend: "+5 this week",
+      trend: "+5 this month",
       trendDirection: "up" as const,
       description: "All schedule configurations",
       bgColor: "bg-purple-50",
@@ -76,13 +80,13 @@ export function ScheduleStatsCards({ stats, isLoading = false }: ScheduleStatsCa
       textColor: "text-purple-600",
     },
     {
-      title: "Assigned Buses",
+      title: "Bus Assignments",
       value: displayStats.totalAssignedBuses || 0,
       icon: Bus,
       color: "orange",
-      trend: "+12 assignments",
+      trend: `${utilizationRate}% utilization`,
       trendDirection: "up" as const,
-      description: "Buses in service",
+      description: "Buses assigned to schedules",
       bgColor: "bg-orange-50",
       iconColor: "text-orange-600",
       borderColor: "border-l-orange-500",

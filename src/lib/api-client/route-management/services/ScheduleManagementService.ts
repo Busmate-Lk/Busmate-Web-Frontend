@@ -8,6 +8,7 @@ import type { ScheduleExceptionRequest } from '../models/ScheduleExceptionReques
 import type { ScheduleExceptionResponse } from '../models/ScheduleExceptionResponse';
 import type { ScheduleRequest } from '../models/ScheduleRequest';
 import type { ScheduleResponse } from '../models/ScheduleResponse';
+import type { TripResponse } from '../models/TripResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -525,6 +526,37 @@ export class ScheduleManagementService {
             mediaType: 'application/json',
             errors: {
                 400: `Invalid input data`,
+                401: `Unauthorized`,
+                404: `Schedule not found`,
+            },
+        });
+    }
+    /**
+     * Generate trips for schedule
+     * Generate trips for the specified schedule within a date range. If no date range is provided, trips will be generated for the entire schedule validity period.
+     * @param id
+     * @param fromDate
+     * @param toDate
+     * @returns TripResponse Trips generated successfully
+     * @throws ApiError
+     */
+    public static generateTripsForSchedule(
+        id: string,
+        fromDate?: string,
+        toDate?: string,
+    ): CancelablePromise<Array<TripResponse>> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/schedules/{id}/generate-trips',
+            path: {
+                'id': id,
+            },
+            query: {
+                'fromDate': fromDate,
+                'toDate': toDate,
+            },
+            errors: {
+                400: `Invalid date range or schedule configuration`,
                 401: `Unauthorized`,
                 404: `Schedule not found`,
             },

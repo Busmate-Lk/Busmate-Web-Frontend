@@ -2,6 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BulkPspAssignmentRequest } from '../models/BulkPspAssignmentRequest';
+import type { BulkPspAssignmentResponse } from '../models/BulkPspAssignmentResponse';
 import type { TripRequest } from '../models/TripRequest';
 import type { TripResponse } from '../models/TripResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -36,20 +38,40 @@ export class TripManagementService {
         });
     }
     /**
-     * Get trips by assignment
-     * @param assignmentId
+     * Bulk assign Passenger Service Permit to multiple trips
+     * @param tripIds
+     * @param passengerServicePermitId
      * @returns TripResponse OK
      * @throws ApiError
      */
-    public static getTripsByAssignment(
-        assignmentId: string,
+    public static bulkAssignPassengerServicePermitToTrips(
+        tripIds: Array<string>,
+        passengerServicePermitId: string,
     ): CancelablePromise<Array<TripResponse>> {
         return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/trips/assignment/{assignmentId}',
-            path: {
-                'assignmentId': assignmentId,
+            method: 'PATCH',
+            url: '/api/trips/bulk-assign-psp',
+            query: {
+                'tripIds': tripIds,
+                'passengerServicePermitId': passengerServicePermitId,
             },
+        });
+    }
+    /**
+     * Bulk assign PSPs to trips
+     * Assign multiple Passenger Service Permits to multiple trips in a single operation. This is useful for workspace scenarios where operators need to assign PSPs to trips in bulk. The operation returns details of successful and failed assignments.
+     * @param requestBody
+     * @returns BulkPspAssignmentResponse OK
+     * @throws ApiError
+     */
+    public static bulkAssignPspsToTrips(
+        requestBody: BulkPspAssignmentRequest,
+    ): CancelablePromise<BulkPspAssignmentResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/trips/bulk-assign-psps',
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
     /**
@@ -141,25 +163,78 @@ export class TripManagementService {
         });
     }
     /**
-     * Generate trips for assignment within date range
-     * @param assignmentId
+     * Generate trips for schedule within date range or entire validity period
+     * Generate trips for a schedule. If fromDate and toDate are not provided, trips will be generated for the entire validity period of the schedule. If dates are provided, trips will be generated only for the specified period.
+     * @param scheduleId
      * @param fromDate
      * @param toDate
      * @returns TripResponse OK
      * @throws ApiError
      */
-    public static generateTripsForAssignment(
-        assignmentId: string,
-        fromDate: string,
-        toDate: string,
+    public static generateTripsForSchedule1(
+        scheduleId: string,
+        fromDate?: string,
+        toDate?: string,
     ): CancelablePromise<Array<TripResponse>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/trips/generate',
             query: {
-                'assignmentId': assignmentId,
+                'scheduleId': scheduleId,
                 'fromDate': fromDate,
                 'toDate': toDate,
+            },
+        });
+    }
+    /**
+     * Get trips by Passenger Service Permit
+     * @param passengerServicePermitId
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static getTripsByPassengerServicePermit(
+        passengerServicePermitId: string,
+    ): CancelablePromise<Array<TripResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/permit/{passengerServicePermitId}',
+            path: {
+                'passengerServicePermitId': passengerServicePermitId,
+            },
+        });
+    }
+    /**
+     * Get trips by Route
+     * Retrieve all trips associated with a specific route ID. This includes trips from all schedules that belong to the specified route.
+     * @param routeId
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static getTripsByRoute(
+        routeId: string,
+    ): CancelablePromise<Array<TripResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/route/{routeId}',
+            path: {
+                'routeId': routeId,
+            },
+        });
+    }
+    /**
+     * Get trips by Schedule
+     * @param scheduleId
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static getTripsBySchedule(
+        scheduleId: string,
+    ): CancelablePromise<Array<TripResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/schedule/{scheduleId}',
+            path: {
+                'scheduleId': scheduleId,
             },
         });
     }
@@ -236,6 +311,28 @@ export class TripManagementService {
         });
     }
     /**
+     * Assign Passenger Service Permit to trip
+     * @param id
+     * @param passengerServicePermitId
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static assignPassengerServicePermitToTrip(
+        id: string,
+        passengerServicePermitId: string,
+    ): CancelablePromise<TripResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/trips/{id}/assign-psp',
+            path: {
+                'id': id,
+            },
+            query: {
+                'passengerServicePermitId': passengerServicePermitId,
+            },
+        });
+    }
+    /**
      * Cancel trip
      * @param id
      * @param reason
@@ -269,6 +366,23 @@ export class TripManagementService {
         return __request(OpenAPI, {
             method: 'PATCH',
             url: '/api/trips/{id}/complete',
+            path: {
+                'id': id,
+            },
+        });
+    }
+    /**
+     * Remove Passenger Service Permit from trip
+     * @param id
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static removePassengerServicePermitFromTrip(
+        id: string,
+    ): CancelablePromise<TripResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/trips/{id}/remove-psp',
             path: {
                 'id': id,
             },

@@ -13,6 +13,10 @@ export type ScheduleRequest = {
     effectiveEndDate?: string;
     status?: string;
     description?: string;
+    /**
+     * Whether to automatically generate trips for the schedule's validity period
+     */
+    generateTrips?: boolean;
     scheduleStops?: Array<ScheduleStopRequest>;
     calendar?: ScheduleCalendarRequest;
     exceptions?: Array<ScheduleExceptionRequest>;

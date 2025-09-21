@@ -73,25 +73,25 @@ export function Sidebar({
     {
       icon: Route,
       label: 'Routes Management',
-      active: activeItem === 'bus-route-groups',
+      active: activeItem === 'routes',
       href: '/mot/routes',
     },
     {
       icon: Calendar,
       label: 'Schedule Management',
-      active: activeItem === 'schedule',
-      href: '/mot/schedule-management',
+      active: activeItem === 'schedules',
+      href: '/mot/schedules',
     },
     {
       icon: FileText,
       label: 'Operator Management',
-      active: activeItem === 'operator-management',
+      active: activeItem === 'operators',
       href: '/mot/users/operators',
     },
     {
       icon: Bus,
       label: 'Bus Management',
-      active: activeItem === 'bus-management',
+      active: activeItem === 'buses',
       href: '/mot/buses',
     },
     {
@@ -101,10 +101,10 @@ export function Sidebar({
       href: '/mot/passenger-service-permits',
     },
     {
-      icon: Pen,
-      label: 'Schedule Assignment',
-      active: activeItem === 'schedule-assignment',
-      href: '/mot/schedule-assign-form',
+      icon: Bus,
+      label: 'Trip Assignment',
+      active: activeItem === 'trip-assignment',
+      href: '/mot/trip-assignment',
     },
     {
       icon: DollarSign,
@@ -239,7 +239,13 @@ export function Sidebar({
       </div>
 
       {/* Navigation Section */}
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
         <nav className="p-4 space-y-2">
           {sidebarItems.map((item, index) => (
             <Link

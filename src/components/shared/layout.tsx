@@ -25,10 +25,12 @@ interface LayoutProps {
   pageTitle?: string
   pageDescription?: string
   role?:string
+  padding?: number
 }
 
-export function Layout({ children, activeItem = "dashboard", pageTitle, pageDescription,role }: LayoutProps) {
+export function Layout({ children, activeItem = "dashboard", pageTitle, pageDescription,role, padding = 6 }: LayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const paddingStr = padding.toString();
 
   return (
     <LayoutContext.Provider value={{ isCollapsed, setIsCollapsed}}>
@@ -37,8 +39,8 @@ export function Layout({ children, activeItem = "dashboard", pageTitle, pageDesc
         
         <div className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'ml-20' : 'ml-68'} min-h-screen`}>
           <Header pageTitle={pageTitle} pageDescription={pageDescription} />
-          
-          <main className="p-6">
+
+          <main className={`p-${paddingStr}`}>
             {children}
           </main>
         </div>

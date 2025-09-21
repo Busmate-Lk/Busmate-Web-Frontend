@@ -8,12 +8,12 @@ import type { Sortnull } from './Sortnull';
 export type PageRouteGroupResponse = {
     totalElements?: number;
     totalPages?: number;
+    pageable?: Pageablenull;
     size?: number;
     content?: Array<RouteGroupResponse>;
     number?: number;
     sort?: Sortnull;
     numberOfElements?: number;
-    pageable?: Pageablenull;
     first?: boolean;
     last?: boolean;
     empty?: boolean;
