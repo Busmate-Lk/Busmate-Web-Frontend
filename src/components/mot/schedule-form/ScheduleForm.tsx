@@ -156,18 +156,33 @@ export function ScheduleForm({
     loadData();
   }, []);
 
-  // Load routes when route group changes
+  // Load routes for edit mode when route groups are loaded
   useEffect(() => {
-    const selectedRoute = routes.find(r => r.id === formData.routeId);
-    if (selectedRoute) {
+    if (mode === 'edit' && initialData?.routeId && routeGroups.length > 0) {
+      // Find the route group that contains the initial route
       const routeGroup = routeGroups.find(rg => 
-        rg.routes?.some(r => r.id === selectedRoute.id)
+        rg.routes?.some(r => r.id === initialData.routeId)
       );
-      if (routeGroup) {
-        setRoutes(routeGroup.routes || []);
+      if (routeGroup && routeGroup.routes) {
+        setRoutes(routeGroup.routes);
       }
     }
-  }, [formData.routeId, routeGroups, routes]);
+  }, [mode, initialData?.routeId, routeGroups]);
+
+  // Load routes when route group changes (for create mode)
+  useEffect(() => {
+    if (mode === 'create') {
+      const selectedRoute = routes.find(r => r.id === formData.routeId);
+      if (selectedRoute) {
+        const routeGroup = routeGroups.find(rg => 
+          rg.routes?.some(r => r.id === selectedRoute.id)
+        );
+        if (routeGroup) {
+          setRoutes(routeGroup.routes || []);
+        }
+      }
+    }
+  }, [mode, formData.routeId, routeGroups, routes]);
 
   // Validation
   const validateForm = (): boolean => {

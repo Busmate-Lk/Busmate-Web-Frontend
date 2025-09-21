@@ -25,6 +25,7 @@ export default function EditSchedulePage() {
             try {
                 setIsLoadingSchedule(true);
                 const response = await ScheduleManagementService.getScheduleById(scheduleId);
+                console.log('Loaded schedule:', response);
                 setSchedule(response);
             } catch (error) {
                 console.error('Error loading schedule:', error);

@@ -706,7 +706,7 @@ export default function ScheduleDetails() {
   const handleArchive = () => {
     if (confirm('Are you sure you want to archive this schedule?')) {
       alert('Schedule archived successfully!');
-      router.push('/mot/schedule-management');
+      router.push('/mot/schedules');
     }
   };
 
@@ -721,7 +721,7 @@ export default function ScheduleDetails() {
   };
 
   const handleBack = () => {
-    router.push('/mot/schedule-management');
+    router.push('/mot/schedules');
   };
 
   return (

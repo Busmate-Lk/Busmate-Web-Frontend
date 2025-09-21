@@ -115,7 +115,21 @@ export function ScheduleBasicForm({
         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
           <Route className="w-5 h-5 mr-2" />
           Route Assignment
+          {mode === 'edit' && (
+            <span className="ml-2 text-sm text-gray-500 font-normal">
+              (Cannot be changed in edit mode)
+            </span>
+          )}
         </h3>
+        
+        {mode === 'edit' && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-sm text-yellow-800">
+              <strong>Note:</strong> Route and route group cannot be changed when editing an existing schedule 
+              as they are foundational elements that affect the entire schedule structure.
+            </p>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Route Group Selection */}
@@ -126,7 +140,11 @@ export function ScheduleBasicForm({
             <select
               value={selectedRouteGroup?.id || ''}
               onChange={(e) => handleRouteGroupChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={mode === 'edit'}
+              className={`
+                w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                ${mode === 'edit' ? 'bg-gray-100 cursor-not-allowed' : ''}
+              `}
             >
               <option value="">Select a route group</option>
               {routeGroups.map((group) => (
@@ -135,6 +153,11 @@ export function ScheduleBasicForm({
                 </option>
               ))}
             </select>
+            {mode === 'edit' && selectedRouteGroup && (
+              <p className="mt-1 text-sm text-gray-600">
+                Current: {selectedRouteGroup.name}
+              </p>
+            )}
           </div>
 
           {/* Route Selection */}
@@ -145,14 +168,14 @@ export function ScheduleBasicForm({
             <select
               value={formData.routeId}
               onChange={(e) => handleFieldChange('routeId', e.target.value)}
-              disabled={routes.length === 0}
+              disabled={mode === 'edit' || routes.length === 0}
               className={`
                 w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
                 ${validationErrors.routeId 
                   ? 'border-red-300 focus:border-red-500' 
                   : 'border-gray-300 focus:border-blue-500'
                 }
-                ${routes.length === 0 ? 'bg-gray-100 cursor-not-allowed' : ''}
+                ${mode === 'edit' || routes.length === 0 ? 'bg-gray-100 cursor-not-allowed' : ''}
               `}
             >
               <option value="">
@@ -166,6 +189,11 @@ export function ScheduleBasicForm({
             </select>
             {validationErrors.routeId && (
               <p className="mt-1 text-sm text-red-600">{validationErrors.routeId}</p>
+            )}
+            {mode === 'edit' && selectedRoute && (
+              <p className="mt-1 text-sm text-gray-600">
+                Current: {selectedRoute.name}
+              </p>
             )}
           </div>
 
