@@ -25,6 +25,7 @@ export type { PageRouteGroupResponse } from './models/PageRouteGroupResponse';
 export type { PageRouteResponse } from './models/PageRouteResponse';
 export type { PageScheduleResponse } from './models/PageScheduleResponse';
 export type { PageStopResponse } from './models/PageStopResponse';
+export type { PaginatedResponsePassengerServicePermitResponse } from './models/PaginatedResponsePassengerServicePermitResponse';
 export type { PassengerServicePermitRequest } from './models/PassengerServicePermitRequest';
 export type { PassengerServicePermitResponse } from './models/PassengerServicePermitResponse';
 export type { PspTripAssignment } from './models/PspTripAssignment';
