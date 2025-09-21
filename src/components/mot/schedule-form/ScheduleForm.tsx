@@ -23,6 +23,7 @@ import {
 import { ScheduleBasicForm } from './ScheduleBasicForm';
 import { ScheduleCalendarForm } from './ScheduleCalendarForm';
 import { ScheduleStopsForm } from './ScheduleStopsForm';
+import { ScheduleExceptionsForm } from './ScheduleExceptionsForm';
 
 export interface ScheduleFormData {
   name: string;
@@ -48,6 +49,17 @@ export interface ScheduleFormData {
     stopOrder: number;
     arrivalTime: string;
     departureTime: string;
+  }>;
+  scheduleExceptions: Array<{
+    id?: string;
+    exceptionDate: string;
+    exceptionType: 'NO_SERVICE' | 'ADDITIONAL_SERVICE' | 'MODIFIED_SERVICE';
+    description: string;
+    alternativeSchedule?: {
+      departureTime?: string;
+      arrivalTime?: string;
+      frequency?: number;
+    };
   }>;
 }
 
@@ -87,14 +99,15 @@ export function ScheduleForm({
       saturday: false,
       sunday: false
     },
-    scheduleStops: []
+    scheduleStops: [],
+    scheduleExceptions: []
   });
 
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Form sections state
-  const [activeSection, setActiveSection] = useState<'basic' | 'calendar' | 'stops'>('basic');
+  const [activeSection, setActiveSection] = useState<'basic' | 'calendar' | 'stops' | 'exceptions'>('basic');
 
   // Reference data
   const [routeGroups, setRouteGroups] = useState<RouteGroupResponse[]>([]);
@@ -130,6 +143,13 @@ export function ScheduleForm({
           stopOrder: stop.stopOrder || index + 1,
           arrivalTime: stop.arrivalTime || '',
           departureTime: stop.departureTime || ''
+        })) || [],
+        scheduleExceptions: initialData.scheduleExceptions?.map((exception) => ({
+          id: exception.id,
+          exceptionDate: exception.exceptionDate || '',
+          exceptionType: (exception.exceptionType as 'NO_SERVICE' | 'ADDITIONAL_SERVICE' | 'MODIFIED_SERVICE') || 'NO_SERVICE',
+          description: '', // Not available in API response, will be empty for editing
+          alternativeSchedule: undefined // Not available in API response
         })) || []
       });
     }
@@ -278,6 +298,10 @@ export function ScheduleForm({
           stopOrder: stop.stopOrder,
           arrivalTime: formatTimeForBackend(stop.arrivalTime),
           departureTime: formatTimeForBackend(stop.departureTime)
+        })),
+        exceptions: formData.scheduleExceptions.map(exception => ({
+          exceptionDate: exception.exceptionDate,
+          exceptionType: exception.exceptionType
         }))
       });
     } catch (error) {
@@ -286,7 +310,8 @@ export function ScheduleForm({
   };  const sections = [
     { id: 'basic', label: 'Basic Information', icon: Info },
     { id: 'calendar', label: 'Operating Schedule', icon: Calendar },
-    { id: 'stops', label: 'Route Stops', icon: MapPin }
+    { id: 'stops', label: 'Route Stops', icon: MapPin },
+    { id: 'exceptions', label: 'Schedule Exceptions', icon: AlertCircle }
   ];
 
   if (isLoadingData) {
@@ -321,7 +346,8 @@ export function ScheduleForm({
                 key.startsWith(section.id) || 
                 (section.id === 'basic' && ['name', 'routeId', 'effectiveStartDate', 'effectiveEndDate'].includes(key)) ||
                 (section.id === 'calendar' && key === 'calendar') ||
-                (section.id === 'stops' && (key === 'scheduleStops' || key.startsWith('stop_')))
+                (section.id === 'stops' && (key === 'scheduleStops' || key.startsWith('stop_'))) ||
+                (section.id === 'exceptions' && (key === 'scheduleExceptions' || key.startsWith('exception_')))
               );
 
               return (
@@ -376,6 +402,14 @@ export function ScheduleForm({
               formData={formData}
               onChange={setFormData}
               selectedRoute={routes.find(r => r.id === formData.routeId) || null}
+              validationErrors={validationErrors}
+            />
+          )}
+
+          {activeSection === 'exceptions' && (
+            <ScheduleExceptionsForm
+              formData={formData}
+              onChange={setFormData}
               validationErrors={validationErrors}
             />
           )}
