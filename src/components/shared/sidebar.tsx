@@ -101,12 +101,6 @@ export function Sidebar({
       href: '/mot/passenger-service-permits',
     },
     {
-      icon: Pen,
-      label: 'Schedule Assignment',
-      active: activeItem === 'schedule-assignment',
-      href: '/mot/schedule-assign-form',
-    },
-    {
       icon: Bus,
       label: 'Trip Assignment',
       active: activeItem === 'trip-assignment',
