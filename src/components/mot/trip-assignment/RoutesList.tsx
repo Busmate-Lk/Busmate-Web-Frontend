@@ -80,23 +80,26 @@ export function RoutesList({
       
       <div className="space-y-4">
         {filteredRouteGroups.map((group) => (
-          <div key={group.id} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+          <div key={group.id} className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-100 rounded-lg p-2 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="font-semibold text-blue-900 text-lg mb-3 flex items-center">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-              {group.name}
+              <div className="w-full truncate" title={group.name}>
+                {group.name}
+              </div>
             </div>
-            <div className="ml-5 space-y-2">
+            <div className="space-y-2">
               {group.routes?.map((route) => (
                 <div
                   key={route.id}
-                  className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                  className={`p-2 rounded-md flex justify-between items-center cursor-pointer transition-all duration-200 ${
                     selectedRoute === route.id
                       ? 'bg-blue-600 text-white shadow-md transform scale-[1.02]'
                       : 'bg-white hover:bg-blue-50 hover:shadow-sm border border-gray-100'
                   }`}
                   onClick={() => route.id && onRouteSelect(route.id)}
                 >
-                  <div className="font-medium">{route.name}</div>
+                  <div className="font-medium max-w-44 truncate" title={route.name + ' (' + (route.direction === 'OUTBOUND' ? 'Outbound' : 'Inbound') + ')'}>
+                    {route.name}
+                  </div>
                   <div className={`text-xs mt-1 flex items-center ${
                     selectedRoute === route.id ? 'text-blue-100' : 'text-gray-500'
                   }`}>
@@ -107,7 +110,7 @@ export function RoutesList({
                         ? 'bg-green-100 text-green-700'
                         : 'bg-orange-100 text-orange-700'
                     }`}>
-                      {route.direction}
+                      {route.direction === 'OUTBOUND' ? 'Out' : 'In'}
                     </span>
                   </div>
                 </div>
