@@ -78,9 +78,15 @@ export function Sidebar({
     },
     {
       icon: Calendar,
-      label: 'Schedule Management',
-      active: activeItem === 'schedule',
+      label: 'Schedule Management old',
+      active: activeItem === 'schedule-old',
       href: '/mot/schedule-management',
+    },
+    {
+      icon: Calendar,
+      label: 'Schedule Management',
+      active: activeItem === 'schedules',
+      href: '/mot/schedules',
     },
     {
       icon: FileText,

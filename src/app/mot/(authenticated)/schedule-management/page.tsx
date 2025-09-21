@@ -419,7 +419,7 @@ export default function ScheduleAssignment() {
     return (
       <Layout
         role="mot"
-        activeItem="schedule"
+        activeItem="schedule-old"
         pageTitle="Schedule Management"
         pageDescription="Manage route timetables and bus assignments for all bus routes"
       >
@@ -433,7 +433,7 @@ export default function ScheduleAssignment() {
   return (
     <Layout
       role="mot"
-      activeItem="schedule"
+      activeItem="schedule-old"
       pageTitle="Schedule Management"
       pageDescription="Manage route timetables and bus assignments for all bus routes"
     >
