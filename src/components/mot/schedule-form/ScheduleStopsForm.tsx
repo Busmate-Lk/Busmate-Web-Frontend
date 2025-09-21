@@ -100,6 +100,14 @@ export function ScheduleStopsForm({
     routeStop.stopId?.toLowerCase().includes(stopSearch.toLowerCase())
   );
 
+  // Helper to determine stop type based on position
+  const getStopType = (routeStopIndex: number, totalStops: number) => {
+    if (totalStops === 1) return 'single'; // Edge case: only one stop
+    if (routeStopIndex === 0) return 'first'; // Origin stop
+    if (routeStopIndex === totalStops - 1) return 'last'; // Destination stop
+    return 'intermediate'; // Middle stops
+  };
+
   const calculateDuration = (arrivalTime: string, departureTime: string) => {
     if (!arrivalTime || !departureTime) return null;
     
@@ -119,16 +127,24 @@ export function ScheduleStopsForm({
   };
 
   const getTotalJourneyTime = () => {
-    if (formData.scheduleStops.length < 2) return null;
+    if (routeStops.length < 2) return null;
     
-    const firstStop = formData.scheduleStops[0];
-    const lastStop = formData.scheduleStops[formData.scheduleStops.length - 1];
+    // Find first stop with departure time and last stop with arrival time
+    const sortedRouteStops = [...routeStops].sort((a, b) => (a.stopOrder || 0) - (b.stopOrder || 0));
+    const firstRouteStop = sortedRouteStops[0];
+    const lastRouteStop = sortedRouteStops[sortedRouteStops.length - 1];
     
-    if (!firstStop.arrivalTime || !lastStop.departureTime) return null;
+    const firstScheduleStop = formData.scheduleStops.find(ss => ss.stopId === firstRouteStop.stopId);
+    const lastScheduleStop = formData.scheduleStops.find(ss => ss.stopId === lastRouteStop.stopId);
+    
+    const startTime = firstScheduleStop?.departureTime; // First stop departure
+    const endTime = lastScheduleStop?.arrivalTime; // Last stop arrival
+    
+    if (!startTime || !endTime) return null;
     
     try {
-      const start = new Date(`1970-01-01T${firstStop.arrivalTime}`);
-      const end = new Date(`1970-01-01T${lastStop.departureTime}`);
+      const start = new Date(`1970-01-01T${startTime}`);
+      const end = new Date(`1970-01-01T${endTime}`);
       const diffMs = end.getTime() - start.getTime();
       const diffMins = Math.round(diffMs / (1000 * 60));
       
@@ -152,8 +168,8 @@ export function ScheduleStopsForm({
           Route Stops & Timing
         </h3>
         <p className="text-sm text-gray-500 mb-4">
-          Add arrival and departure times for the stops on this route. 
-          All times are required for schedule generation.
+          Configure timing for route stops: First stop needs departure time only, 
+          intermediate stops need both arrival and departure times, last stop needs arrival time only.
         </p>
       </div>
 
@@ -197,15 +213,19 @@ export function ScheduleStopsForm({
             <button
               type="button"
               onClick={() => {
-                // Auto-fill all route stops with empty times
+                // Auto-fill all route stops with empty times based on stop type
                 const allStops = routeStops
                   .filter(routeStop => routeStop.stopId && routeStop.stopOrder !== undefined)
-                  .map((routeStop, index) => ({
-                    stopId: routeStop.stopId!,
-                    stopOrder: routeStop.stopOrder!,
-                    arrivalTime: '',
-                    departureTime: ''
-                  }));
+                  .map((routeStop, index) => {
+                    const stopType = getStopType(index, routeStops.length);
+                    return {
+                      stopId: routeStop.stopId!,
+                      stopOrder: routeStop.stopOrder!,
+                      // First stop: no arrival time, last stop: no departure time
+                      arrivalTime: stopType === 'first' ? '' : '',
+                      departureTime: stopType === 'last' ? '' : ''
+                    };
+                  });
                 onChange({
                   ...formData,
                   scheduleStops: allStops
@@ -234,6 +254,12 @@ export function ScheduleStopsForm({
               const stopError = validationErrors[`stop_${index}_arrival`] || 
                                validationErrors[`stop_${index}_departure`];
               
+              // Determine stop type for timing requirements
+              const stopType = getStopType(index, routeStops.length);
+              const isFirstStop = stopType === 'first' || stopType === 'single';
+              const isLastStop = stopType === 'last' || stopType === 'single';
+              const isIntermediateStop = stopType === 'intermediate';
+              
               return (
                 <div
                   key={routeStop.stopId}
@@ -242,7 +268,11 @@ export function ScheduleStopsForm({
                   <div className="flex items-center space-x-4">
                     {/* Stop Order */}
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        isFirstStop ? 'bg-green-600 text-white' : 
+                        isLastStop ? 'bg-red-600 text-white' : 
+                        'bg-blue-600 text-white'
+                      }`}>
                         {routeStop.stopOrder}
                       </div>
                     </div>
@@ -250,7 +280,16 @@ export function ScheduleStopsForm({
                     {/* Stop Info */}
                     <div className="flex-1">
                       <div className="mb-3">
-                        <h4 className="font-medium text-gray-900">{routeStop.stopName}</h4>
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-medium text-gray-900">{routeStop.stopName}</h4>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            isFirstStop ? 'bg-green-100 text-green-800' : 
+                            isLastStop ? 'bg-red-100 text-red-800' : 
+                            'bg-blue-100 text-blue-800'
+                          }`}>
+                            {isFirstStop ? 'Origin' : isLastStop ? 'Destination' : 'Stop'}
+                          </span>
+                        </div>
                         <p className="text-sm text-gray-500">
                           Distance: {routeStop.distanceFromStartKm?.toFixed(1) || '0.0'} km
                         </p>
@@ -258,94 +297,115 @@ export function ScheduleStopsForm({
 
                       {/* Timing Inputs */}
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Arrival Time *
-                          </label>
-                          <input
-                            type="time"
-                            value={scheduleStop?.arrivalTime || ''}
-                            onChange={(e) => {
-                              const existingIndex = formData.scheduleStops.findIndex(ss => ss.stopId === routeStop.stopId);
-                              if (existingIndex >= 0) {
-                                handleStopChange(existingIndex, 'arrivalTime', e.target.value);
-                              } else if (routeStop.stopId && routeStop.stopOrder !== undefined) {
-                                // Add new schedule stop
-                                const newScheduleStop = {
-                                  stopId: routeStop.stopId,
-                                  stopOrder: routeStop.stopOrder,
-                                  arrivalTime: e.target.value,
-                                  departureTime: ''
-                                };
-                                onChange({
-                                  ...formData,
-                                  scheduleStops: [...formData.scheduleStops, newScheduleStop]
-                                });
-                              }
-                            }}
-                            className={`
-                              w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                              ${validationErrors[`stop_${index}_arrival`] 
-                                ? 'border-red-300 focus:border-red-500' 
-                                : 'border-gray-300 focus:border-blue-500'
-                              }
-                            `}
-                          />
-                          {validationErrors[`stop_${index}_arrival`] && (
-                            <p className="mt-1 text-xs text-red-600">
-                              {validationErrors[`stop_${index}_arrival`]}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Departure Time *
-                          </label>
-                          <input
-                            type="time"
-                            value={scheduleStop?.departureTime || ''}
-                            onChange={(e) => {
-                              const existingIndex = formData.scheduleStops.findIndex(ss => ss.stopId === routeStop.stopId);
-                              if (existingIndex >= 0) {
-                                handleStopChange(existingIndex, 'departureTime', e.target.value);
-                              } else if (routeStop.stopId && routeStop.stopOrder !== undefined) {
-                                // Add new schedule stop
-                                const newScheduleStop = {
-                                  stopId: routeStop.stopId,
-                                  stopOrder: routeStop.stopOrder,
-                                  arrivalTime: scheduleStop?.arrivalTime || '',
-                                  departureTime: e.target.value
-                                };
-                                onChange({
-                                  ...formData,
-                                  scheduleStops: [...formData.scheduleStops, newScheduleStop]
-                                });
-                              }
-                            }}
-                            className={`
-                              w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                              ${validationErrors[`stop_${index}_departure`] 
-                                ? 'border-red-300 focus:border-red-500' 
-                                : 'border-gray-300 focus:border-blue-500'
-                              }
-                            `}
-                          />
-                          {validationErrors[`stop_${index}_departure`] && (
-                            <p className="mt-1 text-xs text-red-600">
-                              {validationErrors[`stop_${index}_departure`]}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Dwell Time
-                          </label>
-                          <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-600">
-                            {calculateDuration(scheduleStop?.arrivalTime || '', scheduleStop?.departureTime || '') || '--'}
+                        {/* Arrival Time - Hidden for first stop */}
+                        {!isFirstStop && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Arrival Time <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="time"
+                              value={scheduleStop?.arrivalTime || ''}
+                              onChange={(e) => {
+                                const existingIndex = formData.scheduleStops.findIndex(ss => ss.stopId === routeStop.stopId);
+                                if (existingIndex >= 0) {
+                                  handleStopChange(existingIndex, 'arrivalTime', e.target.value);
+                                } else if (routeStop.stopId && routeStop.stopOrder !== undefined) {
+                                  // Add new schedule stop
+                                  const newScheduleStop = {
+                                    stopId: routeStop.stopId,
+                                    stopOrder: routeStop.stopOrder,
+                                    arrivalTime: e.target.value,
+                                    departureTime: scheduleStop?.departureTime || ''
+                                  };
+                                  onChange({
+                                    ...formData,
+                                    scheduleStops: [...formData.scheduleStops, newScheduleStop]
+                                  });
+                                }
+                              }}
+                              className={`
+                                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
+                                ${validationErrors[`stop_${index}_arrival`] 
+                                  ? 'border-red-300 focus:border-red-500' 
+                                  : 'border-gray-300 focus:border-blue-500'
+                                }
+                              `}
+                            />
+                            {validationErrors[`stop_${index}_arrival`] && (
+                              <p className="mt-1 text-xs text-red-600">
+                                {validationErrors[`stop_${index}_arrival`]}
+                              </p>
+                            )}
                           </div>
-                        </div>
+                        )}
+
+                        {/* Departure Time - Hidden for last stop */}
+                        {!isLastStop && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Departure Time <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="time"
+                              value={scheduleStop?.departureTime || ''}
+                              onChange={(e) => {
+                                const existingIndex = formData.scheduleStops.findIndex(ss => ss.stopId === routeStop.stopId);
+                                if (existingIndex >= 0) {
+                                  handleStopChange(existingIndex, 'departureTime', e.target.value);
+                                } else if (routeStop.stopId && routeStop.stopOrder !== undefined) {
+                                  // Add new schedule stop
+                                  const newScheduleStop = {
+                                    stopId: routeStop.stopId,
+                                    stopOrder: routeStop.stopOrder,
+                                    arrivalTime: scheduleStop?.arrivalTime || '',
+                                    departureTime: e.target.value
+                                  };
+                                  onChange({
+                                    ...formData,
+                                    scheduleStops: [...formData.scheduleStops, newScheduleStop]
+                                  });
+                                }
+                              }}
+                              className={`
+                                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
+                                ${validationErrors[`stop_${index}_departure`] 
+                                  ? 'border-red-300 focus:border-red-500' 
+                                  : 'border-gray-300 focus:border-blue-500'
+                                }
+                              `}
+                            />
+                            {validationErrors[`stop_${index}_departure`] && (
+                              <p className="mt-1 text-xs text-red-600">
+                                {validationErrors[`stop_${index}_departure`]}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Dwell Time - Only for intermediate stops */}
+                        {isIntermediateStop && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Dwell Time
+                            </label>
+                            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-600">
+                              {calculateDuration(scheduleStop?.arrivalTime || '', scheduleStop?.departureTime || '') || '--'}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Show timing info for first/last stops */}
+                        {(isFirstStop || isLastStop) && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              {isFirstStop ? 'Journey Start' : 'Journey End'}
+                            </label>
+                            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-600">
+                              {isFirstStop ? (scheduleStop?.departureTime || '--:--') : (scheduleStop?.arrivalTime || '--:--')}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -381,10 +441,11 @@ export function ScheduleStopsForm({
               Schedule Timing Guidelines
             </h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Configure timing for stops in route sequence order</li>
-              <li>• Departure time must be equal to or later than arrival time</li>
+              <li>• <span className="font-medium">Origin stop (green):</span> Only departure time required - buses start here</li>
+              <li>• <span className="font-medium">Intermediate stops (blue):</span> Both arrival and departure times required</li>
+              <li>• <span className="font-medium">Destination stop (red):</span> Only arrival time required - buses end here</li>
+              <li>• Departure time must be equal to or later than arrival time for intermediate stops</li>
               <li>• Times should be realistic for passenger boarding/alighting</li>
-              <li>• You can skip stops that won't be used in this schedule</li>
             </ul>
           </div>
         </div>

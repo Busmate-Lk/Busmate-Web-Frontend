@@ -245,19 +245,54 @@ export function ScheduleForm({
         errors.scheduleStops = 'Duplicate stops are not allowed';
       }
 
-      // Validate timing
-      formData.scheduleStops.forEach((stop, index) => {
-        if (!stop.arrivalTime) {
-          errors[`stop_${index}_arrival`] = 'Arrival time is required';
-        }
-        if (!stop.departureTime) {
-          errors[`stop_${index}_departure`] = 'Departure time is required';
-        }
-        if (stop.arrivalTime && stop.departureTime) {
-          const arrival = new Date(`1970-01-01T${stop.arrivalTime}`);
-          const departure = new Date(`1970-01-01T${stop.departureTime}`);
-          if (departure < arrival) {
-            errors[`stop_${index}_departure`] = 'Departure must be after arrival';
+      // Get the selected route to determine stop order
+      const selectedRoute = routes.find(r => r.id === formData.routeId);
+      const routeStops = selectedRoute?.routeStops || [];
+      
+      // Helper to determine stop type based on position
+      const getStopType = (routeStopIndex: number, totalStops: number) => {
+        if (totalStops === 1) return 'single'; // Edge case: only one stop
+        if (routeStopIndex === 0) return 'first'; // Origin stop
+        if (routeStopIndex === totalStops - 1) return 'last'; // Destination stop
+        return 'intermediate'; // Middle stops
+      };
+
+      // Validate timing based on stop type
+      formData.scheduleStops.forEach((stop, scheduleStopIndex) => {
+        // Find the route stop index for this schedule stop
+        const routeStopIndex = routeStops.findIndex(rs => rs.stopId === stop.stopId);
+        
+        if (routeStopIndex >= 0) {
+          const stopType = getStopType(routeStopIndex, routeStops.length);
+          
+          // Validate based on stop type
+          if (stopType === 'first' || stopType === 'single') {
+            // First stop: only departure time required
+            if (!stop.departureTime) {
+              errors[`stop_${scheduleStopIndex}_departure`] = 'Departure time is required for origin stop';
+            }
+          } else if (stopType === 'last') {
+            // Last stop: only arrival time required
+            if (!stop.arrivalTime) {
+              errors[`stop_${scheduleStopIndex}_arrival`] = 'Arrival time is required for destination stop';
+            }
+          } else {
+            // Intermediate stops: both times required
+            if (!stop.arrivalTime) {
+              errors[`stop_${scheduleStopIndex}_arrival`] = 'Arrival time is required for intermediate stop';
+            }
+            if (!stop.departureTime) {
+              errors[`stop_${scheduleStopIndex}_departure`] = 'Departure time is required for intermediate stop';
+            }
+          }
+          
+          // Validate departure after arrival for stops that have both
+          if (stop.arrivalTime && stop.departureTime) {
+            const arrival = new Date(`1970-01-01T${stop.arrivalTime}`);
+            const departure = new Date(`1970-01-01T${stop.departureTime}`);
+            if (departure < arrival) {
+              errors[`stop_${scheduleStopIndex}_departure`] = 'Departure must be equal to or after arrival';
+            }
           }
         }
       });
