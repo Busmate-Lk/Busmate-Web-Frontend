@@ -73,14 +73,8 @@ export function Sidebar({
     {
       icon: Route,
       label: 'Routes Management',
-      active: activeItem === 'bus-route-groups',
+      active: activeItem === 'routes',
       href: '/mot/routes',
-    },
-    {
-      icon: Calendar,
-      label: 'Schedule Management old',
-      active: activeItem === 'schedule-old',
-      href: '/mot/schedule-management',
     },
     {
       icon: Calendar,
@@ -91,13 +85,13 @@ export function Sidebar({
     {
       icon: FileText,
       label: 'Operator Management',
-      active: activeItem === 'operator-management',
+      active: activeItem === 'operators',
       href: '/mot/users/operators',
     },
     {
       icon: Bus,
       label: 'Bus Management',
-      active: activeItem === 'bus-management',
+      active: activeItem === 'buses',
       href: '/mot/buses',
     },
     {
