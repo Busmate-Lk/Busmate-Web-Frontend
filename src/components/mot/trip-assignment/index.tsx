@@ -37,7 +37,7 @@ export function TripAssignment() {
   const [psps, setPsps] = useState<PassengerServicePermitResponse[]>([]);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
-  const [isLoadingPsps, setIsLoadingPsps] = useState(true);
+  const [isLoadingPsps, setIsLoadingPsps] = useState(false); // Start as false since no route selected initially
   const [isLoadingTrips, setIsLoadingTrips] = useState(true);
   const [routesError, setRoutesError] = useState<string | null>(null);
   const [pspsError, setPspsError] = useState<string | null>(null);
@@ -59,7 +59,7 @@ export function TripAssignment() {
       }
     };
 
-    // Load PSPs
+    // Load PSPs - Initial load (can be removed since we'll load by route group)
     const loadPsps = async () => {
       try {
         setIsLoadingPsps(true);
@@ -104,7 +104,7 @@ export function TripAssignment() {
     };
 
     loadRouteGroups();
-    loadPsps();
+    // loadPsps(); // Removed - will load PSPs based on selected route group
     loadTrips();
   }, []);
 
@@ -193,6 +193,44 @@ export function TripAssignment() {
     } else if (!selectedRoute) {
       // Clear trips when no route is selected
       setTrips([]);
+    }
+  }, [selectedRoute, routeGroups]);
+
+  // Load PSPs by route group when a specific route is selected
+  useEffect(() => {
+    const loadPspsByRouteGroup = async () => {
+      if (!selectedRoute) return;
+      
+      try {
+        setIsLoadingPsps(true);
+        setPspsError(null);
+        
+        // Find the route group ID for the selected route
+        const routeGroup = routeGroups.find(group => 
+          group.routes?.some(route => route.id === selectedRoute)
+        );
+        
+        if (!routeGroup?.id) {
+          setPspsError('Route group not found for selected route.');
+          return;
+        }
+        
+        const response = await PermitManagementService.getPermitsByRouteGroupId(routeGroup.id);
+        setPsps(response);
+      } catch (error) {
+        console.error('Error loading PSPs by route group:', error);
+        setPspsError('Failed to load permits for selected route. Please try again.');
+      } finally {
+        setIsLoadingPsps(false);
+      }
+    };
+
+    // Load PSPs by route group when a specific route is selected
+    if (selectedRoute && routeGroups.length > 0) {
+      loadPspsByRouteGroup();
+    } else if (!selectedRoute) {
+      // Clear PSPs when no route is selected
+      setPsps([]);
     }
   }, [selectedRoute, routeGroups]);
 

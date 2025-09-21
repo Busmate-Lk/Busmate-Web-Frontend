@@ -41,19 +41,12 @@ export function PSPList({
   isLoading = false,
   error = null,
 }: PSPListProps) {
-  // Filter PSPs based on search input and selected route
+  // Filter PSPs based on search input only (route group filtering handled by API)
   const filteredPSPs = selectedRoute 
     ? psps.filter(psp => {
         const matchesSearch = psp.permitNumber?.toLowerCase().includes(searchValue.toLowerCase()) ||
                              psp.operatorName?.toLowerCase().includes(searchValue.toLowerCase());
-        
-        // Only show PSPs for the selected route group
-        const matchesRoute = routeGroups.find(group => 
-          group.routes?.some(route => route.id === selectedRoute) && 
-          group.id === psp.routeGroupId
-        );
-        
-        return matchesSearch && matchesRoute;
+        return matchesSearch;
       })
     : [];
 
