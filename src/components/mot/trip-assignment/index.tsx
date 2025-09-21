@@ -39,9 +39,22 @@ export function TripAssignment() {
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
   const [isLoadingPsps, setIsLoadingPsps] = useState(false); // Start as false since no route selected initially
   const [isLoadingTrips, setIsLoadingTrips] = useState(true);
+  const [isAssigningPsp, setIsAssigningPsp] = useState(false);
   const [routesError, setRoutesError] = useState<string | null>(null);
   const [pspsError, setPspsError] = useState<string | null>(null);
   const [tripsError, setTripsError] = useState<string | null>(null);
+  const [assignmentError, setAssignmentError] = useState<string | null>(null);
+  
+  // Clear assignment error after 5 seconds
+  useEffect(() => {
+    if (assignmentError) {
+      const timer = setTimeout(() => {
+        setAssignmentError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [assignmentError]);
+
   // Load data from APIs
   useEffect(() => {
     // Load route groups
@@ -246,15 +259,46 @@ export function TripAssignment() {
   };
 
   // Handle PSP assignment
-  const handleAssignPsp = (pspId: string) => {
+  const handleAssignPsp = async (pspId: string) => {
     if (!selectedTrip) return;
     
-    // In a real app, this would make an API call to update the trip
-    console.log(`Assigning PSP ${pspId} to Trip ${selectedTrip}`);
-    
-    // For demo purposes, we'll update our local state
-    // In a real app, this would be handled by refreshing from the API
-    setSelectedTrip(null);
+    try {
+      setIsAssigningPsp(true);
+      setAssignmentError(null);
+
+      // Call the API to assign PSP to trip
+      await TripManagementService.assignPassengerServicePermitToTrip(selectedTrip, pspId);
+      
+      // Refresh trips data to show the updated assignment
+      if (selectedRoute) {
+        // Reload trips for the selected route to reflect the assignment
+        const response = await TripManagementService.getTripsByRoute(selectedRoute);
+        
+        // Transform the response to match our Trip interface
+        const transformedTrips = response.map((tripResponse: TripResponse) => ({
+          id: tripResponse.id || '',
+          routeId: tripResponse.routeId || '',
+          tripDate: tripResponse.tripDate || '',
+          departureTime: tripResponse.scheduledDepartureTime || '',
+          arrivalTime: tripResponse.scheduledArrivalTime || '',
+          busPlateNumber: tripResponse.busPlateNumber,
+          status: tripResponse.status || 'Unknown',
+          passengerServicePermitId: tripResponse.passengerServicePermitId,
+          assigned: !!tripResponse.passengerServicePermitId
+        }));
+        
+        setTrips(transformedTrips);
+      }
+      
+      // Clear selected trip after successful assignment
+      setSelectedTrip(null);
+      
+    } catch (error) {
+      console.error('Error assigning PSP to trip:', error);
+      setAssignmentError('Failed to assign PSP to trip. Please try again.');
+    } finally {
+      setIsAssigningPsp(false);
+    }
   };
 
   return (
@@ -293,6 +337,8 @@ export function TripAssignment() {
           onAssignPsp={handleAssignPsp}
           isLoading={isLoadingPsps}
           error={pspsError}
+          isAssigning={isAssigningPsp}
+          assignmentError={assignmentError}
         />
       </div>
     </div>
