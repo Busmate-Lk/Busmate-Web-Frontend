@@ -317,18 +317,21 @@ export function RoutesTabsSection({ routes }: RoutesTabsSectionProps) {
             {/* Visual Map Tab */}
             {activeSubTab === 'map' && (
               <div className="space-y-4">
-                {/* Only show map for OUTBOUND routes as requested */}
-                {activeRoute.direction === 'OUTBOUND' ? (
+                {/* Show map for both OUTBOUND and INBOUND routes */}
+                {(activeRoute.direction === 'OUTBOUND' || activeRoute.direction === 'INBOUND') ? (
                   <RouteMap route={activeRoute} />
                 ) : (
                   <div className="text-center py-12 bg-yellow-50 rounded-lg border border-yellow-200">
                     <Map className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-yellow-900 mb-2">Map View - OUTBOUND Routes Only</h3>
+                    <h3 className="text-lg font-medium text-yellow-900 mb-2">Map View - Supported Directions</h3>
                     <p className="text-yellow-700 mb-4">
-                      Currently showing map visualization for OUTBOUND routes only.
+                      Map visualization is available for OUTBOUND and INBOUND routes.
                     </p>
                     <p className="text-sm text-yellow-600">
-                      Route direction: <span className="font-medium">{activeRoute.direction || 'Unknown'}</span>
+                      Current route direction: <span className="font-medium">{activeRoute.direction || 'Unknown'}</span>
+                    </p>
+                    <p className="text-xs text-yellow-500 mt-2">
+                      Supported directions: OUTBOUND, INBOUND
                     </p>
                   </div>
                 )}

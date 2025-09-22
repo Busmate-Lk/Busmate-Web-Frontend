@@ -182,6 +182,9 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
           return;
         }
 
+        // Determine route color based on direction
+        const routeColor = route.direction === 'INBOUND' ? '#7c3aed' : '#2563eb'; // Purple for INBOUND, Blue for OUTBOUND
+
         // Request directions
         const request: google.maps.DirectionsRequest = {
           origin: {
@@ -207,7 +210,7 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
               map: map,
               suppressMarkers: true, // We already have our custom markers
               polylineOptions: {
-                strokeColor: '#2563eb',
+                strokeColor: routeColor,
                 strokeOpacity: 1.0,
                 strokeWeight: 4,
               }
@@ -243,10 +246,13 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
       });
 
       if (path.length > 1) {
+        // Use different colors for fallback based on direction
+        const fallbackColor = route.direction === 'INBOUND' ? '#dc2626' : '#dc2626'; // Red for fallback (both directions)
+        
         const polyline = new window.google.maps.Polyline({
           path: path,
           geodesic: true,
-          strokeColor: '#dc2626', // Red color to indicate fallback
+          strokeColor: fallbackColor,
           strokeOpacity: 1.0,
           strokeWeight: 3,
         });
@@ -468,20 +474,23 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Route Info */}
-      <div className="bg-blue-50 rounded-lg p-4">
+      <div className={`${route.direction === 'INBOUND' ? 'bg-purple-50' : 'bg-blue-50'} rounded-lg p-4`}>
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-medium text-blue-900">
+            <h4 className={`font-medium ${route.direction === 'INBOUND' ? 'text-purple-900' : 'text-blue-900'}`}>
               {route.name || 'Route Map'}
             </h4>
-            <p className="text-sm text-blue-700">
+            <p className={`text-sm ${route.direction === 'INBOUND' ? 'text-purple-700' : 'text-blue-700'}`}>
               {stops.length} stops • {(route.distanceKm || 0).toFixed(1)} km • Direction: {route.direction || 'OUTBOUND'}
             </p>
-            <p className="text-xs text-blue-600 mt-1">
+            <p className={`text-xs ${route.direction === 'INBOUND' ? 'text-purple-600' : 'text-blue-600'} mt-1`}>
               🛣️ Showing road-based route paths (not direct lines)
             </p>
+            <p className={`text-xs ${route.direction === 'INBOUND' ? 'text-purple-500' : 'text-blue-500'} mt-1`}>
+              {route.direction === 'INBOUND' ? '⬅️ Return journey route' : '➡️ Outward journey route'}
+            </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-blue-700">
+          <div className={`flex items-center gap-2 text-sm ${route.direction === 'INBOUND' ? 'text-purple-700' : 'text-blue-700'}`}>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               Start
@@ -560,7 +569,7 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <h4 className="font-medium text-gray-900 mb-3">Route Stops ({stops.length})</h4>
         <p className="text-xs text-gray-500 mb-3">
-          ℹ️ Blue route = Road-based path • Red route = Direct fallback (if road data unavailable)
+          ℹ️ {route.direction === 'INBOUND' ? 'Purple' : 'Blue'} route = Road-based path • Red route = Direct fallback (if road data unavailable)
         </p>
         <div className="space-y-2 max-h-32 overflow-y-auto">
           {stops.map((stop, index) => (
