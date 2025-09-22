@@ -124,19 +124,33 @@ export default function BusStopAdvancedFilters({
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       {/* Compact Main Filter Section */}
       <div className="p-4">
+        {/* Header with Count */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Search className="h-5 w-5 text-gray-500" />
+            <h3 className="text-lg font-semibold text-gray-900">Search & Filters</h3>
+          </div>
+          <div className="text-sm text-gray-600">
+            <span className="font-medium text-gray-900">
+              {filteredCount.toLocaleString()}
+            </span>
+            <> of {totalCount.toLocaleString()} stops</>
+          </div>
+        </div>
+
         {/* Compact Filter Row */}
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search Bar */}
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
+              {/* <Search className="h-4 w-4 text-gray-400" /> */}
             </div>
             <input
               type="text"
               placeholder="Search bus stops..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="block w-full pl-10 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="block w-full pl-4 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
             {searchValue && (
               <button
@@ -190,20 +204,9 @@ export default function BusStopAdvancedFilters({
               className="flex items-center justify-between w-full text-left"
             >
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-700">
                   {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
                 </span>
-                {/* Clear All Button */}
-                {hasActiveFilters && (
-                  <button
-                    onClick={handleClearAll}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 hover:border-red-200 rounded-md hover:bg-red-100 hover:text-red-700 transition-colors"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    Clear All
-                  </button>
-                )}
                 <div className='flex items-center gap-2 ml-4'>
                   {searchTerm && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
@@ -244,12 +247,16 @@ export default function BusStopAdvancedFilters({
                 </div>
 
               </div>
-              <div className="text-sm text-gray-600">
-                <span className="font-medium text-gray-900">
-                  {filteredCount.toLocaleString()}
-                </span>
-                <> of {totalCount.toLocaleString()} stops</>
-              </div>
+              {/* Clear All Button */}
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearAll}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 hover:border-red-200 rounded-md hover:bg-red-100 hover:text-red-700 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Clear All
+                </button>
+              )}
             </div>
           </div>
         </div>
