@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Plus, RefreshCw, Download, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import BusStopStats from '@/components/mot/bus-stops/BusStopStats';
-import BusStopFilters from '@/components/mot/bus-stops/BusStopFilters';
+import BusStopAdvancedFilters from '@/components/mot/bus-stops/BusStopAdvancedFilters';
 import BusStopTable from '@/components/mot/bus-stops/BusStopTable';
 import BusStopsMapView from '@/components/mot/bus-stops/BusStopsMapView';
 import ViewTabs, { ViewType } from '@/components/mot/bus-stops/ViewTabs';
@@ -50,7 +50,10 @@ export default function BusStops() {
     getCurrentParams,
     updateParams,
     loadAllBusStops,
+    loadFilteredBusStopsForMap,
   } = useBusStops();
+
+  console.log("Pagination data is: ", pagination);
 
   // Get current query params for UI state
   const currentParams = getCurrentParams();
@@ -107,11 +110,21 @@ export default function BusStops() {
   const handleViewChange = useCallback(async (view: ViewType) => {
     setCurrentView(view);
     
-    // Load all bus stops when switching to map view if not already loaded
-    if (view === 'map' && allBusStops.length === 0 && !allBusStopsLoading) {
-      await loadAllBusStops();
+    // Load data based on current filters when switching to map view
+    if (view === 'map') {
+      const hasFilters = (currentParams.search && currentParams.search.length > 0) ||
+                        localFilters.state !== 'all' ||
+                        localFilters.accessibility !== 'all';
+      
+      if (hasFilters) {
+        // Use filtered loading for map when filters are active
+        await loadFilteredBusStopsForMap();
+      } else if (allBusStops.length === 0 && !allBusStopsLoading) {
+        // Load all bus stops when no filters and not already loaded
+        await loadAllBusStops();
+      }
     }
-  }, [allBusStops.length, allBusStopsLoading, loadAllBusStops]);
+  }, [currentParams.search, localFilters, allBusStops.length, allBusStopsLoading, loadAllBusStops, loadFilteredBusStopsForMap]);
 
   // Computed filter status
   const hasActiveFilters = useMemo(() => {
@@ -122,12 +135,22 @@ export default function BusStops() {
     );
   }, [currentParams.search, localFilters]);
 
-  // Load all bus stops on mount if starting with map view
+  // Load data based on view and filters on mount
   useEffect(() => {
-    if (currentView === 'map' && allBusStops.length === 0 && !allBusStopsLoading) {
-      loadAllBusStops();
+    if (currentView === 'map') {
+      const hasFilters = (currentParams.search && currentParams.search.length > 0) ||
+                        localFilters.state !== 'all' ||
+                        localFilters.accessibility !== 'all';
+      
+      if (hasFilters) {
+        // Use filtered loading when filters are active
+        loadFilteredBusStopsForMap();
+      } else if (allBusStops.length === 0 && !allBusStopsLoading) {
+        // Load all bus stops when no filters and not already loaded
+        loadAllBusStops();
+      }
     }
-  }, [currentView, allBusStops.length, allBusStopsLoading, loadAllBusStops]);
+  }, [currentView, currentParams.search, localFilters, allBusStops.length, allBusStopsLoading, loadAllBusStops, loadFilteredBusStopsForMap]);
 
   // Refresh handler
   const handleRefresh = useCallback(async () => {
@@ -136,8 +159,16 @@ export default function BusStops() {
     
     try {
       if (currentView === 'map') {
-        // For map view, refresh all bus stops
-        await loadAllBusStops();
+        // For map view, check for active filters and use smart loading
+        const hasFilters = (currentParams.search && currentParams.search.length > 0) ||
+                          localFilters.state !== 'all' ||
+                          localFilters.accessibility !== 'all';
+        
+        if (hasFilters) {
+          await loadFilteredBusStopsForMap();
+        } else {
+          await loadAllBusStops();
+        }
       } else {
         // For directory view, refresh paginated data
         await updateParams(getCurrentParams());
@@ -145,7 +176,7 @@ export default function BusStops() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [currentView, loadAllBusStops, updateParams, getCurrentParams, clearError]);
+  }, [currentView, currentParams.search, localFilters, loadAllBusStops, loadFilteredBusStopsForMap, updateParams, getCurrentParams, clearError]);
 
   // Search handler (server-side search + reset to page 0)
   const handleSearch = useCallback(async (searchTerm: string) => {
@@ -368,18 +399,20 @@ export default function BusStops() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <BusStopFilters
-            searchTerm={currentParams.search || ''}
-            setSearchTerm={handleSearch}
-            stateFilter={localFilters.state}
-            setStateFilter={(value) => handleLocalFilterChange('state', value)}
-            accessibilityFilter={localFilters.accessibility}
-            setAccessibilityFilter={(value) => handleLocalFilterChange('accessibility', value)}
-            filterOptions={filterOptions}
-            loading={filterOptionsLoading}
-          />
-        </div>
+        <BusStopAdvancedFilters
+          searchTerm={currentParams.search || ''}
+          setSearchTerm={handleSearch}
+          stateFilter={localFilters.state}
+          setStateFilter={(value) => handleLocalFilterChange('state', value)}
+          accessibilityFilter={localFilters.accessibility}
+          setAccessibilityFilter={(value) => handleLocalFilterChange('accessibility', value)}
+          filterOptions={filterOptions}
+          loading={filterOptionsLoading}
+          totalCount={pagination.totalElements}
+          filteredCount={filteredBusStops.length}
+          onClearAll={handleClearAllFilters}
+          onSearch={handleSearch}
+        />
 
         {/* Active Filters Indicator */}
         {hasActiveFilters && (

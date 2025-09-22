@@ -91,7 +91,7 @@ export default function ViewTabs({
           
           return (
             <p key={tab.id} className="text-sm text-gray-600">
-              {tab.description}
+              {/* {tab.description} */}
             </p>
           );
         })}
