@@ -408,33 +408,11 @@ export default function BusStops() {
           setAccessibilityFilter={(value) => handleLocalFilterChange('accessibility', value)}
           filterOptions={filterOptions}
           loading={filterOptionsLoading}
-          totalCount={pagination.totalElements}
+          totalCount={currentView === 'map' ? allBusStops.length : pagination.totalElements}
           filteredCount={filteredBusStops.length}
           onClearAll={handleClearAllFilters}
           onSearch={handleSearch}
         />
-
-        {/* Active Filters Indicator */}
-        {hasActiveFilters && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-blue-700">
-                  {filteredBusStops.length} of {busStops?.length || 0} results shown
-                </span>
-                <span className="text-xs text-blue-600">
-                  Total in database: {pagination.totalElements}
-                </span>
-              </div>
-              <button
-                onClick={handleClearAllFilters}
-                className="text-xs text-blue-600 hover:text-blue-800 underline"
-              >
-                Clear all filters
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* View Tabs */}
         <div className="bg-white rounded-lg shadow">
