@@ -109,7 +109,7 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
 
         // Load Google Maps script
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=geometry,places&callback=initMap`;
         script.async = true;
         script.defer = true;
         
@@ -138,7 +138,125 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
       }
     };
 
-    const createMap = () => {
+    const createRoadBasedRoute = async (map: google.maps.Map, stops: RouteStop[]) => {
+      if (!window.google || stops.length < 2) return;
+
+      try {
+        // Clear existing polyline
+        if (polylineRef.current) {
+          polylineRef.current.setMap(null);
+          polylineRef.current = null;
+        }
+
+        const directionsService = new window.google.maps.DirectionsService();
+        
+        // Create waypoints (excluding start and end)
+        const waypoints: google.maps.DirectionsWaypoint[] = [];
+        if (stops.length > 2) {
+          for (let i = 1; i < stops.length - 1; i++) {
+            const stop = stops[i];
+            if (stop.location && 
+                typeof stop.location.latitude === 'number' && 
+                typeof stop.location.longitude === 'number') {
+              waypoints.push({
+                location: {
+                  lat: stop.location.latitude,
+                  lng: stop.location.longitude
+                },
+                stopover: true
+              });
+            }
+          }
+        }
+
+        // Get the first and last stops
+        const startStop = stops[0];
+        const endStop = stops[stops.length - 1];
+
+        if (!startStop?.location || !endStop?.location ||
+            typeof startStop.location.latitude !== 'number' ||
+            typeof startStop.location.longitude !== 'number' ||
+            typeof endStop.location.latitude !== 'number' ||
+            typeof endStop.location.longitude !== 'number') {
+          console.warn('Invalid start or end stop coordinates');
+          return;
+        }
+
+        // Request directions
+        const request: google.maps.DirectionsRequest = {
+          origin: {
+            lat: startStop.location.latitude,
+            lng: startStop.location.longitude
+          },
+          destination: {
+            lat: endStop.location.latitude,
+            lng: endStop.location.longitude
+          },
+          waypoints: waypoints,
+          travelMode: google.maps.TravelMode.DRIVING,
+          optimizeWaypoints: false, // Keep the order of stops as provided
+          avoidHighways: false,
+          avoidTolls: false
+        };
+
+        directionsService.route(request, (result, status) => {
+          if (status === google.maps.DirectionsStatus.OK && result) {
+            // Create a DirectionsRenderer to display the route
+            const directionsRenderer = new window.google.maps.DirectionsRenderer({
+              directions: result,
+              map: map,
+              suppressMarkers: true, // We already have our custom markers
+              polylineOptions: {
+                strokeColor: '#2563eb',
+                strokeOpacity: 1.0,
+                strokeWeight: 4,
+              }
+            });
+
+            // Store reference for cleanup
+            polylineRef.current = directionsRenderer as any;
+
+          } else {
+            console.warn('Directions request failed:', status);
+            // Fallback to direct polyline if directions fail
+            createFallbackPolyline(map, stops);
+          }
+        });
+
+      } catch (error) {
+        console.error('Error creating road-based route:', error);
+        // Fallback to direct polyline
+        createFallbackPolyline(map, stops);
+      }
+    };
+
+    const createFallbackPolyline = (map: google.maps.Map, stops: RouteStop[]) => {
+      // Fallback: Create direct polyline path (original behavior)
+      const path: google.maps.LatLng[] = [];
+      
+      stops.forEach(stop => {
+        if (stop.location && 
+            typeof stop.location.latitude === 'number' && 
+            typeof stop.location.longitude === 'number') {
+          path.push(new window.google.maps.LatLng(stop.location.latitude, stop.location.longitude));
+        }
+      });
+
+      if (path.length > 1) {
+        const polyline = new window.google.maps.Polyline({
+          path: path,
+          geodesic: true,
+          strokeColor: '#dc2626', // Red color to indicate fallback
+          strokeOpacity: 1.0,
+          strokeWeight: 3,
+        });
+
+        polyline.setMap(map);
+        polylineRef.current = polyline;
+      }
+    };
+
+    const createMap = async () => {
       if (!mapRef.current || !window.google) return;
 
       try {
@@ -249,18 +367,9 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
           markersRef.current.push(marker);
         });
 
-        // Create polyline to show route path
+        // Create route path using Google Directions API for road-based routing
         if (path.length > 1) {
-          const polyline = new window.google.maps.Polyline({
-            path: path,
-            geodesic: true,
-            strokeColor: '#2563eb',
-            strokeOpacity: 1.0,
-            strokeWeight: 3,
-          });
-
-          polyline.setMap(map);
-          polylineRef.current = polyline;
+          await createRoadBasedRoute(map, stops);
         }
 
         // Fit map to show all stops
@@ -289,7 +398,14 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
         markersRef.current = [];
       }
       if (polylineRef.current) {
-        polylineRef.current.setMap(null);
+        // Handle both Polyline and DirectionsRenderer
+        if (typeof (polylineRef.current as any).setMap === 'function') {
+          (polylineRef.current as any).setMap(null);
+        }
+        if (typeof (polylineRef.current as any).setDirections === 'function') {
+          // It's a DirectionsRenderer
+          (polylineRef.current as any).setMap(null);
+        }
         polylineRef.current = null;
       }
     };
@@ -361,6 +477,9 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
             <p className="text-sm text-blue-700">
               {stops.length} stops • {(route.distanceKm || 0).toFixed(1)} km • Direction: {route.direction || 'OUTBOUND'}
             </p>
+            <p className="text-xs text-blue-600 mt-1">
+              🛣️ Showing road-based route paths (not direct lines)
+            </p>
           </div>
           <div className="flex items-center gap-2 text-sm text-blue-700">
             <div className="flex items-center gap-1">
@@ -384,7 +503,7 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
         <div 
           ref={mapRef} 
           className="w-full h-96 rounded-lg bg-gray-200 border border-gray-300"
-          style={{ minHeight: '384px' }}
+          style={{ minHeight: '720px' }}
         />
         
         {(isLoading || !isMapLoaded) && (
@@ -440,6 +559,9 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
       {/* Stops List */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <h4 className="font-medium text-gray-900 mb-3">Route Stops ({stops.length})</h4>
+        <p className="text-xs text-gray-500 mb-3">
+          ℹ️ Blue route = Road-based path • Red route = Direct fallback (if road data unavailable)
+        </p>
         <div className="space-y-2 max-h-32 overflow-y-auto">
           {stops.map((stop, index) => (
             <div key={index} className="flex items-center justify-between text-sm">
