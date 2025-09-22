@@ -66,7 +66,7 @@ export default function ViewTabs({
                 aria-hidden="true" 
               />
               <span>{tab.name}</span>
-              {tab.count > 0 && (
+              {/* {tab.count > 0 && (
                 <span 
                   className={`
                     ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -78,7 +78,7 @@ export default function ViewTabs({
                 >
                   {tab.count}
                 </span>
-              )}
+              )} */}
             </button>
           );
         })}

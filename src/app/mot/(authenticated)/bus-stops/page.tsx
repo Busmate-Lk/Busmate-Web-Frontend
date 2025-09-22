@@ -37,9 +37,11 @@ export default function BusStops() {
   // Hook usage - MOVED ALL HOOKS TO THE TOP
   const {
     busStops,
+    allBusStops,
     filterOptions,
     pagination,
     loading,
+    allBusStopsLoading,
     filterOptionsLoading,
     error,
     deleteBusStop,
@@ -47,16 +49,22 @@ export default function BusStops() {
     hasData,
     getCurrentParams,
     updateParams,
+    loadAllBusStops,
   } = useBusStops();
 
   // Get current query params for UI state
   const currentParams = getCurrentParams();
 
+  // Get the appropriate data source based on current view
+  const currentDataSource = useMemo(() => {
+    return currentView === 'map' ? allBusStops : busStops;
+  }, [currentView, allBusStops, busStops]);
+
   // Apply local (client-side) filters to server-filtered bus stops
   const filteredBusStops = useMemo(() => {
-    if (!busStops) return [];
+    if (!currentDataSource) return [];
 
-    return busStops.filter((stop: StopResponse) => {
+    return currentDataSource.filter((stop: StopResponse) => {
       // State filter
       if (localFilters.state !== 'all' && stop.location?.state !== localFilters.state) {
         return false;
@@ -72,14 +80,38 @@ export default function BusStops() {
         }
       }
 
+      // For map view, also apply search filter client-side since allBusStops doesn't have server-side search
+      if (currentView === 'map') {
+        const searchTerm = getCurrentParams().search?.toLowerCase() || '';
+        if (searchTerm) {
+          const searchableText = [
+            stop.name,
+            stop.description,
+            stop.location?.address,
+            stop.location?.city,
+            stop.location?.state,
+            stop.location?.country
+          ].filter(Boolean).join(' ').toLowerCase();
+          
+          if (!searchableText.includes(searchTerm)) {
+            return false;
+          }
+        }
+      }
+
       return true;
     });
-  }, [busStops, localFilters]);
+  }, [currentDataSource, localFilters, currentView, getCurrentParams]);
 
-  // View change handler
-  const handleViewChange = useCallback((view: ViewType) => {
+  // View change handler with data loading
+  const handleViewChange = useCallback(async (view: ViewType) => {
     setCurrentView(view);
-  }, []);
+    
+    // Load all bus stops when switching to map view if not already loaded
+    if (view === 'map' && allBusStops.length === 0 && !allBusStopsLoading) {
+      await loadAllBusStops();
+    }
+  }, [allBusStops.length, allBusStopsLoading, loadAllBusStops]);
 
   // Computed filter status
   const hasActiveFilters = useMemo(() => {
@@ -90,17 +122,30 @@ export default function BusStops() {
     );
   }, [currentParams.search, localFilters]);
 
+  // Load all bus stops on mount if starting with map view
+  useEffect(() => {
+    if (currentView === 'map' && allBusStops.length === 0 && !allBusStopsLoading) {
+      loadAllBusStops();
+    }
+  }, [currentView, allBusStops.length, allBusStopsLoading, loadAllBusStops]);
+
   // Refresh handler
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     clearError();
     
     try {
-      await updateParams(getCurrentParams());
+      if (currentView === 'map') {
+        // For map view, refresh all bus stops
+        await loadAllBusStops();
+      } else {
+        // For directory view, refresh paginated data
+        await updateParams(getCurrentParams());
+      }
     } finally {
       setIsRefreshing(false);
     }
-  }, [updateParams, getCurrentParams, clearError]);
+  }, [currentView, loadAllBusStops, updateParams, getCurrentParams, clearError]);
 
   // Search handler (server-side search + reset to page 0)
   const handleSearch = useCallback(async (searchTerm: string) => {
@@ -242,7 +287,10 @@ export default function BusStops() {
 
   // CONDITIONAL RENDERING MOVED TO THE END AFTER ALL HOOKS
   // Loading state for initial load
-  if (loading && pagination.currentPage === 0 && !hasData) {
+  const isInitialLoading = (loading && pagination.currentPage === 0 && !hasData) || 
+                          (currentView === 'map' && allBusStopsLoading && allBusStops.length === 0);
+  
+  if (isInitialLoading) {
     return (
       <Layout
         activeItem="bus-stops"
@@ -292,7 +340,7 @@ export default function BusStops() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleRefresh}
-              disabled={isRefreshing || loading}
+              disabled={isRefreshing || loading || allBusStopsLoading}
               className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -407,14 +455,14 @@ export default function BusStops() {
             <div className="p-0">
               <BusStopsMapView
                 busStops={filteredBusStops}
-                loading={loading}
+                loading={allBusStopsLoading}
                 onDelete={handleDeleteClick}
               />
             </div>
           )}
 
           {/* Empty State */}
-          {!loading && !hasData && !error && (
+          {!loading && !allBusStopsLoading && filteredBusStops.length === 0 && !error && (
             <div className="text-center py-12">
               <div className="text-gray-500 mb-4">
                 <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
