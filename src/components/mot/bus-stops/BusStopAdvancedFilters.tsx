@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Search, 
-  Filter, 
-  X, 
-  ChevronDown, 
-  MapPin, 
+import {
+  Search,
+  Filter,
+  X,
+  ChevronDown,
+  MapPin,
   Users,
   RotateCcw,
   CheckCircle2,
@@ -22,21 +22,21 @@ interface BusStopAdvancedFiltersProps {
   // Search
   searchTerm: string;
   setSearchTerm: (value: string) => void;
-  
+
   // Filters
   stateFilter: string;
   setStateFilter: (value: string) => void;
   accessibilityFilter: string;
   setAccessibilityFilter: (value: string) => void;
-  
+
   // Data
   filterOptions: FilterOptions;
   loading: boolean;
-  
+
   // Stats for display
   totalCount?: number;
   filteredCount?: number;
-  
+
   // Event handlers
   onClearAll?: () => void;
   onSearch?: (term: string) => void;
@@ -78,8 +78,8 @@ export default function BusStopAdvancedFilters({
   }, [searchTerm]);
 
   const hasActiveFilters = Boolean(
-    searchTerm || 
-    stateFilter !== 'all' || 
+    searchTerm ||
+    stateFilter !== 'all' ||
     accessibilityFilter !== 'all'
   );
 
@@ -124,24 +124,6 @@ export default function BusStopAdvancedFilters({
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       {/* Compact Main Filter Section */}
       <div className="p-4">
-        {/* Header with Count */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-gray-600" />
-            <h3 className="text-sm font-medium text-gray-900">Bus Stops</h3>
-          </div>
-          <div className="text-sm text-gray-600">
-            <span className="font-medium text-gray-900">
-              {filteredCount.toLocaleString()}
-            </span>
-            {hasActiveFilters ? (
-              <> of {totalCount.toLocaleString()} stops</>
-            ) : (
-              <> total stops</>
-            )}
-          </div>
-        </div>
-
         {/* Compact Filter Row */}
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search Bar */}
@@ -151,7 +133,7 @@ export default function BusStopAdvancedFilters({
             </div>
             <input
               type="text"
-              placeholder="Search stops..."
+              placeholder="Search bus stops..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="block w-full pl-10 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -197,26 +179,14 @@ export default function BusStopAdvancedFilters({
             </select>
             <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-
-          {/* Clear All Button */}
-          {hasActiveFilters && (
-            <button
-              onClick={handleClearAll}
-              className="inline-flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Clear
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Collapsible Active Filters Section */}
-      {hasActiveFilters && (
+      {/* Active & Quick Filters Section */}
+      {(
         <div className="border-t border-gray-100">
           <div className="p-3">
-            <button
-              onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+            <div
               className="flex items-center justify-between w-full text-left"
             >
               <div className="flex items-center gap-2">
@@ -224,55 +194,63 @@ export default function BusStopAdvancedFilters({
                 <span className="text-sm text-gray-700">
                   {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
                 </span>
-              </div>
-              <ChevronDown 
-                className={`w-4 h-4 text-gray-500 transition-transform ${
-                  isFilterExpanded ? 'rotate-180' : ''
-                }`} 
-              />
-            </button>
+                {/* Clear All Button */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearAll}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 hover:border-red-200 rounded-md hover:bg-red-100 hover:text-red-700 transition-colors"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Clear All
+                  </button>
+                )}
+                <div className='flex items-center gap-2 ml-4'>
+                  {searchTerm && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                      <Search className="w-3 h-3" />
+                      "{searchTerm}"
+                      <button
+                        onClick={() => setSearchValue('')}
+                        className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {stateFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
+                      <MapPin className="w-3 h-3" />
+                      {stateFilter}
+                      <button
+                        onClick={() => setStateFilter('all')}
+                        className="ml-1 hover:bg-green-200 rounded-full p-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {accessibilityFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
+                      {getAccessibilityIcon(accessibilityFilter)}
+                      {accessibilityFilter === 'accessible' ? 'Accessible' : 'Non-Accessible'}
+                      <button
+                        onClick={() => setAccessibilityFilter('all')}
+                        className="ml-1 hover:bg-purple-200 rounded-full p-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                </div>
 
-            {/* Active Filter Tags */}
-            {isFilterExpanded && (
-              <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-100">
-                {searchTerm && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-                    <Search className="w-3 h-3" />
-                    "{searchTerm}"
-                    <button
-                      onClick={() => setSearchValue('')}
-                      className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-                {stateFilter !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
-                    <MapPin className="w-3 h-3" />
-                    {stateFilter}
-                    <button
-                      onClick={() => setStateFilter('all')}
-                      className="ml-1 hover:bg-green-200 rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-                {accessibilityFilter !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
-                    {getAccessibilityIcon(accessibilityFilter)}
-                    {accessibilityFilter === 'accessible' ? 'Accessible' : 'Non-Accessible'}
-                    <button
-                      onClick={() => setAccessibilityFilter('all')}
-                      className="ml-1 hover:bg-purple-200 rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
               </div>
-            )}
+              <div className="text-sm text-gray-600">
+                <span className="font-medium text-gray-900">
+                  {filteredCount.toLocaleString()}
+                </span>
+                <> of {totalCount.toLocaleString()} stops</>
+              </div>
+            </div>
           </div>
         </div>
       )}
