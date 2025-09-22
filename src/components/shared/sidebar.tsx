@@ -83,6 +83,12 @@ export function Sidebar({
       href: '/mot/schedules',
     },
     {
+      icon: Bus,
+      label: 'Trip Assignment',
+      active: activeItem === 'trip-assignment',
+      href: '/mot/trip-assignment',
+    },
+    {
       icon: FileText,
       label: 'Operator Management',
       active: activeItem === 'operators',
@@ -99,12 +105,6 @@ export function Sidebar({
       label: 'Permit Management',
       active: activeItem === 'passenger-service-permits',
       href: '/mot/passenger-service-permits',
-    },
-    {
-      icon: Bus,
-      label: 'Trip Assignment',
-      active: activeItem === 'trip-assignment',
-      href: '/mot/trip-assignment',
     },
     {
       icon: DollarSign,

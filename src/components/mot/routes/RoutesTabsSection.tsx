@@ -25,11 +25,11 @@ interface RoutesTabsSectionProps {
 
 export function RoutesTabsSection({ routes }: RoutesTabsSectionProps) {
   const [activeRouteTab, setActiveRouteTab] = useState<string>(routes.length > 0 ? routes[0].id || '' : '');
-  const [activeSubTab, setActiveSubTab] = useState<string>('details');
+  const [activeSubTab, setActiveSubTab] = useState<string>('map');
 
   const subTabs: RouteTabType[] = [
-    { id: 'details', label: 'Route Details', icon: <List className="w-4 h-4" /> },
     { id: 'map', label: 'Visual View', icon: <Map className="w-4 h-4" /> },
+    { id: 'details', label: 'Route Details', icon: <List className="w-4 h-4" /> },
     { id: 'schedules', label: 'Schedules', icon: <Clock className="w-4 h-4" /> },
     { id: 'more', label: 'More', icon: <MoreHorizontal className="w-4 h-4" /> },
   ];
