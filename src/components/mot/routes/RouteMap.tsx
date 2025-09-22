@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
-import { MapPin, RotateCcw, Maximize2, AlertCircle } from 'lucide-react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { AlertCircle, RotateCcw, Maximize2, ExternalLink, Maximize } from 'lucide-react';
 import type { RouteResponse, LocationDto } from '@/lib/api-client/route-management';
+import { RouteMapFullscreen } from './RouteMapFullscreen';
 
 interface RouteMapProps {
   route: RouteResponse;
@@ -34,6 +35,7 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
 
   // Process route stops and add start/end stops
   const getOrderedStops = useCallback((): RouteStop[] => {
@@ -442,10 +444,38 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
     }
   }, [getOrderedStops]);
 
-  // Open in full screen Google Maps
+  // Open in full screen Google Maps with complete route
   const openInFullMaps = useCallback(() => {
     const stops = getOrderedStops();
-    if (stops.length > 0 && stops[0].location) {
+    if (stops.length >= 2) {
+      // Create Google Maps URL with directions for multiple stops
+      const firstStop = stops[0];
+      const lastStop = stops[stops.length - 1];
+      
+      if (firstStop.location && lastStop.location) {
+        let url = `https://www.google.com/maps/dir/`;
+        
+        // Add origin
+        url += `${firstStop.location.latitude},${firstStop.location.longitude}/`;
+        
+        // Add waypoints (intermediate stops)
+        for (let i = 1; i < stops.length - 1; i++) {
+          const stop = stops[i];
+          if (stop.location) {
+            url += `${stop.location.latitude},${stop.location.longitude}/`;
+          }
+        }
+        
+        // Add destination
+        url += `${lastStop.location.latitude},${lastStop.location.longitude}`;
+        
+        // Add additional parameters for driving directions
+        url += `/@${firstStop.location.latitude},${firstStop.location.longitude},12z/data=!3m1!4b1!4m2!4m1!3e0`;
+        
+        window.open(url, '_blank');
+      }
+    } else if (stops.length === 1 && stops[0].location) {
+      // Fallback for single stop
       const { latitude, longitude } = stops[0].location;
       const url = `https://www.google.com/maps?q=${latitude},${longitude}&z=15`;
       window.open(url, '_blank');
@@ -535,11 +565,18 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
               <RotateCcw className="w-4 h-4 text-gray-600" />
             </button>
             <button
+              onClick={() => setIsFullscreenOpen(true)}
+              className="bg-white shadow-md rounded p-2 hover:bg-gray-50 transition-colors"
+              title="View fullscreen"
+            >
+              <Maximize className="w-4 h-4 text-gray-600" />
+            </button>
+            <button
               onClick={openInFullMaps}
               className="bg-white shadow-md rounded p-2 hover:bg-gray-50 transition-colors"
               title="Open in Google Maps"
             >
-              <Maximize2 className="w-4 h-4 text-gray-600" />
+              <ExternalLink className="w-4 h-4 text-gray-600" />
             </button>
           </div>
         )}
@@ -591,6 +628,13 @@ export function RouteMap({ route, className = "" }: RouteMapProps) {
           ))}
         </div>
       </div>
+
+      {/* Fullscreen Modal */}
+      <RouteMapFullscreen 
+        route={route}
+        isOpen={isFullscreenOpen}
+        onClose={() => setIsFullscreenOpen(false)}
+      />
     </div>
   );
 }
