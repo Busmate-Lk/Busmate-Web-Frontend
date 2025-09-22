@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import BusStopStats from '@/components/mot/bus-stops/BusStopStats';
 import BusStopFilters from '@/components/mot/bus-stops/BusStopFilters';
 import BusStopTable from '@/components/mot/bus-stops/BusStopTable';
+import BusStopsMapView from '@/components/mot/bus-stops/BusStopsMapView';
+import ViewTabs, { ViewType } from '@/components/mot/bus-stops/ViewTabs';
 import DeleteBusStopModal from '@/components/mot/bus-stops/DeleteBusStopModal';
 import Pagination from '@/components/shared/Pagination';
 import { Layout } from '@/components/shared/layout';
@@ -14,6 +16,9 @@ import { StopResponse } from '@/lib/api-client/route-management';
 
 export default function BusStops() {
   const router = useRouter();
+  
+  // View state
+  const [currentView, setCurrentView] = useState<ViewType>('directory');
   
   // Local filter states (client-side filtering)
   const [localFilters, setLocalFilters] = useState({
@@ -70,6 +75,11 @@ export default function BusStops() {
       return true;
     });
   }, [busStops, localFilters]);
+
+  // View change handler
+  const handleViewChange = useCallback((view: ViewType) => {
+    setCurrentView(view);
+  }, []);
 
   // Computed filter status
   const hasActiveFilters = useMemo(() => {
@@ -345,30 +355,60 @@ export default function BusStops() {
           </div>
         )}
 
-        {/* Main Content */}
+        {/* View Tabs */}
         <div className="bg-white rounded-lg shadow">
-          <BusStopTable 
-            busStops={filteredBusStops} 
-            loading={loading}
-            onSort={handleSort}
-            sortBy={currentParams.sortBy}
-            sortDir={currentParams.sortDir}
-            onDelete={handleDeleteClick}
-          />
+          <div className="px-6 pt-4">
+            <ViewTabs
+              activeView={currentView}
+              onViewChange={handleViewChange}
+              directoryCount={filteredBusStops.length}
+              mapCount={filteredBusStops.filter(stop => 
+                stop.location?.latitude && 
+                stop.location?.longitude &&
+                !isNaN(Number(stop.location.latitude)) &&
+                !isNaN(Number(stop.location.longitude))
+              ).length}
+            />
+          </div>
 
-          {/* Pagination */}
-          {pagination.totalElements > 0 && (
-            <div className="border-t border-gray-200">
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalElements={pagination.totalElements}
-                pageSize={pagination.pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
+          {/* Directory View */}
+          {currentView === 'directory' && (
+            <>
+              <BusStopTable 
+                busStops={filteredBusStops} 
                 loading={loading}
-                searchActive={Boolean(currentParams.search)}
-                filterCount={hasActiveFilters ? 1 : 0}
+                onSort={handleSort}
+                sortBy={currentParams.sortBy}
+                sortDir={currentParams.sortDir}
+                onDelete={handleDeleteClick}
+              />
+
+              {/* Pagination */}
+              {pagination.totalElements > 0 && (
+                <div className="border-t border-gray-200">
+                  <Pagination
+                    currentPage={pagination.currentPage}
+                    totalPages={pagination.totalPages}
+                    totalElements={pagination.totalElements}
+                    pageSize={pagination.pageSize}
+                    onPageChange={handlePageChange}
+                    onPageSizeChange={handlePageSizeChange}
+                    loading={loading}
+                    searchActive={Boolean(currentParams.search)}
+                    filterCount={hasActiveFilters ? 1 : 0}
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Map View */}
+          {currentView === 'map' && (
+            <div className="p-0">
+              <BusStopsMapView
+                busStops={filteredBusStops}
+                loading={loading}
+                onDelete={handleDeleteClick}
               />
             </div>
           )}
@@ -388,15 +428,12 @@ export default function BusStops() {
                   : "Get started by adding your first bus stop."
                 }
               </p>
-              {!hasActiveFilters && (
-                <button
-                  onClick={() => router.push('/mot/bus-stops/add-new')}
-                  className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add First Bus Stop
-                </button>
-              )}
+              <button
+                onClick={() => router.push('/mot/bus-stops/add-new')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                Add Your First Bus Stop
+              </button>
             </div>
           )}
         </div>
