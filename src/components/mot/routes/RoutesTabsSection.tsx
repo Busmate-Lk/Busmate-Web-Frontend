@@ -11,6 +11,7 @@ import {
   Route as RouteIcon
 } from 'lucide-react';
 import type { RouteResponse, RouteStopResponse } from '@/lib/api-client/route-management';
+import { RouteMap } from './RouteMap';
 
 interface RouteTabType {
   id: string;
@@ -316,19 +317,21 @@ export function RoutesTabsSection({ routes }: RoutesTabsSectionProps) {
             {/* Visual Map Tab */}
             {activeSubTab === 'map' && (
               <div className="space-y-4">
-                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <Map className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Interactive Map View</h3>
-                  <p className="text-gray-600 mb-4">
-                    🔌 <strong>API Integration Point:</strong> Implement map component here
-                  </p>
-                  <div className="text-sm text-gray-500 space-y-1">
-                    <p>• Use Google Maps, Leaflet, or Mapbox</p>
-                    <p>• Show route path with start/end markers</p>
-                    <p>• Display all intermediate stops</p>
-                    <p>• Add fullscreen toggle functionality</p>
+                {/* Only show map for OUTBOUND routes as requested */}
+                {activeRoute.direction === 'OUTBOUND' ? (
+                  <RouteMap route={activeRoute} />
+                ) : (
+                  <div className="text-center py-12 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <Map className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-yellow-900 mb-2">Map View - OUTBOUND Routes Only</h3>
+                    <p className="text-yellow-700 mb-4">
+                      Currently showing map visualization for OUTBOUND routes only.
+                    </p>
+                    <p className="text-sm text-yellow-600">
+                      Route direction: <span className="font-medium">{activeRoute.direction || 'Unknown'}</span>
+                    </p>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
