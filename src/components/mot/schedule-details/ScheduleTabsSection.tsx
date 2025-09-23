@@ -7,14 +7,16 @@ import {
   Bus, 
   AlertTriangle,
   Plus,
-  RefreshCw
+  RefreshCw,
+  Route
 } from 'lucide-react';
 import { ScheduleResponse, RouteResponse, TripResponse } from '@/lib/api-client/route-management';
 import { 
   ScheduleStopsTab,
   ScheduleCalendarTab,
   ScheduleTripsTab,
-  ScheduleExceptionsTab
+  ScheduleExceptionsTab,
+  ScheduleRouteAnalysisTab
 } from './tabs';
 
 interface ScheduleTabsSectionProps {
@@ -27,7 +29,7 @@ interface ScheduleTabsSectionProps {
   onAssignBuses?: () => void;
 }
 
-type TabType = 'stops' | 'calendar' | 'trips' | 'exceptions';
+type TabType = 'stops' | 'calendar' | 'trips' | 'exceptions' | 'route-analysis';
 
 export function ScheduleTabsSection({
   schedule,
@@ -58,6 +60,12 @@ export function ScheduleTabsSection({
       name: 'Generated Trips',
       icon: Bus,
       count: trips.length
+    },
+    {
+      id: 'route-analysis' as TabType,
+      name: 'Route Analysis',
+      icon: Route,
+      count: 0 // Will be populated with route schedules count
     },
     {
       id: 'exceptions' as TabType,
@@ -92,6 +100,14 @@ export function ScheduleTabsSection({
             onRefresh={onRefresh}
             onGenerateTrips={onGenerateTrips}
             onAssignBuses={onAssignBuses}
+          />
+        );
+      case 'route-analysis':
+        return (
+          <ScheduleRouteAnalysisTab 
+            schedule={schedule}
+            route={route}
+            onRefresh={onRefresh}
           />
         );
       case 'exceptions':
