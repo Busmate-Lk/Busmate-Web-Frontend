@@ -480,17 +480,20 @@ export default function RoutesPage() {
             currentSort={{ field: queryParams.sortBy, direction: queryParams.sortDir }}
           />
 
+
           {pagination.totalElements > 0 && (
-            <Pagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              totalElements={pagination.totalElements}
-              pageSize={pagination.pageSize}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              loading={isLoading}
-              searchActive={!!searchTerm}
-            />
+            <div className="bg-white shadow px-2 py-0">
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalElements={pagination.totalElements}
+                pageSize={pagination.pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                loading={isLoading}
+                searchActive={!!searchTerm}
+              />
+            </div>
           )}
         </div>
 
