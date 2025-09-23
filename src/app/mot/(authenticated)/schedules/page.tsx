@@ -185,37 +185,61 @@ export default function SchedulesPage() {
     setQueryParams(prev => {
       const newParams = { ...prev, ...updates };
 
-      // Convert filter states to API parameters
-      if (statusFilter !== 'all') {
-        newParams.status = statusFilter as 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'CANCELLED';
-      } else {
-        delete newParams.status;
+      // Handle explicit undefined values (for clearing filters)
+      Object.keys(updates).forEach(key => {
+        if (updates[key as keyof QueryParams] === undefined) {
+          delete newParams[key as keyof QueryParams];
+        }
+      });
+
+      // Convert current filter states to API parameters (only if not explicitly overridden)
+      if (!('status' in updates)) {
+        if (statusFilter !== 'all') {
+          newParams.status = statusFilter as 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'CANCELLED';
+        } else {
+          delete newParams.status;
+        }
       }
 
-      if (scheduleTypeFilter !== 'all') {
-        newParams.scheduleType = scheduleTypeFilter as 'REGULAR' | 'SPECIAL';
-      } else {
-        delete newParams.scheduleType;
+      if (!('scheduleType' in updates)) {
+        if (scheduleTypeFilter !== 'all') {
+          newParams.scheduleType = scheduleTypeFilter as 'REGULAR' | 'SPECIAL';
+        } else {
+          delete newParams.scheduleType;
+        }
       }
 
-      if (routeFilter !== 'all') {
-        newParams.routeId = routeFilter;
-      } else {
-        delete newParams.routeId;
+      if (!('routeId' in updates)) {
+        if (routeFilter !== 'all') {
+          newParams.routeId = routeFilter;
+        } else {
+          delete newParams.routeId;
+        }
       }
 
-      if (effectiveStartDate) {
-        newParams.effectiveStartDate = effectiveStartDate;
+      if (!('effectiveStartDate' in updates)) {
+        if (effectiveStartDate) {
+          newParams.effectiveStartDate = effectiveStartDate;
+        } else {
+          delete newParams.effectiveStartDate;
+        }
       }
 
-      if (effectiveEndDate) {
-        newParams.effectiveEndDate = effectiveEndDate;
+      if (!('effectiveEndDate' in updates)) {
+        if (effectiveEndDate) {
+          newParams.effectiveEndDate = effectiveEndDate;
+        } else {
+          delete newParams.effectiveEndDate;
+        }
       }
 
       // Only update if something actually changed
       const hasChanges = Object.keys(newParams).some(key => {
         const typedKey = key as keyof QueryParams;
         return newParams[typedKey] !== prev[typedKey];
+      }) || Object.keys(prev).some(key => {
+        const typedKey = key as keyof QueryParams;
+        return prev[typedKey] !== newParams[typedKey];
       });
 
       return hasChanges ? newParams : prev;
@@ -229,7 +253,7 @@ export default function SchedulesPage() {
     }, 300); // Short debounce for filter changes
 
     return () => clearTimeout(timer);
-  }, [statusFilter, scheduleTypeFilter, routeFilter, effectiveStartDate, effectiveEndDate]);
+  }, [statusFilter, scheduleTypeFilter, routeFilter, effectiveStartDate, effectiveEndDate, updateQueryParams]);
 
   const handleSearch = (searchTerm: string) => {
     setSearchTerm(searchTerm);
@@ -248,15 +272,34 @@ export default function SchedulesPage() {
     updateQueryParams({ size, page: 0 });
   };
 
-  const handleClearAllFilters = () => {
+  const handleClearAllFilters = useCallback(() => {
+    // Clear all filter states
     setSearchTerm('');
     setStatusFilter('all');
     setScheduleTypeFilter('all');
     setRouteFilter('all');
     setEffectiveStartDate('');
     setEffectiveEndDate('');
-    updateQueryParams({ search: '', page: 0 });
-  };
+    
+    // Immediately update query params to clear all filters and trigger new API call
+    setQueryParams(prev => {
+      const newParams = {
+        ...prev,
+        search: '',
+        page: 0
+      };
+      
+      // Remove all filter-related parameters
+      delete newParams.status;
+      delete newParams.scheduleType;
+      delete newParams.routeId;
+      delete newParams.routeGroupId;
+      delete newParams.effectiveStartDate;
+      delete newParams.effectiveEndDate;
+      
+      return newParams;
+    });
+  }, []);
 
   const handleAddNewSchedule = () => {
     router.push('/mot/schedules/new');
