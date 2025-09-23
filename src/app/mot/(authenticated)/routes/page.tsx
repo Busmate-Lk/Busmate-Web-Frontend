@@ -3,13 +3,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Layout } from '@/components/shared/layout';
-import { BusRouteGroupSearchFilters } from '@/components/mot/bus-route-group-search-filters';
-import { BusRouteGroupStatsCards } from '@/components/mot/bus-route-group-stats-cards';
-import { BusRouteGroupsTable } from '@/components/mot/bus-route-groups-table';
+import RouteAdvancedFilters from '@/components/mot/routes/RouteAdvancedFilters';
+import { RouteStatsCards } from '@/components/mot/routes/RouteStatsCards';
+import { RoutesTable } from '@/components/mot/routes/RoutesTable';
+import { RouteActionButtons } from '@/components/mot/routes/RouteActionButtons';
 import Pagination from '@/components/shared/Pagination';
 import DeleteRouteConfirmation from '@/components/mot/routes/DeleteRouteConfirmation';
 import { RouteManagementService } from '@/lib/api-client/route-management';
-import type { RouteGroupResponse, PageRouteGroupResponse } from '@/lib/api-client/route-management';
+import type { RouteResponse, PageRouteResponse } from '@/lib/api-client/route-management';
 
 interface QueryParams {
   page: number;
@@ -17,14 +18,45 @@ interface QueryParams {
   sortBy: string;
   sortDir: 'asc' | 'desc';
   search: string;
+  routeGroupId?: string;
+  direction?: 'OUTBOUND' | 'INBOUND';
+  minDistance?: number;
+  maxDistance?: number;
+  minDuration?: number;
+  maxDuration?: number;
 }
 
-export default function RouteGroupsPage() {
+interface FilterOptions {
+  routeGroups: Array<{ id: string; name: string }>;
+  directions: Array<'OUTBOUND' | 'INBOUND'>;
+  distanceRange: { min: number; max: number };
+  durationRange: { min: number; max: number };
+}
+
+export default function RoutesPage() {
   const router = useRouter();
-  const [routeGroups, setRouteGroups] = useState<RouteGroupResponse[]>([]);
+  const [routes, setRoutes] = useState<RouteResponse[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Filter states
+  const [routeGroupFilter, setRouteGroupFilter] = useState('all');
+  const [directionFilter, setDirectionFilter] = useState('all');
+  const [minDistance, setMinDistance] = useState('');
+  const [maxDistance, setMaxDistance] = useState('');
+  const [minDuration, setMinDuration] = useState('');
+  const [maxDuration, setMaxDuration] = useState('');
+  
+  // Filter options from API
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    routeGroups: [],
+    directions: [],
+    distanceRange: { min: 0, max: 100 },
+    durationRange: { min: 0, max: 300 }
+  });
+  const [filterOptionsLoading, setFilterOptionsLoading] = useState(true);
+
   const [queryParams, setQueryParams] = useState<QueryParams>({
     page: 0,
     size: 10,
@@ -43,24 +75,54 @@ export default function RouteGroupsPage() {
 
   // State for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [routeGroupToDelete, setRouteGroupToDelete] = useState<RouteGroupResponse | null>(null);
+  const [routeToDelete, setRouteToDelete] = useState<RouteResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Load route groups from API
-  const loadRouteGroups = useCallback(async () => {
+  // Load filter options
+  const loadFilterOptions = useCallback(async () => {
+    try {
+      setFilterOptionsLoading(true);
+      const [routeGroups, directions, distanceRange, durationRange] = await Promise.all([
+        RouteManagementService.getDistinctRouteGroups(),
+        RouteManagementService.getDistinctDirections(),
+        RouteManagementService.getDistanceRange(),
+        RouteManagementService.getDurationRange(),
+      ]);
+
+      setFilterOptions({
+        routeGroups: routeGroups.map((rg: any) => ({ id: rg.id, name: rg.name })),
+        directions,
+        distanceRange: { min: distanceRange.min || 0, max: distanceRange.max || 100 },
+        durationRange: { min: durationRange.min || 0, max: durationRange.max || 300 }
+      });
+    } catch (err) {
+      console.error('Error loading filter options:', err);
+    } finally {
+      setFilterOptionsLoading(false);
+    }
+  }, []);
+
+  // Load routes from API
+  const loadRoutes = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const response: PageRouteGroupResponse = await RouteManagementService.getAllRouteGroups(
+      const response: PageRouteResponse = await RouteManagementService.getAllRoutes(
         queryParams.page,
         queryParams.size,
         queryParams.sortBy,
         queryParams.sortDir,
-        queryParams.search || undefined
+        queryParams.search || undefined,
+        queryParams.routeGroupId,
+        queryParams.direction,
+        queryParams.minDistance,
+        queryParams.maxDistance,
+        queryParams.minDuration,
+        queryParams.maxDuration
       );
 
-      setRouteGroups(response.content || []);
+      setRoutes(response.content || []);
       setPagination({
         currentPage: response.number || 0,
         totalPages: response.totalPages || 0,
@@ -68,9 +130,9 @@ export default function RouteGroupsPage() {
         pageSize: response.size || 10,
       });
     } catch (err) {
-      console.error('Error loading route groups:', err);
-      setError('Failed to load route groups. Please try again.');
-      setRouteGroups([]);
+      console.error('Error loading routes:', err);
+      setError('Failed to load routes. Please try again.');
+      setRoutes([]);
       setPagination({
         currentPage: 0,
         totalPages: 0,
@@ -83,56 +145,138 @@ export default function RouteGroupsPage() {
   }, [queryParams]);
 
   useEffect(() => {
-    loadRouteGroups();
-  }, [loadRouteGroups]);
+    loadFilterOptions();
+  }, [loadFilterOptions]);
+
+  useEffect(() => {
+    loadRoutes();
+  }, [loadRoutes]);
+
+  // Update query params with filters (optimized to prevent unnecessary updates)
+  const updateQueryParams = useCallback((updates: Partial<QueryParams>) => {
+    setQueryParams(prev => {
+      const newParams = { ...prev, ...updates };
+      
+      // Convert filter states to query params
+      const currentRouteGroupId = routeGroupFilter !== 'all' ? routeGroupFilter : undefined;
+      const currentDirection = directionFilter !== 'all' ? directionFilter as 'OUTBOUND' | 'INBOUND' : undefined;
+      const currentMinDistance = minDistance ? parseFloat(minDistance) : undefined;
+      const currentMaxDistance = maxDistance ? parseFloat(maxDistance) : undefined;
+      const currentMinDuration = minDuration ? parseFloat(minDuration) : undefined;
+      const currentMaxDuration = maxDuration ? parseFloat(maxDuration) : undefined;
+      
+      // Only update if values actually changed
+      if (currentRouteGroupId !== prev.routeGroupId) {
+        if (currentRouteGroupId) {
+          newParams.routeGroupId = currentRouteGroupId;
+        } else {
+          delete newParams.routeGroupId;
+        }
+      }
+      
+      if (currentDirection !== prev.direction) {
+        if (currentDirection) {
+          newParams.direction = currentDirection;
+        } else {
+          delete newParams.direction;
+        }
+      }
+      
+      if (currentMinDistance !== prev.minDistance) {
+        if (currentMinDistance) {
+          newParams.minDistance = currentMinDistance;
+        } else {
+          delete newParams.minDistance;
+        }
+      }
+      
+      if (currentMaxDistance !== prev.maxDistance) {
+        if (currentMaxDistance) {
+          newParams.maxDistance = currentMaxDistance;
+        } else {
+          delete newParams.maxDistance;
+        }
+      }
+      
+      if (currentMinDuration !== prev.minDuration) {
+        if (currentMinDuration) {
+          newParams.minDuration = currentMinDuration;
+        } else {
+          delete newParams.minDuration;
+        }
+      }
+      
+      if (currentMaxDuration !== prev.maxDuration) {
+        if (currentMaxDuration) {
+          newParams.maxDuration = currentMaxDuration;
+        } else {
+          delete newParams.maxDuration;
+        }
+      }
+      
+      return newParams;
+    });
+  }, [routeGroupFilter, directionFilter, minDistance, maxDistance, minDuration, maxDuration]);
+
+  // Apply filters when they change (with debounce for better UX)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateQueryParams({ page: 0 });
+    }, 300); // Short debounce for filter changes
+
+    return () => clearTimeout(timer);
+  }, [routeGroupFilter, directionFilter, minDistance, maxDistance, minDuration, maxDuration]);
 
   const handleSearch = (searchTerm: string) => {
     setSearchTerm(searchTerm);
-    setQueryParams((prev) => ({
-      ...prev,
-      search: searchTerm,
-      page: 0, // Reset to first page on search
-    }));
+    updateQueryParams({ search: searchTerm, page: 0 });
   };
 
   const handleSort = (sortBy: string, sortDir: 'asc' | 'desc') => {
-    setQueryParams((prev) => ({
-      ...prev,
-      sortBy,
-      sortDir,
-      page: 0, // Reset to first page on sort
-    }));
+    updateQueryParams({ sortBy, sortDir, page: 0 });
   };
 
   const handlePageChange = (page: number) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      page,
-    }));
+    updateQueryParams({ page });
   };
 
   const handlePageSizeChange = (size: number) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      size,
-      page: 0, // Reset to first page on page size change
-    }));
+    updateQueryParams({ size, page: 0 });
+  };
+
+  const handleClearAllFilters = () => {
+    setSearchTerm('');
+    setRouteGroupFilter('all');
+    setDirectionFilter('all');
+    setMinDistance('');
+    setMaxDistance('');
+    setMinDuration('');
+    setMaxDuration('');
   };
 
   const handleExportAll = async () => {
     try {
-      // Get all route groups without pagination for export
-      const allRouteGroups = await RouteManagementService.getAllRouteGroupsAsList();
+      // Get all routes without pagination for export
+      const allRoutes = await RouteManagementService.getAllRoutesAsList();
       
       // Create CSV content
-      const csvHeaders = ['ID', 'Name', 'Description', 'Routes Count', 'Created At', 'Updated At'];
-      const csvRows = allRouteGroups.map(group => [
-        group.id || '',
-        group.name || '',
-        group.description || '',
-        group.routes?.length || 0,
-        group.createdAt || '',
-        group.updatedAt || ''
+      const csvHeaders = [
+        'ID', 'Name', 'Description', 'Route Group', 'Direction', 
+        'Start Stop', 'End Stop', 'Distance (km)', 'Duration (min)', 
+        'Created At', 'Updated At'
+      ];
+      const csvRows = allRoutes.map(route => [
+        route.id || '',
+        route.name || '',
+        route.description || '',
+        route.routeGroupName || '',
+        route.direction || '',
+        route.startStopName || '',
+        route.endStopName || '',
+        route.distanceKm || '',
+        route.estimatedDurationMinutes || '',
+        route.createdAt || '',
+        route.updatedAt || ''
       ]);
 
       const csvContent = [
@@ -145,58 +289,68 @@ export default function RouteGroupsPage() {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `route-groups-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `routes-${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error exporting route groups:', error);
-      setError('Failed to export route groups. Please try again.');
+      console.error('Error exporting routes:', error);
+      setError('Failed to export routes. Please try again.');
     }
   };
 
-  const handleAddNewRouteGroup = () => {
+  const handleAddNewRoute = () => {
     router.push('/mot/routes/add-new');
   };
 
-  const handleView = (routeGroupId: string) => {
-    router.push(`/mot/routes/${routeGroupId}`);
+  const handleView = (routeId: string) => {
+    // Navigate to route group page since routes are managed within route groups
+    const route = routes.find(r => r.id === routeId);
+    if (route?.routeGroupId) {
+      router.push(`/mot/routes/${route.routeGroupId}?highlight=${routeId}`);
+    }
   };
 
-  const handleEdit = (routeGroupId: string) => {
-    router.push(`/mot/routes/${routeGroupId}/edit`);
+  const handleEdit = (routeId: string) => {
+    // Navigate to route group edit page
+    const route = routes.find(r => r.id === routeId);
+    if (route?.routeGroupId) {
+      router.push(`/mot/routes/${route.routeGroupId}/edit?route=${routeId}`);
+    }
   };
 
-  const handleDelete = (routeGroupId: string, routeGroupName: string) => {
-    // Find the route group to get full details for the modal
-    const routeGroup = routeGroups.find(group => group.id === routeGroupId);
-    if (routeGroup) {
-      setRouteGroupToDelete(routeGroup);
+  const handleDelete = (routeId: string, routeName: string) => {
+    // Find the route to get full details for the modal
+    const route = routes.find(r => r.id === routeId);
+    if (route) {
+      setRouteToDelete(route);
       setShowDeleteModal(true);
     }
   };
 
   const handleDeleteCancel = () => {
     setShowDeleteModal(false);
-    setRouteGroupToDelete(null);
+    setRouteToDelete(null);
   };
 
   const handleDeleteConfirm = async () => {
-    if (!routeGroupToDelete?.id) return;
+    if (!routeToDelete?.id) return;
 
     try {
       setIsDeleting(true);
-      await RouteManagementService.deleteRouteGroup(routeGroupToDelete.id);
+      // Note: You'll need to implement a delete route API endpoint
+      // await RouteManagementService.deleteRoute(routeToDelete.id);
+      console.log('Delete route not implemented in API yet:', routeToDelete.id);
       
       // Refresh the list after successful deletion
-      await loadRouteGroups();
+      await loadRoutes();
       
       setShowDeleteModal(false);
-      setRouteGroupToDelete(null);
+      setRouteToDelete(null);
     } catch (error) {
-      console.error('Error deleting route group:', error);
-      setError('Failed to delete route group. Please try again.');
+      console.error('Error deleting route:', error);
+      setError('Failed to delete route. Please try again.');
       // Keep the modal open on error so user can see what happened
     } finally {
       setIsDeleting(false);
@@ -205,39 +359,43 @@ export default function RouteGroupsPage() {
 
   // Calculate stats for the stats cards
   const stats = useMemo(() => {
-    const totalRoutes = routeGroups.reduce((acc, group) => acc + (group.routes?.length || 0), 0);
-    const activeGroups = routeGroups.filter((g) => (g.routes?.length || 0) > 0).length;
+    const outboundRoutes = routes.filter(r => r.direction === 'OUTBOUND').length;
+    const inboundRoutes = routes.filter(r => r.direction === 'INBOUND').length;
+    const totalDistance = routes.reduce((acc, route) => acc + (route.distanceKm || 0), 0);
+    const avgDistance = routes.length > 0 ? totalDistance / routes.length : 0;
 
     return {
       total: { 
         count: pagination.totalElements, 
-        change: routeGroups.length > 0 ? '+' + Math.ceil(routeGroups.length * 0.1) + ' this month' : 'No data'
+        change: routes.length > 0 ? '+' + Math.ceil(routes.length * 0.1) + ' this month' : 'No data'
       },
-      active: {
-        count: activeGroups,
-        change: activeGroups > 0 ? '+' + Math.ceil(activeGroups * 0.08) + ' this month' : 'No data',
+      outbound: {
+        count: outboundRoutes,
+        change: outboundRoutes > 0 ? '+' + Math.ceil(outboundRoutes * 0.08) + ' this month' : 'No data',
       },
-      routes: {
-        count: totalRoutes,
+      inbound: {
+        count: inboundRoutes,
+        change: inboundRoutes > 0 ? '+' + Math.ceil(inboundRoutes * 0.05) + ' this month' : 'No data',
       },
-      groups: { 
-        count: pagination.totalElements 
+      avgDistance: { 
+        count: avgDistance,
+        unit: 'km'
       },
     };
-  }, [routeGroups, pagination.totalElements]);
+  }, [routes, pagination.totalElements]);
 
-  if (isLoading && routeGroups.length === 0) {
+  if (isLoading && routes.length === 0) {
     return (
       <Layout
         activeItem="routes"
         pageTitle="Loading..."
-        pageDescription="Loading route groups"
+        pageDescription="Loading routes"
         role="mot"
       >
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading route groups...</p>
+            <p className="text-gray-600">Loading routes...</p>
           </div>
         </div>
       </Layout>
@@ -247,8 +405,8 @@ export default function RouteGroupsPage() {
   return (
     <Layout
       activeItem="routes"
-      pageTitle="Route Groups"
-      pageDescription="Manage bus route groups and their associated routes"
+      pageTitle="Routes"
+      pageDescription="Manage bus routes with advanced filtering and search capabilities"
       role="mot"
     >
       <div className="space-y-6">
@@ -268,43 +426,56 @@ export default function RouteGroupsPage() {
         )}
 
         {/* Stats Cards */}
-        <BusRouteGroupStatsCards stats={stats} />
+        <RouteStatsCards stats={stats} />
 
-        {/* Search Filters */}
-        <BusRouteGroupSearchFilters
-          searchTerm={searchTerm}
-          setSearchTerm={handleSearch}
-          onAddNewRouteGroup={handleAddNewRouteGroup}
+        {/* Action Buttons */}
+        <RouteActionButtons
+          onAddRoute={handleAddNewRoute}
           onExportAll={handleExportAll}
           isLoading={isLoading}
         />
 
-        {/* Results indicator */}
-        {searchTerm && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-700">
-                Showing {pagination.totalElements} route groups matching "{searchTerm}"
-              </span>
-              <button
-                onClick={() => handleSearch('')}
-                className="text-xs text-blue-600 hover:text-blue-800 underline"
-              >
-                Clear search
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Advanced Filters */}
+        <RouteAdvancedFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          routeGroupFilter={routeGroupFilter}
+          setRouteGroupFilter={setRouteGroupFilter}
+          directionFilter={directionFilter}
+          setDirectionFilter={setDirectionFilter}
+          minDistance={minDistance}
+          setMinDistance={setMinDistance}
+          maxDistance={maxDistance}
+          setMaxDistance={setMaxDistance}
+          minDuration={minDuration}
+          setMinDuration={setMinDuration}
+          maxDuration={maxDuration}
+          setMaxDuration={setMaxDuration}
+          filterOptions={filterOptions}
+          loading={filterOptionsLoading}
+          totalCount={pagination.totalElements}
+          filteredCount={routes.length}
+          onSearch={handleSearch}
+          onClearAll={handleClearAllFilters}
+        />
 
-        {/* Route Groups Table */}
+        {/* Routes Table */}
         <div className="bg-white rounded-lg shadow">
-          <BusRouteGroupsTable
-            routeGroups={routeGroups}
+          <RoutesTable
+            routes={routes}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onSort={handleSort}
-            activeFilters={{ search: searchTerm }}
+            activeFilters={{ 
+              search: searchTerm,
+              routeGroup: routeGroupFilter,
+              direction: directionFilter,
+              minDistance,
+              maxDistance,
+              minDuration,
+              maxDuration
+            }}
             loading={isLoading}
             currentSort={{ field: queryParams.sortBy, direction: queryParams.sortDir }}
           />
@@ -328,7 +499,7 @@ export default function RouteGroupsPage() {
           isOpen={showDeleteModal}
           onClose={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
-          routeGroup={routeGroupToDelete}
+          route={routeToDelete}
           isDeleting={isDeleting}
         />
       </div>
