@@ -302,7 +302,7 @@ export default function SchedulesPage() {
   }, []);
 
   const handleAddNewSchedule = () => {
-    router.push('/mot/schedules/new');
+    router.push('/mot/schedules/add-new');
   };
 
   const handleImportSchedules = () => {
