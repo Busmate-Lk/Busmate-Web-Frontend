@@ -2,8 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BusFilterOptionsResponse } from '../models/BusFilterOptionsResponse';
+import type { BusImportResponse } from '../models/BusImportResponse';
 import type { BusRequest } from '../models/BusRequest';
 import type { BusResponse } from '../models/BusResponse';
+import type { BusStatisticsResponse } from '../models/BusStatisticsResponse';
 import type { PageBusResponse } from '../models/PageBusResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -11,14 +14,14 @@ import { request as __request } from '../core/request';
 export class BusManagementService {
     /**
      * Get all buses with pagination, sorting, and filtering
-     * Retrieve all buses with optional pagination, sorting, search, and filtering by operator, status, and capacity range. Search is performed across NTC registration number, plate number, model, and operator name. Default: page=0, size=10, sort=ntc_registration_number
+     * Retrieve all buses with optional pagination, sorting, search, and filtering by operator, status, and capacity range. Search is performed across NTC registration number, plate number, model, and operator name (case-insensitive). Default: page=0, size=10, sort=ntcRegistrationNumber,asc. Maximum page size is 100.
      * @param page Page number (0-based)
      * @param size Page size (max 100)
-     * @param sortBy Sort by field name (ntc_registration_number, plate_number, capacity, model, status, created_at, updated_at)
+     * @param sortBy Sort by field name (ntcRegistrationNumber, plateNumber, capacity, model, status, createdAt, updatedAt)
      * @param sortDir Sort direction (asc or desc)
-     * @param search Search text to filter buses by NTC registration number, plate number, model, or operator name
+     * @param search Search text to filter buses by NTC registration number, plate number, model, or operator name (case-insensitive)
      * @param operatorId Filter by operator ID
-     * @param status Filter by status (pending, active, inactive, cancelled)
+     * @param status Filter by status (pending, active, inactive, cancelled) - case insensitive
      * @param minCapacity Filter by minimum capacity
      * @param maxCapacity Filter by maximum capacity
      * @returns PageBusResponse Buses retrieved successfully
@@ -27,7 +30,7 @@ export class BusManagementService {
     public static getAllBuses(
         page?: number,
         size: number = 10,
-        sortBy: string = 'ntc_registration_number',
+        sortBy: string = 'ntcRegistrationNumber',
         sortDir: string = 'asc',
         search?: string,
         operatorId?: string,
@@ -86,6 +89,68 @@ export class BusManagementService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/buses/all',
+        });
+    }
+    /**
+     * Get available filter options
+     * Retrieve all available filter options for bus management frontend including operators, models, statuses, capacity ranges, and sort options.
+     * @returns BusFilterOptionsResponse Filter options retrieved successfully
+     * @throws ApiError
+     */
+    public static getBusFilterOptions(): CancelablePromise<BusFilterOptionsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/buses/filter-options',
+        });
+    }
+    /**
+     * Import buses from CSV file
+     * Bulk import buses from a CSV file. Expected CSV format: operatorName,ntcRegistrationNumber,plateNumber,capacity,model,facilities,status (header row required). OperatorName must match an existing operator. Status should be active, inactive, pending, or cancelled. Facilities should be valid JSON or simple text. Requires authentication.
+     * @param formData
+     * @returns BusImportResponse Import completed (check response for detailed results)
+     * @throws ApiError
+     */
+    public static importBuses(
+        formData?: {
+            /**
+             * CSV file containing bus data
+             */
+            file: Blob;
+        },
+    ): CancelablePromise<BusImportResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/buses/import',
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `Invalid file format or content`,
+                401: `Unauthorized`,
+            },
+        });
+    }
+    /**
+     * Download CSV import template
+     * Download a CSV template file with sample data and correct format for bus import.
+     * @returns string Template downloaded successfully
+     * @throws ApiError
+     */
+    public static downloadBusImportTemplate(): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/buses/import-template',
+        });
+    }
+    /**
+     * Get bus statistics
+     * Retrieve comprehensive bus statistics for dashboard KPI cards including counts, distributions, capacity metrics, and calculated statistics.
+     * @returns BusStatisticsResponse Statistics retrieved successfully
+     * @throws ApiError
+     */
+    public static getBusStatistics(): CancelablePromise<BusStatisticsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/buses/statistics',
         });
     }
     /**
