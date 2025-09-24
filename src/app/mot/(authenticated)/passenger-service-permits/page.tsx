@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Plus, 
@@ -42,7 +42,7 @@ interface SortState {
   direction: 'asc' | 'desc';
 }
 
-export default function PassengerServicePermitsPage() {
+function PassengerServicePermitsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -147,29 +147,65 @@ export default function PassengerServicePermitsPage() {
       setLoading(true);
       setError(null);
       
-      // Prepare filters for API call
-      const apiFilters: any = {};
-      if (filters.search) apiFilters.search = filters.search;
-      if (filters.status !== 'all') apiFilters.status = filters.status;
-      if (filters.operatorId !== 'all') apiFilters.operatorId = filters.operatorId;
-      if (filters.routeGroupId !== 'all') apiFilters.routeGroupId = filters.routeGroupId;
-      if (filters.permitType !== 'all') apiFilters.permitType = filters.permitType;
-      if (filters.expiryWithin) apiFilters.expiryWithin = filters.expiryWithin;
+      // Prepare individual filter parameters for API call
+      const statusFilter = filters.status !== 'all' ? filters.status : undefined;
+      const permitTypeFilter = filters.permitType !== 'all' ? filters.permitType : undefined;
+      
+      // For operatorName and routeGroupName, we need to get the names from the filterOptions
+      // based on the selected IDs
+      let operatorNameFilter: string | undefined = undefined;
+      let routeGroupNameFilter: string | undefined = undefined;
+      
+      if (filters.operatorId !== 'all' && filterOptions.operators?.length > 0) {
+        const selectedOperator = filterOptions.operators.find((op: any) => op.id === filters.operatorId);
+        operatorNameFilter = selectedOperator?.name;
+      }
+      
+      if (filters.routeGroupId !== 'all' && filterOptions.routeGroups?.length > 0) {
+        const selectedRouteGroup = filterOptions.routeGroups.find((rg: any) => rg.id === filters.routeGroupId);
+        routeGroupNameFilter = selectedRouteGroup?.name;
+      }
+      
+      // When there's a search term, fetch more data to enable client-side filtering
+      const pageSize = filters.search ? Math.max(pagination.pageSize * 5, 100) : pagination.pageSize;
+      const currentPage = filters.search ? 0 : (pagination.currentPage - 1);
       
       const response = await PermitManagementService.getPermits(
-        pagination.currentPage - 1, // Convert to 0-based for API
-        pagination.pageSize,
+        currentPage, // Convert to 0-based for API
+        pageSize,
         sort.field,
         sort.direction,
-        apiFilters
+        statusFilter,
+        permitTypeFilter,
+        operatorNameFilter,
+        routeGroupNameFilter
       );
       
-      const permitsData = response.content || [];
+      let permitsData = response.content || [];
+      let filteredCount = response.totalElements || 0;
+      
+      // Apply client-side search filtering if search term exists
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        permitsData = permitsData.filter((permit: any) => 
+          permit.permitNumber?.toLowerCase().includes(searchTerm) ||
+          permit.operatorName?.toLowerCase().includes(searchTerm) ||
+          permit.routeGroupName?.toLowerCase().includes(searchTerm) ||
+          permit.permitType?.toLowerCase().includes(searchTerm)
+        );
+        filteredCount = permitsData.length;
+        
+        // Apply client-side pagination for search results
+        const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+        const endIndex = startIndex + pagination.pageSize;
+        permitsData = permitsData.slice(startIndex, endIndex);
+      }
+      
       setPermits(permitsData);
       setPagination(prev => ({
         ...prev,
-        totalPages: response.totalPages || 0,
-        totalElements: response.totalElements || 0
+        totalPages: filters.search ? Math.ceil(filteredCount / pagination.pageSize) : (response.totalPages || 0),
+        totalElements: filteredCount
       }));
       
     } catch (err) {
@@ -189,18 +225,30 @@ export default function PassengerServicePermitsPage() {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.currentPage, pagination.pageSize, sort]);
+  }, [filters, pagination.currentPage, pagination.pageSize, sort, filterOptions]);
 
   // Load initial data
   useEffect(() => {
-    loadStatistics();
-    loadFilterOptions();
-  }, []);
+    const initializeData = async () => {
+      // Load filter options first, then load permits
+      await Promise.all([
+        loadStatistics(),
+        loadFilterOptions()
+      ]);
+      // Don't load permits here - let the effect handle it after filterOptions is set
+    };
+    
+    initializeData();
+  }, [loadStatistics, loadFilterOptions]);
 
-  // Load permits when dependencies change
+  // Load permits when dependencies change, but only after filterOptions are loaded
   useEffect(() => {
-    loadPermits();
-  }, [loadPermits]);
+    // Only load permits if we have filterOptions (or no filters requiring them are set)
+    if (filterOptions.operators !== undefined || 
+        (filters.operatorId === 'all' && filters.routeGroupId === 'all')) {
+      loadPermits();
+    }
+  }, [loadPermits, filterOptions]);
 
   // Refresh handler
   const handleRefresh = useCallback(async () => {
@@ -490,7 +538,7 @@ export default function PassengerServicePermitsPage() {
 
           {/* Pagination */}
           {pagination.totalElements > 0 && (
-            <div className="border-t border-gray-200 p-4">
+            <div className="border-t border-gray-200 px-4 pb-3">
               <Pagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
@@ -562,5 +610,22 @@ export default function PassengerServicePermitsPage() {
         />
       </div>
     </Layout>
+  );
+}
+
+export default function PassengerServicePermitsPage() {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <div className="container mx-auto px-4 py-6 space-y-6">
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-gray-600">Loading permits...</span>
+          </div>
+        </div>
+      </Layout>
+    }>
+      <PassengerServicePermitsContent />
+    </Suspense>
   );
 }
