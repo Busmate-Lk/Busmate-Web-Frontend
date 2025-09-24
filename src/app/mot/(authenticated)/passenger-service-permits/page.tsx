@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Plus, 
   RefreshCw, 
@@ -10,9 +10,10 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Layout } from '@/components/shared/layout';
-import { BusPermitStatsCards } from '@/components/mot/bus-permit-stats-cards';
-import { BusPermitSearchFilters } from '@/components/mot/bus-permit-search-filters';
-import { BusPermitsTable } from '@/components/mot/bus-permits-table';
+import { PermitStatsCards } from '@/components/mot/permits/PermitStatsCards';
+import { PermitAdvancedFilters } from '@/components/mot/permits/PermitAdvancedFilters';
+import { PermitActionButtons } from '@/components/mot/permits/PermitActionButtons';
+import { PermitsTable } from '@/components/mot/permits/PermitsTable';
 import { Pagination } from '@/components/mot/pagination';
 import { 
   PermitManagementService,
@@ -24,204 +25,229 @@ interface PermitFilters {
   search: string;
   status: string;
   operatorId: string;
+  routeGroupId: string;
+  permitType: string;
+  expiryWithin?: number; // days
 }
 
 interface PaginationState {
-  currentPage: number;  // 1-based to match pagination component
+  currentPage: number;
   totalPages: number;
   totalElements: number;
   pageSize: number;
 }
 
+interface SortState {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
 export default function PassengerServicePermitsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   // Data states
   const [permits, setPermits] = useState<PassengerServicePermitResponse[]>([]);
-  const [allPermits, setAllPermits] = useState<PassengerServicePermitResponse[]>([]);
-  const [filteredPermits, setFilteredPermits] = useState<PassengerServicePermitResponse[]>([]);
-  
-  // Filter states
-  const [filters, setFilters] = useState<PermitFilters>({
-    search: '',
-    status: 'all',
-    operatorId: '',
+  const [statistics, setStatistics] = useState<any>(null);
+  const [filterOptions, setFilterOptions] = useState<any>({
+    statuses: ['ACTIVE', 'INACTIVE', 'PENDING', 'EXPIRED'],
+    operators: [],
+    routeGroups: [],
+    permitTypes: []
   });
   
-  // Pagination states (1-based to match pagination component)
+  // Filter states with URL sync
+  const [filters, setFilters] = useState<PermitFilters>({
+    search: searchParams.get('search') || '',
+    status: searchParams.get('status') || 'all',
+    operatorId: searchParams.get('operator') || 'all',
+    routeGroupId: searchParams.get('routeGroup') || 'all',
+    permitType: searchParams.get('permitType') || 'all',
+    expiryWithin: searchParams.get('expiryWithin') ? parseInt(searchParams.get('expiryWithin')!) : undefined
+  });
+  
+  // Pagination and sort states with URL sync
   const [pagination, setPagination] = useState<PaginationState>({
-    currentPage: 1,  // Start from 1, not 0
+    currentPage: parseInt(searchParams.get('page') || '1'),
     totalPages: 0,
     totalElements: 0,
-    pageSize: 10,
+    pageSize: parseInt(searchParams.get('size') || '10')
+  });
+  
+  const [sort, setSort] = useState<SortState>({
+    field: searchParams.get('sortBy') || 'createdAt',
+    direction: (searchParams.get('sortDir') as 'asc' | 'desc') || 'desc'
   });
   
   // UI states
   const [loading, setLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [permitToDelete, setPermitToDelete] = useState<PassengerServicePermitResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Apply filters to permits
-  const applyFilters = useCallback((permitsData: PassengerServicePermitResponse[]) => {
-    let filtered = [...permitsData];
-    
-    // Search filter
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(permit => 
-        permit.permitNumber?.toLowerCase().includes(searchTerm) ||
-        permit.operatorName?.toLowerCase().includes(searchTerm) ||
-        permit.routeGroupName?.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    // Status filter
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(permit => 
-        permit.status?.toLowerCase() === filters.status.toLowerCase()
-      );
-    }
-    
-    // Operator filter
-    if (filters.operatorId) {
-      filtered = filtered.filter(permit => 
-        permit.operatorId?.includes(filters.operatorId)
-      );
-    }
-    
-    return filtered;
-  }, [filters]);
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.search) params.set('search', filters.search);
+    if (filters.status !== 'all') params.set('status', filters.status);
+    if (filters.operatorId !== 'all') params.set('operator', filters.operatorId);
+    if (filters.routeGroupId !== 'all') params.set('routeGroup', filters.routeGroupId);
+    if (filters.permitType !== 'all') params.set('permitType', filters.permitType);
+    if (filters.expiryWithin) params.set('expiryWithin', filters.expiryWithin.toString());
+    if (pagination.currentPage > 1) params.set('page', pagination.currentPage.toString());
+    if (pagination.pageSize !== 10) params.set('size', pagination.pageSize.toString());
+    if (sort.field !== 'createdAt') params.set('sortBy', sort.field);
+    if (sort.direction !== 'desc') params.set('sortDir', sort.direction);
 
-  // Apply pagination to filtered data
-  const applyPagination = useCallback((filteredData: PassengerServicePermitResponse[]) => {
-    const totalElements = filteredData.length;
-    const totalPages = Math.ceil(totalElements / pagination.pageSize);
-    
-    // Convert 1-based page to 0-based index for slicing
-    const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
-    const endIndex = startIndex + pagination.pageSize;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
-    
-    return {
-      paginatedData,
-      totalElements,
-      totalPages,
-    };
-  }, [pagination.currentPage, pagination.pageSize]);
+    const queryString = params.toString();
+    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
+    window.history.replaceState({}, '', newUrl);
+  }, [filters, pagination.currentPage, pagination.pageSize, sort]);
 
-  // Load permits data from API
-  const loadPermitsFromAPI = useCallback(async () => {
+  // Load statistics
+  const loadStatistics = useCallback(async () => {
+    try {
+      const stats = await PermitManagementService.getPermitStatistics();
+      setStatistics(stats);
+    } catch (err) {
+      console.error('Error loading statistics:', err);
+      // Set default statistics if API fails
+      setStatistics({
+        totalPermits: 0,
+        activePermits: 0,
+        inactivePermits: 0,
+        expiringSoonPermits: 0,
+        permitsByOperator: {},
+        permitsByRouteGroup: {}
+      });
+    }
+  }, []);
+
+  // Load filter options
+  const loadFilterOptions = useCallback(async () => {
+    try {
+      const options = await PermitManagementService.getPermitFilterOptions();
+      setFilterOptions(options);
+    } catch (err) {
+      console.error('Error loading filter options:', err);
+      // Set default filter options if API fails
+      setFilterOptions({
+        statuses: ['ACTIVE', 'INACTIVE', 'PENDING', 'EXPIRED'],
+        operators: [],
+        routeGroups: [],
+        permitTypes: []
+      });
+    }
+  }, []);
+
+  // Load permits data from API with server-side filtering/pagination
+  const loadPermits = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await PermitManagementService.getAllPermits();
-      const permitsData = response || [];
+      // Prepare filters for API call
+      const apiFilters: any = {};
+      if (filters.search) apiFilters.search = filters.search;
+      if (filters.status !== 'all') apiFilters.status = filters.status;
+      if (filters.operatorId !== 'all') apiFilters.operatorId = filters.operatorId;
+      if (filters.routeGroupId !== 'all') apiFilters.routeGroupId = filters.routeGroupId;
+      if (filters.permitType !== 'all') apiFilters.permitType = filters.permitType;
+      if (filters.expiryWithin) apiFilters.expiryWithin = filters.expiryWithin;
       
-      setAllPermits(permitsData);
-      return permitsData;
+      const response = await PermitManagementService.getPermits(
+        pagination.currentPage - 1, // Convert to 0-based for API
+        pagination.pageSize,
+        sort.field,
+        sort.direction,
+        apiFilters
+      );
+      
+      const permitsData = response.content || [];
+      setPermits(permitsData);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: response.totalPages || 0,
+        totalElements: response.totalElements || 0
+      }));
+      
     } catch (err) {
       console.error('Error loading permits:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load permits');
-      setAllPermits([]);
-      return [];
+      // Set error message and empty data when API fails
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to load permits. The API service may not be available.');
+      }
+      setPermits([]);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: 0,
+        totalElements: 0
+      }));
     } finally {
       setLoading(false);
     }
+  }, [filters, pagination.currentPage, pagination.pageSize, sort]);
+
+  // Load initial data
+  useEffect(() => {
+    loadStatistics();
+    loadFilterOptions();
   }, []);
 
-  // Process data with filters and pagination
-  const processData = useCallback((permitsData: PassengerServicePermitResponse[]) => {
-    // Apply filters
-    const filtered = applyFilters(permitsData);
-    setFilteredPermits(filtered);
-    
-    // Apply pagination
-    const { paginatedData, totalElements, totalPages } = applyPagination(filtered);
-    
-    setPermits(paginatedData);
-    setPagination(prev => ({
-      ...prev,
-      totalPages,
-      totalElements
-    }));
-  }, [applyFilters, applyPagination]);
-
-  // Load and process permits
-  const loadPermits = useCallback(async () => {
-    const permitsData = await loadPermitsFromAPI();
-    processData(permitsData);
-  }, [loadPermitsFromAPI, processData]);
-
-  // Process data when filters or pagination change (without API call)
-  const reprocessData = useCallback(() => {
-    processData(allPermits);
-  }, [processData, allPermits]);
-
-  // Load data on mount
+  // Load permits when dependencies change
   useEffect(() => {
     loadPermits();
-  }, []); // Only on mount
-
-  // Reprocess when filters or pagination change
-  useEffect(() => {
-    if (allPermits.length > 0) {
-      reprocessData();
-    }
-  }, [filters, pagination.currentPage, pagination.pageSize, reprocessData]);
+  }, [loadPermits]);
 
   // Refresh handler
   const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await loadPermits();
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [loadPermits]);
-
-  // Search handler (with debouncing logic)
-  const handleSearchChange = useCallback((searchTerm: string) => {
-    setFilters(prev => ({ ...prev, search: searchTerm }));
-    setPagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page
-  }, []);
+    await Promise.all([
+      loadStatistics(),
+      loadFilterOptions(),
+      loadPermits()
+    ]);
+  }, [loadStatistics, loadFilterOptions, loadPermits]);
 
   // Filter handlers
-  const handleStatusChange = useCallback((status: string) => {
-    setFilters(prev => ({ ...prev, status }));
-    setPagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page
+  const handleFilterChange = useCallback((newFilters: Partial<PermitFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
   }, []);
 
-  const handleOperatorChange = useCallback((operatorId: string) => {
-    setFilters(prev => ({ ...prev, operatorId }));
-    setPagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page
-  }, []);
-
-  // Pagination handlers (1-based)
+  // Pagination handlers
   const handlePageChange = useCallback((page: number) => {
     setPagination(prev => ({ ...prev, currentPage: page }));
   }, []);
 
   const handlePageSizeChange = useCallback((size: number) => {
-    setPagination(prev => ({ ...prev, pageSize: size, currentPage: 1 })); // Reset to first page
+    setPagination(prev => ({ ...prev, pageSize: size, currentPage: 1 }));
+  }, []);
+
+  // Sort handlers
+  const handleSort = useCallback((field: string, direction: 'asc' | 'desc') => {
+    setSort({ field, direction });
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
   }, []);
 
   // Action handlers
-  const handleView = useCallback((permit: PassengerServicePermitResponse) => {
-    router.push(`/mot/passenger-service-permits/${permit.id}`);
+  const handleView = useCallback((permitId: string) => {
+    router.push(`/mot/passenger-service-permits/${permitId}`);
   }, [router]);
 
-  const handleEdit = useCallback((permit: PassengerServicePermitResponse) => {
-    router.push(`/mot/passenger-service-permits/${permit.id}/edit`);
+  const handleEdit = useCallback((permitId: string) => {
+    router.push(`/mot/passenger-service-permits/${permitId}/edit`);
   }, [router]);
 
-  const handleDelete = useCallback(async (permit: PassengerServicePermitResponse) => {
-    setPermitToDelete(permit);
-    setShowDeleteModal(true);
-  }, []);
+  const handleDelete = useCallback((permitId: string, permitNumber: string) => {
+    const permit = permits.find(p => p.id === permitId);
+    if (permit) {
+      setPermitToDelete(permit);
+      setShowDeleteModal(true);
+    }
+  }, [permits]);
 
   const handleDeleteCancel = useCallback(() => {
     setShowDeleteModal(false);
@@ -239,7 +265,6 @@ export default function PassengerServicePermitsPage() {
       setPermitToDelete(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete permit');
-      // Keep modal open on error
     } finally {
       setIsDeleting(false);
     }
@@ -249,18 +274,24 @@ export default function PassengerServicePermitsPage() {
     router.push('/mot/passenger-service-permits/add-new');
   }, [router]);
 
-  // Export functionality (export filtered data, not just current page)
+  const handleAssignBus = useCallback((permitId: string, permitNumber: string) => {
+    // Navigate to assign bus page or open modal
+    router.push(`/mot/passenger-service-permits/${permitId}/assign-bus`);
+  }, [router]);
+
+  // Export functionality
   const handleExport = useCallback(async () => {
     try {
-      const dataToExport = filteredPermits.map(permit => ({
+      // Export current page data or make a separate API call for all filtered data
+      const dataToExport = permits.map(permit => ({
         'Permit Number': permit.permitNumber || '',
         'Operator Name': permit.operatorName || '',
         'Route Group': permit.routeGroupName || '',
+        'Permit Type': permit.permitType || '',
         'Issue Date': permit.issueDate || '',
         'Expiry Date': permit.expiryDate || '',
         'Maximum Buses': permit.maximumBusAssigned || 0,
         'Status': permit.status || '',
-        'Permit Type': permit.permitType || '',
         'Created At': permit.createdAt ? new Date(permit.createdAt).toLocaleDateString() : '',
         'Updated At': permit.updatedAt ? new Date(permit.updatedAt).toLocaleDateString() : '',
       }));
@@ -296,38 +327,46 @@ export default function PassengerServicePermitsPage() {
       console.error('Export failed:', error);
       alert('Failed to export data. Please try again.');
     }
-  }, [filteredPermits]);
+  }, [permits]);
+
+  // Import functionality
+  const handleImport = useCallback(() => {
+    // Open import dialog or navigate to import page
+    alert('Import functionality will be implemented');
+  }, []);
+
+  // Bulk operations
+  const handleBulkDelete = useCallback((selectedIds: string[]) => {
+    // Handle bulk delete
+    alert(`Bulk delete ${selectedIds.length} permits`);
+  }, []);
+
+  const handleBulkStatusUpdate = useCallback((selectedIds: string[], newStatus: string) => {
+    // Handle bulk status update
+    alert(`Update ${selectedIds.length} permits to ${newStatus}`);
+  }, []);
 
   // Computed values
   const hasActiveFilters = useMemo(() => {
     return filters.search !== '' || 
            filters.status !== 'all' || 
-           filters.operatorId !== '';
+           filters.operatorId !== 'all' ||
+           filters.routeGroupId !== 'all' ||
+           filters.permitType !== 'all' ||
+           !!filters.expiryWithin;
   }, [filters]);
 
-  const hasData = permits.length > 0;
-  const hasFilteredData = filteredPermits.length > 0;
-
-  // Calculate statistics
-  const permitStats = useMemo(() => {
-    const active = allPermits.filter(p => p.status?.toLowerCase() === 'active').length;
-    const pending = allPermits.filter(p => p.status?.toLowerCase() === 'pending').length;
-    const expired = allPermits.filter(p => {
-      if (!p.expiryDate) return false;
-      return new Date(p.expiryDate) < new Date();
-    }).length;
-    const total = allPermits.length;
-
-    return {
-      active: { count: active, change: "+2 this month" },
-      pending: { count: pending },
-      expired: { count: expired },
-      total: { count: total, change: "No change from last month" },
-    };
-  }, [allPermits]);
+  const activeFiltersObject = useMemo(() => ({
+    search: filters.search || undefined,
+    status: filters.status !== 'all' ? filters.status : undefined,
+    operator: filters.operatorId !== 'all' ? filters.operatorId : undefined,
+    routeGroup: filters.routeGroupId !== 'all' ? filters.routeGroupId : undefined,
+    permitType: filters.permitType !== 'all' ? filters.permitType : undefined,
+    expiryWithin: filters.expiryWithin
+  }), [filters]);
 
   // Loading state for initial load
-  if (loading && pagination.currentPage === 1 && !hasData) {
+  if (loading && pagination.currentPage === 1 && permits.length === 0) {
     return (
       <Layout
         activeItem="passenger-service-permits"
@@ -384,50 +423,42 @@ export default function PassengerServicePermitsPage() {
         </div>
 
         {/* Stats Cards */}
-        <BusPermitStatsCards stats={permitStats} />
+        <PermitStatsCards stats={statistics} loading={!statistics} />
 
-        {/* Header Actions */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing || loading}
-              className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            
-            {hasFilteredData && (
-              <button
-                onClick={handleExport}
-                className="flex items-center bg-green-100 hover:bg-green-200 text-green-700 px-3 py-2 rounded-lg transition-colors duration-200"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV ({filteredPermits.length} items)
-              </button>
-            )}
-          </div>
+        {/* Action Buttons */}
+        <PermitActionButtons
+          onAddPermit={handleAddNew}
+          onImportPermits={handleImport}
+          onExportAll={handleExport}
+          isLoading={loading}
+        />
 
-          <button
-            onClick={handleAddNew}
-            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Permit
-          </button>
-        </div>
-
-        {/* Search and Filters */}
-        <BusPermitSearchFilters
+        {/* Advanced Filters */}
+        <PermitAdvancedFilters
           searchTerm={filters.search}
-          setSearchTerm={handleSearchChange}
-          onAddNewPermit={handleAddNew}
-          onExportAll={hasFilteredData ? handleExport : undefined}
+          setSearchTerm={(value) => handleFilterChange({ search: value })}
           statusFilter={filters.status}
-          setStatusFilter={handleStatusChange}
+          setStatusFilter={(value) => handleFilterChange({ status: value })}
           operatorFilter={filters.operatorId}
-          setOperatorFilter={handleOperatorChange}
+          setOperatorFilter={(value) => handleFilterChange({ operatorId: value })}
+          routeGroupFilter={filters.routeGroupId}
+          setRouteGroupFilter={(value) => handleFilterChange({ routeGroupId: value })}
+          permitTypeFilter={filters.permitType}
+          setPermitTypeFilter={(value) => handleFilterChange({ permitType: value })}
+          filterOptions={filterOptions}
+          loading={loading}
+          totalCount={pagination.totalElements}
+          filteredCount={pagination.totalElements}
+          onClearAll={() => {
+            setFilters({
+              search: '',
+              status: 'all',
+              operatorId: 'all',
+              routeGroupId: 'all',
+              permitType: 'all'
+            });
+            setPagination(prev => ({ ...prev, currentPage: 1 }));
+          }}
         />
 
         {/* Active Filters Indicator */}
@@ -438,35 +469,23 @@ export default function PassengerServicePermitsPage() {
                 <span className="text-sm text-blue-700 font-medium">
                   {pagination.totalElements} permits found with active filters
                 </span>
-                {pagination.totalElements !== allPermits.length && (
-                  <span className="text-sm text-blue-600">
-                    (filtered from {allPermits.length} total)
-                  </span>
-                )}
               </div>
             </div>
           </div>
         )}
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow">
-          <BusPermitsTable
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <PermitsTable
             permits={permits}
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
-            totalItems={pagination.totalElements}
-            itemsPerPage={pagination.pageSize}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onAssignBus={handleAssignBus}
+            onSort={handleSort}
+            activeFilters={activeFiltersObject}
             loading={loading}
-            activeFilters={{
-              status: filters.status !== 'all' ? filters.status : undefined,
-              operator: filters.operatorId || undefined,
-              search: filters.search || undefined,
-            }}
+            currentSort={sort}
           />
 
           {/* Pagination */}
@@ -484,7 +503,7 @@ export default function PassengerServicePermitsPage() {
           )}
 
           {/* Empty State */}
-          {!loading && !hasData && !error && (
+          {!loading && permits.length === 0 && !error && (
             <div className="text-center py-12 px-4">
               <div className="text-gray-500">
                 {!hasActiveFilters ? (
@@ -505,7 +524,13 @@ export default function PassengerServicePermitsPage() {
                     <div className="flex items-center justify-center gap-3">
                       <button
                         onClick={() => {
-                          setFilters({ search: '', status: 'all', operatorId: '' });
+                          setFilters({ 
+                            search: '', 
+                            status: 'all', 
+                            operatorId: 'all',
+                            routeGroupId: 'all',
+                            permitType: 'all'
+                          });
                           setPagination(prev => ({ ...prev, currentPage: 1 }));
                         }}
                         className="text-blue-600 hover:text-blue-700 underline"
