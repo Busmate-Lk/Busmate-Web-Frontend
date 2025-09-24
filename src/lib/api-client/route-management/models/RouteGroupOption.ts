@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OperatorOption = {
+export type RouteGroupOption = {
     id?: string;
     name?: string;
-    type?: string;
-    region?: string;
+    description?: string;
 };
 
