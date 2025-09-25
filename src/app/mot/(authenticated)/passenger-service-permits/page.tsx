@@ -457,7 +457,7 @@ function PassengerServicePermitsContent() {
         )}
 
         {/* Breadcrumbs */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        {/* <div className="flex items-center space-x-2 text-sm text-gray-600">
           <button 
             onClick={() => router.push('/mot')}
             className="hover:text-blue-600 transition-colors"
@@ -468,7 +468,7 @@ function PassengerServicePermitsContent() {
           <span className="text-gray-900 font-medium">
             Passenger Service Permits Management
           </span>
-        </div>
+        </div> */}
 
         {/* Stats Cards */}
         <PermitStatsCards stats={statistics} loading={!statistics} />

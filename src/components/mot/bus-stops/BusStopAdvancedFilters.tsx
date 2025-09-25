@@ -143,8 +143,8 @@ export function BusStopAdvancedFilters({
         {/* Header with Count */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Search className="h-5 w-5 text-gray-500" />
-            <span className="font-medium text-gray-900">Bus Stop Filters</span>
+                      <Search className="h-5 w-5 text-gray-500" />
+                      <h3 className="text-lg font-semibold text-gray-900">Search & Filters</h3>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span>
@@ -157,15 +157,12 @@ export function BusStopAdvancedFilters({
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
             <input
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search by name, address, city, or state..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             {searchValue && (
               <button

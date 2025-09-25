@@ -153,8 +153,8 @@ export default function BusAdvancedFilters({
         {/* Header with Count */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Bus className="h-5 w-5 text-gray-500" />
-            <h3 className="text-lg font-medium text-gray-900">Bus Filters</h3>
+            <Search className="h-5 w-5 text-gray-500" />
+            <h3 className="text-lg font-semibold text-gray-900">Search & Filters</h3>
           </div>
           <div className="text-sm text-gray-600">
             {filteredCount !== totalCount ? (
@@ -169,13 +169,10 @@ export default function BusAdvancedFilters({
         <div className="flex flex-col gap-3">
           {/* Search Bar */}
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
             <input
               type="text"
               placeholder="Search by registration number, plate number, model, or operator..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full pl-4 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -307,7 +304,7 @@ export default function BusAdvancedFilters({
                   </button>
                 </span>
               )}
-              
+
               {statusFilter !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-md">
                   {getStatusIcon(statusFilter)}
@@ -320,7 +317,7 @@ export default function BusAdvancedFilters({
                   </button>
                 </span>
               )}
-              
+
               {operatorFilter !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-md">
                   <Users className="h-3 w-3" />
@@ -333,7 +330,7 @@ export default function BusAdvancedFilters({
                   </button>
                 </span>
               )}
-              
+
               {modelFilter !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-md">
                   <Bus className="h-3 w-3" />
@@ -346,7 +343,7 @@ export default function BusAdvancedFilters({
                   </button>
                 </span>
               )}
-              
+
               {(minCapacity || maxCapacity) && (
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-md">
                   Capacity: {minCapacity || '0'} - {maxCapacity || '∞'}
