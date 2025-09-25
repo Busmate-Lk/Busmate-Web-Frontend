@@ -4,21 +4,82 @@
 /* eslint-disable */
 import type { BulkPspAssignmentRequest } from '../models/BulkPspAssignmentRequest';
 import type { BulkPspAssignmentResponse } from '../models/BulkPspAssignmentResponse';
+import type { PageTripResponse } from '../models/PageTripResponse';
+import type { TripFilterOptionsResponse } from '../models/TripFilterOptionsResponse';
 import type { TripRequest } from '../models/TripRequest';
 import type { TripResponse } from '../models/TripResponse';
+import type { TripStatisticsResponse } from '../models/TripStatisticsResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class TripManagementService {
     /**
-     * Get all trips
-     * @returns TripResponse OK
+     * Get all trips with pagination, sorting, and filtering
+     * Retrieve all trips with optional pagination, sorting, search, and filtering by status, route, operator, schedule, PSP, bus, date range, and assignment status. Search is performed across trip details, route information, operator name, permit number, bus plate number, and notes (case-insensitive). Default: page=0, size=10, sort=tripDate,desc. Maximum page size is 100.
+     * @param page Page number (0-based)
+     * @param size Page size (max 100)
+     * @param sortBy Sort by field name (tripDate, scheduledDepartureTime, scheduledArrivalTime, status, createdAt, updatedAt)
+     * @param sortDir Sort direction (asc or desc)
+     * @param search Search text to filter trips by route, operator, permit, bus plate, notes (case-insensitive)
+     * @param status Filter by trip status
+     * @param routeId Filter by route ID
+     * @param operatorId Filter by operator ID
+     * @param scheduleId Filter by schedule ID
+     * @param passengerServicePermitId Filter by passenger service permit ID
+     * @param busId Filter by bus ID
+     * @param fromDate Filter trips from this date (inclusive)
+     * @param toDate Filter trips to this date (inclusive)
+     * @param hasPsp Filter by PSP assignment status - true: has PSP, false: no PSP
+     * @param hasBus Filter by bus assignment status - true: has bus, false: no bus
+     * @param hasDriver Filter by driver assignment status - true: has driver, false: no driver
+     * @param hasConductor Filter by conductor assignment status - true: has conductor, false: no conductor
+     * @returns PageTripResponse Trips retrieved successfully
      * @throws ApiError
      */
-    public static getAllTrips(): CancelablePromise<Array<TripResponse>> {
+    public static getAllTrips(
+        page?: number,
+        size: number = 10,
+        sortBy: string = 'tripDate',
+        sortDir: string = 'desc',
+        search?: string,
+        status?: 'pending' | 'active' | 'completed' | 'cancelled' | 'delayed' | 'in_transit' | 'boarding' | 'departed',
+        routeId?: string,
+        operatorId?: string,
+        scheduleId?: string,
+        passengerServicePermitId?: string,
+        busId?: string,
+        fromDate?: string,
+        toDate?: string,
+        hasPsp?: boolean,
+        hasBus?: boolean,
+        hasDriver?: boolean,
+        hasConductor?: boolean,
+    ): CancelablePromise<PageTripResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/trips',
+            query: {
+                'page': page,
+                'size': size,
+                'sortBy': sortBy,
+                'sortDir': sortDir,
+                'search': search,
+                'status': status,
+                'routeId': routeId,
+                'operatorId': operatorId,
+                'scheduleId': scheduleId,
+                'passengerServicePermitId': passengerServicePermitId,
+                'busId': busId,
+                'fromDate': fromDate,
+                'toDate': toDate,
+                'hasPsp': hasPsp,
+                'hasBus': hasBus,
+                'hasDriver': hasDriver,
+                'hasConductor': hasConductor,
+            },
+            errors: {
+                400: `Invalid pagination, sorting, or filter parameters`,
+            },
         });
     }
     /**
@@ -163,6 +224,18 @@ export class TripManagementService {
         });
     }
     /**
+     * Get trip filter options
+     * Retrieve available filter options for trip search and filtering functionality, including routes, operators, schedules, PSPs, buses, and other filter criteria.
+     * @returns TripFilterOptionsResponse Filter options retrieved successfully
+     * @throws ApiError
+     */
+    public static getTripFilterOptions(): CancelablePromise<TripFilterOptionsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/filter-options',
+        });
+    }
+    /**
      * Generate trips for schedule within date range or entire validity period
      * Generate trips for a schedule. If fromDate and toDate are not provided, trips will be generated for the entire validity period of the schedule. If dates are provided, trips will be generated only for the specified period.
      * @param scheduleId
@@ -236,6 +309,30 @@ export class TripManagementService {
             path: {
                 'scheduleId': scheduleId,
             },
+        });
+    }
+    /**
+     * Get all trips (simple list)
+     * Get all trips as a simple list without pagination - use for dropdowns and quick lookups
+     * @returns TripResponse OK
+     * @throws ApiError
+     */
+    public static getAllTripsSimple(): CancelablePromise<Array<TripResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/simple',
+        });
+    }
+    /**
+     * Get trip statistics
+     * Retrieve comprehensive trip statistics for dashboard KPI cards including counts, performance metrics, distribution data, and operational insights.
+     * @returns TripStatisticsResponse Statistics retrieved successfully
+     * @throws ApiError
+     */
+    public static getTripStatistics(): CancelablePromise<TripStatisticsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/trips/statistics',
         });
     }
     /**

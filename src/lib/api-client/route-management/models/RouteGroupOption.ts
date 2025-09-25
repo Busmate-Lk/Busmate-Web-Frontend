@@ -6,5 +6,6 @@ export type RouteGroupOption = {
     id?: string;
     name?: string;
     description?: string;
+    routeCount?: number;
 };
 

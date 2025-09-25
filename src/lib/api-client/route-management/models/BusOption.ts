@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OperatorOption = {
+export type BusOption = {
     id?: string;
-    name?: string;
-    operatorType?: string;
-    region?: string;
+    plateNumber?: string;
+    model?: string;
+    operatorName?: string;
+    capacity?: number;
 };
 

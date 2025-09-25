@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OperatorOption = {
+export type ScheduleOption = {
     id?: string;
     name?: string;
-    operatorType?: string;
-    region?: string;
+    routeName?: string;
+    operatorName?: string;
+    scheduleType?: string;
 };
 

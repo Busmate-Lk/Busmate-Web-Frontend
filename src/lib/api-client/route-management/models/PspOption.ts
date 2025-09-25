@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OperatorOption = {
+export type PspOption = {
     id?: string;
-    name?: string;
-    operatorType?: string;
-    region?: string;
+    permitNumber?: string;
+    operatorName?: string;
+    routeName?: string;
 };
 

@@ -2,10 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OperatorOption = {
-    id?: string;
+export type KPIMetric = {
     name?: string;
-    operatorType?: string;
-    region?: string;
+    actual?: number;
+    target?: number;
+    variance?: number;
+    status?: string;
+    trend?: string;
 };
 
