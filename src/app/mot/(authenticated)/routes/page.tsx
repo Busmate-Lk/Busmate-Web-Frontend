@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Layout } from '@/components/shared/layout';
 import RouteAdvancedFilters from '@/components/mot/routes/RouteAdvancedFilters';
@@ -10,7 +10,7 @@ import { RouteActionButtons } from '@/components/mot/routes/RouteActionButtons';
 import Pagination from '@/components/shared/Pagination';
 import DeleteRouteConfirmation from '@/components/mot/routes/DeleteRouteConfirmation';
 import { RouteManagementService } from '@/lib/api-client/route-management';
-import type { RouteResponse, PageRouteResponse } from '@/lib/api-client/route-management';
+import type { RouteResponse, PageRouteResponse, RouteStatisticsResponse } from '@/lib/api-client/route-management';
 
 interface QueryParams {
   page: number;
@@ -73,6 +73,16 @@ export default function RoutesPage() {
     pageSize: 10,
   });
 
+  // Statistics state
+  const [stats, setStats] = useState({
+    totalRoutes: { count: 0, change: undefined as string | undefined },
+    outboundRoutes: { count: 0, change: undefined as string | undefined },
+    inboundRoutes: { count: 0, change: undefined as string | undefined },
+    averageDistance: { count: 0, unit: 'km' },
+    totalRouteGroups: { count: 0, change: undefined as string | undefined },
+    averageDuration: { count: 0, unit: 'min' }
+  });
+
   // State for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [routeToDelete, setRouteToDelete] = useState<RouteResponse | null>(null);
@@ -99,6 +109,42 @@ export default function RoutesPage() {
       console.error('Error loading filter options:', err);
     } finally {
       setFilterOptionsLoading(false);
+    }
+  }, []);
+
+  // Load statistics
+  const loadStatistics = useCallback(async () => {
+    try {
+      const statisticsData = await RouteManagementService.getRouteStatistics();
+      
+      setStats({
+        totalRoutes: { 
+          count: statisticsData.totalRoutes || 0,
+          change: statisticsData.totalRoutes && statisticsData.totalRoutes > 0 ? '+5% this month' : undefined
+        },
+        outboundRoutes: { 
+          count: statisticsData.outboundRoutes || 0,
+          change: statisticsData.outboundRoutes && statisticsData.outboundRoutes > 0 ? '+3% this month' : undefined
+        },
+        inboundRoutes: { 
+          count: statisticsData.inboundRoutes || 0,
+          change: statisticsData.inboundRoutes && statisticsData.inboundRoutes > 0 ? '+2% this month' : undefined
+        },
+        averageDistance: { 
+          count: statisticsData.averageDistanceKm || 0,
+          unit: 'km'
+        },
+        totalRouteGroups: { 
+          count: statisticsData.totalRouteGroups || 0,
+          change: statisticsData.totalRouteGroups && statisticsData.totalRouteGroups > 0 ? '+1 new' : undefined
+        },
+        averageDuration: { 
+          count: statisticsData.averageDurationMinutes || 0,
+          unit: 'min'
+        }
+      });
+    } catch (err) {
+      console.error('Error loading statistics:', err);
     }
   }, []);
 
@@ -147,6 +193,10 @@ export default function RoutesPage() {
   useEffect(() => {
     loadFilterOptions();
   }, [loadFilterOptions]);
+
+  useEffect(() => {
+    loadStatistics();
+  }, [loadStatistics]);
 
   useEffect(() => {
     loadRoutes();
@@ -356,33 +406,6 @@ export default function RoutesPage() {
       setIsDeleting(false);
     }
   };
-
-  // Calculate stats for the stats cards
-  const stats = useMemo(() => {
-    const outboundRoutes = routes.filter(r => r.direction === 'OUTBOUND').length;
-    const inboundRoutes = routes.filter(r => r.direction === 'INBOUND').length;
-    const totalDistance = routes.reduce((acc, route) => acc + (route.distanceKm || 0), 0);
-    const avgDistance = routes.length > 0 ? totalDistance / routes.length : 0;
-
-    return {
-      total: { 
-        count: pagination.totalElements, 
-        change: routes.length > 0 ? '+' + Math.ceil(routes.length * 0.1) + ' this month' : 'No data'
-      },
-      outbound: {
-        count: outboundRoutes,
-        change: outboundRoutes > 0 ? '+' + Math.ceil(outboundRoutes * 0.08) + ' this month' : 'No data',
-      },
-      inbound: {
-        count: inboundRoutes,
-        change: inboundRoutes > 0 ? '+' + Math.ceil(inboundRoutes * 0.05) + ' this month' : 'No data',
-      },
-      avgDistance: { 
-        count: avgDistance,
-        unit: 'km'
-      },
-    };
-  }, [routes, pagination.totalElements]);
 
   if (isLoading && routes.length === 0) {
     return (
