@@ -6,11 +6,13 @@ import {
   Filter,
   X,
   ChevronDown,
-  MapPin,
-  Users,
-  RotateCcw,
+  ChevronUp,
+  Loader2,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Users,
+  MapPin,
+  Building
 } from 'lucide-react';
 
 interface FilterOptions {
@@ -42,7 +44,7 @@ interface BusStopAdvancedFiltersProps {
   onSearch?: (term: string) => void;
 }
 
-export default function BusStopAdvancedFilters({
+export function BusStopAdvancedFilters({
   searchTerm,
   setSearchTerm,
   stateFilter,
@@ -59,22 +61,26 @@ export default function BusStopAdvancedFilters({
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [searchValue, setSearchValue] = useState(searchTerm);
 
-  // Debounced search
+  // Debounced search effect
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (onSearch) {
-        onSearch(searchValue);
-      } else {
-        setSearchTerm(searchValue);
-      }
-    }, 300);
+    if (searchValue !== searchTerm) {
+      const timer = setTimeout(() => {
+        if (onSearch) {
+          onSearch(searchValue);
+        } else {
+          setSearchTerm(searchValue);
+        }
+      }, 300);
 
-    return () => clearTimeout(timer);
-  }, [searchValue, onSearch, setSearchTerm]);
+      return () => clearTimeout(timer);
+    }
+  }, [searchValue, searchTerm, setSearchTerm, onSearch]);
 
-  // Update local search when prop changes
+  // Update local search when prop changes (but avoid infinite loops)
   useEffect(() => {
-    setSearchValue(searchTerm);
+    if (searchTerm !== searchValue) {
+      setSearchValue(searchTerm);
+    }
   }, [searchTerm]);
 
   const hasActiveFilters = Boolean(
@@ -120,6 +126,16 @@ export default function BusStopAdvancedFilters({
     }
   };
 
+  const getStateIcon = (value: string) => {
+    return value === 'all' ? 
+      <Building className="w-4 h-4 text-gray-600" /> : 
+      <MapPin className="w-4 h-4 text-blue-600" />;
+  };
+
+  const getStateLabel = (value: string) => {
+    return value === 'all' ? 'All States' : value;
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       {/* Compact Main Filter Section */}
@@ -128,47 +144,45 @@ export default function BusStopAdvancedFilters({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Search className="h-5 w-5 text-gray-500" />
-            <h3 className="text-lg font-semibold text-gray-900">Search & Filters</h3>
+            <span className="font-medium text-gray-900">Bus Stop Filters</span>
           </div>
-          <div className="text-sm text-gray-600">
-            <span className="font-medium text-gray-900">
-              {filteredCount.toLocaleString()}
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>
+              Showing {filteredCount.toLocaleString()} of {totalCount.toLocaleString()} stops
             </span>
-            <> of {totalCount.toLocaleString()} stops</>
           </div>
         </div>
 
-        {/* Compact Filter Row */}
+        {/* Main Filter Row */}
         <div className="flex flex-col lg:flex-row gap-3">
-          {/* Search Bar */}
+          {/* Search Input */}
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              {/* <Search className="h-4 w-4 text-gray-400" /> */}
+              <Search className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="text"
-              placeholder="Search bus stops..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="block w-full pl-4 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Search by name, address, city, or state..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             {searchValue && (
               <button
                 onClick={() => setSearchValue('')}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
               </button>
             )}
           </div>
 
           {/* State Filter */}
-          <div className="relative">
+          <div className="lg:w-48">
             <select
               value={stateFilter}
               onChange={(e) => setStateFilter(e.target.value)}
-              disabled={loading}
-              className="block w-full lg:w-40 pl-3 pr-8 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="all">All States</option>
               {filterOptions.states.map((state) => (
@@ -177,85 +191,90 @@ export default function BusStopAdvancedFilters({
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
           {/* Accessibility Filter */}
-          <div className="relative">
+          <div className="lg:w-48">
             <select
               value={accessibilityFilter}
               onChange={(e) => setAccessibilityFilter(e.target.value)}
-              className="block w-full lg:w-48 pl-3 pr-8 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="all">All Access Types</option>
+              <option value="all">All Accessibility</option>
               <option value="accessible">Accessible Only</option>
               <option value="non-accessible">Non-Accessible Only</option>
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
+
+          {/* Filter Toggle Button */}
+          <button
+            onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+            className={`
+              flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors
+              ${hasActiveFilters
+                ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }
+            `}
+          >
+            <Filter className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {hasActiveFilters ? `Filters (${activeFilterCount})` : 'More Filters'}
+            </span>
+            {isFilterExpanded ? 
+              <ChevronUp className="h-4 w-4" /> : 
+              <ChevronDown className="h-4 w-4" />
+            }
+          </button>
         </div>
       </div>
 
-      {/* Active & Quick Filters Section */}
-      {(
+      {/* Active Filters Display */}
+      {hasActiveFilters && (
         <div className="border-t border-gray-100">
           <div className="p-3">
-            <div
-              className="flex items-center justify-between w-full text-left"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">
-                  {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-900">Active Filters:</span>
+              <button
+                onClick={handleClearAll}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Clear All
+              </button>
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {/* Search Filter */}
+              {searchTerm && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs">
+                  <Search className="h-3 w-3" />
+                  Search: "{searchTerm}"
+                  <button onClick={() => setSearchValue('')}>
+                    <X className="h-3 w-3 hover:text-blue-600" />
+                  </button>
                 </span>
-                <div className='flex items-center gap-2 ml-4'>
-                  {searchTerm && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-                      <Search className="w-3 h-3" />
-                      "{searchTerm}"
-                      <button
-                        onClick={() => setSearchValue('')}
-                        className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  )}
-                  {stateFilter !== 'all' && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
-                      <MapPin className="w-3 h-3" />
-                      {stateFilter}
-                      <button
-                        onClick={() => setStateFilter('all')}
-                        className="ml-1 hover:bg-green-200 rounded-full p-0.5"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  )}
-                  {accessibilityFilter !== 'all' && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
-                      {getAccessibilityIcon(accessibilityFilter)}
-                      {accessibilityFilter === 'accessible' ? 'Accessible' : 'Non-Accessible'}
-                      <button
-                        onClick={() => setAccessibilityFilter('all')}
-                        className="ml-1 hover:bg-purple-200 rounded-full p-0.5"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  )}
-                </div>
+              )}
 
-              </div>
-              {/* Clear All Button */}
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearAll}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 hover:border-red-200 rounded-md hover:bg-red-100 hover:text-red-700 transition-colors"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  Clear All
-                </button>
+              {/* State Filter */}
+              {stateFilter !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded-md text-xs">
+                  {getStateIcon(stateFilter)}
+                  State: {getStateLabel(stateFilter)}
+                  <button onClick={() => setStateFilter('all')}>
+                    <X className="h-3 w-3 hover:text-purple-600" />
+                  </button>
+                </span>
+              )}
+
+              {/* Accessibility Filter */}
+              {accessibilityFilter !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-md text-xs">
+                  {getAccessibilityIcon(accessibilityFilter)}
+                  {getAccessibilityLabel(accessibilityFilter)}
+                  <button onClick={() => setAccessibilityFilter('all')}>
+                    <X className="h-3 w-3 hover:text-green-600" />
+                  </button>
+                </span>
               )}
             </div>
           </div>
@@ -266,8 +285,8 @@ export default function BusStopAdvancedFilters({
       {loading && (
         <div className="px-4 py-2 bg-blue-50 border-t border-blue-100">
           <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
-            <span className="text-xs text-blue-800">Loading...</span>
+            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            <span className="text-sm text-blue-700">Loading bus stops...</span>
           </div>
         </div>
       )}

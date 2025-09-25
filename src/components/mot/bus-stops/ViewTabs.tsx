@@ -3,35 +3,35 @@
 import React from 'react';
 import { Table, Map } from 'lucide-react';
 
-export type ViewType = 'directory' | 'map';
+export type ViewType = 'table' | 'map';
 
 interface ViewTabsProps {
   activeView: ViewType;
   onViewChange: (view: ViewType) => void;
-  directoryCount?: number;
+  tableCount?: number;
   mapCount?: number;
 }
 
-export default function ViewTabs({ 
+export function ViewTabs({ 
   activeView, 
   onViewChange, 
-  directoryCount = 0, 
+  tableCount = 0, 
   mapCount = 0 
 }: ViewTabsProps) {
   const tabs = [
     {
-      id: 'directory' as ViewType,
-      name: 'Directory View',
+      id: 'table' as ViewType,
+      name: 'Table View',
       icon: Table,
-      count: directoryCount,
-      description: 'Table view with detailed information'
+      count: tableCount,
+      description: 'Table view with detailed information and pagination'
     },
     {
       id: 'map' as ViewType,
       name: 'Map View',
       icon: Map,
       count: mapCount,
-      description: 'Visual map with bus stop locations'
+      description: 'Interactive map showing bus stop locations'
     }
   ];
 
@@ -66,7 +66,7 @@ export default function ViewTabs({
                 aria-hidden="true" 
               />
               <span>{tab.name}</span>
-              {/* {tab.count > 0 && (
+              {tab.count > 0 && (
                 <span 
                   className={`
                     ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -76,9 +76,9 @@ export default function ViewTabs({
                     }
                   `}
                 >
-                  {tab.count}
+                  {tab.count.toLocaleString()}
                 </span>
-              )} */}
+              )}
             </button>
           );
         })}
@@ -91,7 +91,7 @@ export default function ViewTabs({
           
           return (
             <p key={tab.id} className="text-sm text-gray-600">
-              {/* {tab.description} */}
+              {tab.description}
             </p>
           );
         })}

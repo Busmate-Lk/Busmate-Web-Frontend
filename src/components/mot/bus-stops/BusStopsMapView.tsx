@@ -1,20 +1,19 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { StopResponse } from '@/lib/api-client/route-management';
 import { 
   MapPin, 
-  Navigation, 
+  Eye, 
+  Edit, 
+  Trash2, 
   ZoomIn, 
   ZoomOut, 
-  RotateCcw, 
-  Eye,
-  Edit,
-  Trash2,
-  Check,
-  X
+  RotateCcw,
+  Locate,
+  AlertTriangle
 } from 'lucide-react';
+import type { StopResponse } from '@/lib/api-client/route-management';
 
 interface BusStopsMapViewProps {
   busStops: StopResponse[];
@@ -43,7 +42,7 @@ declare global {
   }
 }
 
-export default function BusStopsMapView({ 
+export function BusStopsMapView({ 
   busStops, 
   loading, 
   onDelete 
@@ -76,10 +75,10 @@ export default function BusStopsMapView({
     const bounds = new window.google.maps.LatLngBounds();
     validBusStops.forEach(stop => {
       if (stop.location?.latitude && stop.location?.longitude) {
-        bounds.extend({
-          lat: Number(stop.location.latitude),
-          lng: Number(stop.location.longitude)
-        });
+        bounds.extend(new window.google.maps.LatLng(
+          stop.location.latitude, 
+          stop.location.longitude
+        ));
       }
     });
     return bounds;
@@ -89,24 +88,23 @@ export default function BusStopsMapView({
   useEffect(() => {
     const initializeMap = async () => {
       try {
-        // Wait for Google Maps to be available
-        if (!window.google) {
-          // Load Google Maps if not already loaded
-          await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places,geometry`;
-            script.async = true;
-            script.defer = true;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
+        // Check if Google Maps is already loaded
+        if (typeof window.google !== 'undefined') {
+          createMap();
+          return;
         }
 
-        createMap();
+        // Load Google Maps API
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => createMap();
+        script.onerror = () => setMapError('Failed to load Google Maps');
+        document.head.appendChild(script);
       } catch (error) {
-        console.error('Failed to load Google Maps:', error);
-        setMapError('Failed to load Google Maps. Please check your internet connection and try again.');
+        console.error('Error initializing map:', error);
+        setMapError('Failed to initialize map');
       }
     };
 
@@ -114,11 +112,9 @@ export default function BusStopsMapView({
       if (!mapRef.current || !window.google) return;
 
       try {
-        // Create map instance
         const map = new window.google.maps.Map(mapRef.current, {
-          zoom: DEFAULT_ZOOM,
           center: DEFAULT_CENTER,
-          mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+          zoom: DEFAULT_ZOOM,
           styles: [
             {
               featureType: 'poi',
@@ -126,27 +122,23 @@ export default function BusStopsMapView({
               stylers: [{ visibility: 'off' }]
             }
           ],
-          zoomControl: false,
           mapTypeControl: false,
-          scaleControl: true,
           streetViewControl: false,
-          rotateControl: false,
-          fullscreenControl: true
+          fullscreenControl: true,
+          zoomControl: false, // We'll use custom controls
         });
 
         googleMapRef.current = map;
 
         // Create info window
         infoWindowRef.current = new window.google.maps.InfoWindow({
-          maxWidth: 350
+          maxWidth: 300,
         });
 
         setIsMapLoaded(true);
-        setMapError(null);
-
       } catch (error) {
         console.error('Error creating map:', error);
-        setMapError('Error initializing map. Please refresh the page and try again.');
+        setMapError('Failed to create map');
       }
     };
 
@@ -177,37 +169,35 @@ export default function BusStopsMapView({
     const newMarkers = validBusStops.map(stop => {
       if (!stop.location?.latitude || !stop.location?.longitude) return null;
 
-      const position = {
-        lat: Number(stop.location.latitude),
-        lng: Number(stop.location.longitude)
-      };
+      const position = new window.google.maps.LatLng(
+        stop.location.latitude,
+        stop.location.longitude
+      );
 
-      // Choose marker color based on accessibility
-      const markerColor = stop.isAccessible 
+      const markerColor = stop.isAccessible === true 
         ? ACCESSIBLE_MARKER_COLOR 
-        : NOT_ACCESSIBLE_MARKER_COLOR;
+        : stop.isAccessible === false 
+        ? NOT_ACCESSIBLE_MARKER_COLOR 
+        : DEFAULT_MARKER_COLOR;
 
       const marker = new window.google.maps.Marker({
         position,
         map: googleMapRef.current,
         title: stop.name || 'Unnamed Stop',
         icon: {
-          url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-            <svg width="24" height="32" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 0C5.4 0 0 5.4 0 12c0 12 12 20 12 20s12-8 12-20c0-6.6-5.4-12-12-12z" fill="${markerColor}"/>
-              <circle cx="12" cy="12" r="6" fill="white"/>
-            </svg>
-          `)}`,
-          scaledSize: new window.google.maps.Size(24, 32),
-          anchor: new window.google.maps.Point(12, 32)
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: markerColor,
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#ffffff',
         },
-        animation: window.google.maps.Animation.DROP
       });
 
       // Add click listener to show info window
       marker.addListener('click', () => {
-        setSelectedBusStop(stop);
         showInfoWindow(marker, stop);
+        setSelectedBusStop(stop);
       });
 
       return marker;
@@ -217,24 +207,20 @@ export default function BusStopsMapView({
 
     // Initialize marker clusterer if there are many markers
     if (newMarkers.length > 10) {
-      // Simple clustering logic (you might want to use @googlemaps/markerclusterer for advanced clustering)
-      markerClustererRef.current = {
-        clearMarkers: () => {
-          newMarkers.forEach(marker => marker.setMap(null));
-        }
-      };
+      // Note: You'll need to install @googlemaps/markerclusterer if not already installed
+      // markerClustererRef.current = new MarkerClusterer({ markers: newMarkers, map: googleMapRef.current });
     }
 
     // Fit map to show all markers
     if (newMarkers.length > 0) {
       const bounds = getMapBounds();
-      if (bounds) {
+      if (bounds && googleMapRef.current) {
         googleMapRef.current.fitBounds(bounds);
         
         // Set minimum zoom level
         const listener = window.google.maps.event.addListenerOnce(googleMapRef.current, 'bounds_changed', () => {
-          if (googleMapRef.current!.getZoom()! > 15) {
-            googleMapRef.current!.setZoom(15);
+          if (googleMapRef.current && googleMapRef.current.getZoom()! > CLUSTER_ZOOM) {
+            googleMapRef.current.setZoom(CLUSTER_ZOOM);
           }
         });
       }
@@ -245,60 +231,69 @@ export default function BusStopsMapView({
   // Show info window for a bus stop
   const showInfoWindow = (marker: google.maps.Marker, stop: StopResponse) => {
     if (!infoWindowRef.current) return;
+    
+    const formatLocation = (location: any) => {
+      if (!location) return 'No location';
+      const parts = [];
+      if (location.address) parts.push(location.address);
+      if (location.city) parts.push(location.city);
+      if (location.state) parts.push(location.state);
+      return parts.length > 0 ? parts.join(', ') : 'No address';
+    };
 
-    const accessibilityBadge = stop.isAccessible 
-      ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-           ✓ Accessible
-         </span>`
-      : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-           ✗ Not Accessible
-         </span>`;
+    const accessibilityBadge = stop.isAccessible === true 
+      ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">✓ Accessible</span>'
+      : stop.isAccessible === false
+      ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">✗ Not Accessible</span>'
+      : '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Unknown</span>';
 
     const content = `
-      <div class="p-4 min-w-[280px]">
-        <div class="flex justify-between items-start mb-3">
-          <h3 class="text-lg font-semibold text-gray-900 pr-2">${stop.name || 'Unnamed Stop'}</h3>
-          ${accessibilityBadge}
-        </div>
-        
-        ${stop.description ? `<p class="text-sm text-gray-600 mb-3">${stop.description}</p>` : ''}
+      <div class="p-4 min-w-[250px]">
+        <h3 class="font-semibold text-lg text-gray-900 mb-2">${stop.name || 'Unnamed Stop'}</h3>
         
         <div class="space-y-2 mb-4">
-          <div class="flex items-start text-sm">
-            <span class="font-medium text-gray-500 w-16">Address:</span>
-            <span class="text-gray-900">${stop.location?.address || 'N/A'}</span>
+          <div class="flex items-start gap-2">
+            <svg class="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-sm text-gray-600">${formatLocation(stop.location)}</span>
           </div>
-          <div class="flex items-center text-sm">
-            <span class="font-medium text-gray-500 w-16">City:</span>
-            <span class="text-gray-900">${stop.location?.city || 'N/A'}</span>
+          
+          ${stop.description ? `
+          <div class="flex items-start gap-2">
+            <svg class="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+            <span class="text-sm text-gray-600">${stop.description}</span>
           </div>
-          <div class="flex items-center text-sm">
-            <span class="font-medium text-gray-500 w-16">State:</span>
-            <span class="text-gray-900">${stop.location?.state || 'N/A'}</span>
+          ` : ''}
+          
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">Accessibility:</span>
+            ${accessibilityBadge}
           </div>
         </div>
         
-        <div class="flex gap-2 pt-2 border-t border-gray-200">
+        <div class="flex justify-end space-x-2 pt-2 border-t border-gray-200">
           <button 
-            onclick="window.busStopMapActions.viewDetails('${stop.id}')"
-            class="flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+            onclick="window.busStopMapActions?.viewDetails('${stop.id}')" 
+            class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            👁 View
+            View Details
           </button>
           <button 
-            onclick="window.busStopMapActions.editStop('${stop.id}')"
-            class="flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100 transition-colors"
+            onclick="window.busStopMapActions?.editStop('${stop.id}')" 
+            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            ✏️ Edit
+            Edit
           </button>
-          ${onDelete ? `
-            <button 
-              onclick="window.busStopMapActions.deleteStop('${stop.id}')"
-              class="flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
-            >
-              🗑️ Delete
-            </button>
-          ` : ''}
+          <button 
+            onclick="window.busStopMapActions?.deleteStop('${stop.id}')" 
+            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Delete
+          </button>
         </div>
       </div>
     `;
@@ -321,7 +316,7 @@ export default function BusStopsMapView({
         if (stop && onDelete) {
           onDelete(stop);
         }
-      }
+      },
     };
 
     return () => {
@@ -332,26 +327,22 @@ export default function BusStopsMapView({
   // Map control handlers
   const handleZoomIn = () => {
     if (googleMapRef.current) {
-      const currentZoom = googleMapRef.current.getZoom();
-      if (currentZoom !== undefined) {
-        googleMapRef.current.setZoom(Math.min(currentZoom + 1, 20));
-      }
+      const currentZoom = googleMapRef.current.getZoom() || DEFAULT_ZOOM;
+      googleMapRef.current.setZoom(currentZoom + 1);
     }
   };
 
   const handleZoomOut = () => {
     if (googleMapRef.current) {
-      const currentZoom = googleMapRef.current.getZoom();
-      if (currentZoom !== undefined) {
-        googleMapRef.current.setZoom(Math.max(currentZoom - 1, 1));
-      }
+      const currentZoom = googleMapRef.current.getZoom() || DEFAULT_ZOOM;
+      googleMapRef.current.setZoom(currentZoom - 1);
     }
   };
 
   const handleResetView = () => {
-    if (googleMapRef.current && validBusStops.length > 0) {
+    if (googleMapRef.current) {
       const bounds = getMapBounds();
-      if (bounds) {
+      if (bounds && validBusStops.length > 0) {
         googleMapRef.current.fitBounds(bounds);
       } else {
         googleMapRef.current.setCenter(DEFAULT_CENTER);
@@ -361,37 +352,35 @@ export default function BusStopsMapView({
   };
 
   const handleFindMyLocation = () => {
-    if (navigator.geolocation && googleMapRef.current) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (googleMapRef.current) {
           const userLocation = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
-          googleMapRef.current!.setCenter(userLocation);
-          googleMapRef.current!.setZoom(12);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
+          googleMapRef.current.setCenter(userLocation);
+          googleMapRef.current.setZoom(12);
         }
-      );
-    }
+      },
+      () => {
+        console.error('Unable to retrieve your location');
+      }
+    );
   };
 
   if (mapError) {
     return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Bus Stops Map</h3>
-          <p className="text-sm text-gray-600 mt-1">Visual representation of all bus stops</p>
-        </div>
-        <div className="p-12 text-center">
-          <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h4 className="text-lg font-medium text-gray-900 mb-2">Map Unavailable</h4>
-          <p className="text-gray-600 mb-4">{mapError}</p>
+      <div className="bg-white rounded-lg border border-gray-200 p-8">
+        <div className="text-center">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Map Error</h3>
+          <p className="text-gray-500 mb-4">{mapError}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Retry
           </button>
@@ -401,107 +390,95 @@ export default function BusStopsMapView({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex justify-between items-center">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden relative">
+      {/* Map Header */}
+      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Bus Stops Map</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              {validBusStops.length} of {busStops.length} bus stops displayed
-              {validBusStops.length !== busStops.length && (
-                <span className="text-orange-600 ml-1">
-                  ({busStops.length - validBusStops.length} stops without coordinates)
-                </span>
-              )}
+            <p className="text-sm text-gray-600">
+              {validBusStops.length} bus stops with valid coordinates
             </p>
           </div>
-          
-          {/* Legend */}
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ backgroundColor: ACCESSIBLE_MARKER_COLOR }}
-              ></div>
-              <span className="text-gray-600">Accessible</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ backgroundColor: NOT_ACCESSIBLE_MARKER_COLOR }}
-              ></div>
-              <span className="text-gray-600">Not Accessible</span>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3 text-xs">
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
+                <span>Accessible</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
+                <span>Not Accessible</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full bg-gray-500 mr-1"></div>
+                <span>Unknown</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Map Container */}
       <div className="relative">
-        <div 
-          ref={mapRef} 
-          className="w-full h-96 bg-gray-200"
-          style={{ minHeight: '720px' }}
-        />
+        <div ref={mapRef} className="w-full h-96" />
+        
+        {/* Map Controls */}
+        <div className="absolute top-4 right-4 flex flex-col space-y-2">
+          <button
+            onClick={handleZoomIn}
+            className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-50 border border-gray-200"
+            title="Zoom In"
+          >
+            <ZoomIn className="w-4 h-4 text-gray-600" />
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-50 border border-gray-200"
+            title="Zoom Out"
+          >
+            <ZoomOut className="w-4 h-4 text-gray-600" />
+          </button>
+          <button
+            onClick={handleResetView}
+            className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-50 border border-gray-200"
+            title="Reset View"
+          >
+            <RotateCcw className="w-4 h-4 text-gray-600" />
+          </button>
+          <button
+            onClick={handleFindMyLocation}
+            className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-50 border border-gray-200"
+            title="Find My Location"
+          >
+            <Locate className="w-4 h-4 text-gray-600" />
+          </button>
+        </div>
 
-        {/* Loading overlay */}
+        {/* Loading Overlay */}
         {(loading || !isMapLoaded) && (
-          <div className="absolute inset-0 bg-gray-100 bg-opacity-90 flex items-center justify-center">
+          <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-              <span className="text-gray-600">
-                {loading ? 'Loading bus stops...' : 'Initializing map...'}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Map controls */}
-        {isMapLoaded && (
-          <div className="absolute top-4 right-4 flex flex-col gap-2">
-            <button
-              onClick={handleZoomIn}
-              className="p-2 bg-white shadow-md rounded-md hover:bg-gray-50 transition-colors"
-              title="Zoom In"
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleZoomOut}
-              className="p-2 bg-white shadow-md rounded-md hover:bg-gray-50 transition-colors"
-              title="Zoom Out"
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleResetView}
-              className="p-2 bg-white shadow-md rounded-md hover:bg-gray-50 transition-colors"
-              title="Reset View"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleFindMyLocation}
-              className="p-2 bg-white shadow-md rounded-md hover:bg-gray-50 transition-colors"
-              title="Find My Location"
-            >
-              <Navigation className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {/* Statistics */}
-        {isMapLoaded && validBusStops.length === 0 && !loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-90">
-            <div className="text-center">
-              <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No Bus Stops to Display</h4>
-              <p className="text-gray-600">
-                No bus stops have valid coordinates for map display.
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-sm text-gray-600">
+                {!isMapLoaded ? 'Loading map...' : 'Loading bus stops...'}
               </p>
             </div>
           </div>
         )}
       </div>
+
+      {/* Invalid Coordinates Warning */}
+      {busStops.length > validBusStops.length && (
+        <div className="px-6 py-3 bg-yellow-50 border-t border-yellow-200">
+          <div className="flex items-center">
+            <AlertTriangle className="w-4 h-4 text-yellow-600 mr-2" />
+            <span className="text-sm text-yellow-800">
+              {busStops.length - validBusStops.length} bus stops have invalid coordinates and are not shown on the map.
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
