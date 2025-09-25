@@ -215,7 +215,7 @@ export function Header({ pageTitle, pageDescription }: HeaderProps) {
         <div className="flex items-center gap-4">
 
           {/* Toggle to switch between real API and mock data - for demo purposes */}
-          {pageTitle === "NTC Admin Dashboard" && (
+          {pageTitle === "MOT Admin Dashboard" && (
             <div className="flex items-center">
               <label className="inline-flex items-center">
                 <input

@@ -265,7 +265,7 @@ export default function AdminDashboardPage() {
   return (
     <Layout
           activeItem="dashboard"
-          pageTitle="NTC Admin Dashboard"
+          pageTitle="MOT Admin Dashboard"
           pageDescription="Comprehensive overview of the transport management system"
           role="mot"
         >
@@ -276,7 +276,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between h-16">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                NTC Admin Dashboard
+                MOT Admin Dashboard
               </h1>
               <p className="text-sm text-gray-600 mt-1">
                 Comprehensive overview of the transport management system
@@ -376,7 +376,7 @@ export default function AdminDashboardPage() {
         <div className="mt-8 pt-8 border-t border-gray-200">
           <div className="text-center text-sm text-gray-500">
             <p>
-              BusMate NTC Admin Dashboard • Built with Next.js & Chart.js
+              BusMate MOT Admin Dashboard • Built with Next.js & Chart.js
               {useRealApi ? ' • Connected to Live API' : ' • Using Demo Data'}
             </p>
           </div>

@@ -1,4 +1,4 @@
-// Dummy data for NTC Admin Dashboard
+// Dummy data for MOT Admin Dashboard
 // This file contains comprehensive mock data for dashboard components
 // Replace with real API calls once backend services are implemented
 
