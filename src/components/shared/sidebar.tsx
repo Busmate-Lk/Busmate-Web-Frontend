@@ -84,6 +84,12 @@ export function Sidebar({
     },
     {
       icon: Bus,
+      label: 'Trip Management',
+      active: activeItem === 'trips',
+      href: '/mot/trips',
+    },
+    {
+      icon: Bus,
       label: 'Trip Assignment',
       active: activeItem === 'trip-assignment',
       href: '/mot/trip-assignment',
