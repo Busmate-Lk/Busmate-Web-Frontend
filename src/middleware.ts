@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken, isTokenExpired } from '@/lib/utils/jwtHandler';
 
+// Dummy middleware function to satisfy Next.js requirement
+// export async function middleware(){}
+
 export async function middleware(request: NextRequest) {
   console.log('Middleware triggered for:', request.nextUrl.pathname);
   

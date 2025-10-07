@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { Plus, RefreshCw, Download, AlertCircle } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Layout } from '@/components/shared/layout';
-import BusStatsCards from '@/components/mot/BusStatsCards';
-import BusFilters from '@/components/mot/BusFilters';
-import BusTable from '@/components/mot/BusTable';
+import { BusStatsCards } from '@/components/mot/buses/BusStatsCards';
+import BusAdvancedFilters from '@/components/mot/buses/BusAdvancedFilters';
+import { BusActionButtons } from '@/components/mot/buses/BusActionButtons';
+import { BusesTable } from '@/components/mot/buses/BusesTable';
 import Pagination from '@/components/shared/Pagination';
 import DeleteBusModal from '@/components/mot/buses/DeleteBusModal';
 import { 
@@ -15,76 +15,134 @@ import {
   PageBusResponse 
 } from '@/lib/api-client/route-management';
 
-interface BusFilters {
+interface QueryParams {
+  page: number;
+  size: number;
+  sortBy: string;
+  sortDir: 'asc' | 'desc';
   search: string;
-  status: string;
-  minCapacity: string;
-  maxCapacity: string;
-  operatorId: string;
+  operatorId?: string;
+  status?: 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'CANCELLED';
+  minCapacity?: string;
+  maxCapacity?: string;
+  model?: string;
 }
 
-interface PaginationState {
-  currentPage: number;
-  totalPages: number;
-  totalElements: number;
-  pageSize: number;
+interface FilterOptions {
+  statuses: Array<string>;
+  operators: Array<{ id: string; name: string; type?: string }>;
+  models: Array<string>;
+  capacityRanges: Array<string>;
 }
 
 export default function BusesPage() {
   const router = useRouter();
-  
-  // Data states
   const [buses, setBuses] = useState<BusResponse[]>([]);
-  const [allBuses, setAllBuses] = useState<BusResponse[]>([]);
-  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Filter states
-  const [filters, setFilters] = useState<BusFilters>({
-    search: '',
-    status: 'all',
-    minCapacity: '',
-    maxCapacity: '',
-    operatorId: '',
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [operatorFilter, setOperatorFilter] = useState('all');
+  const [minCapacity, setMinCapacity] = useState('');
+  const [maxCapacity, setMaxCapacity] = useState('');
+  const [modelFilter, setModelFilter] = useState('all');
+
+  // Filter options from API
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    statuses: [],
+    operators: [],
+    models: [],
+    capacityRanges: []
   });
-  
-  // Pagination states
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [filterOptionsLoading, setFilterOptionsLoading] = useState(true);
+
+  const [queryParams, setQueryParams] = useState<QueryParams>({
+    page: 0,
+    size: 10,
+    sortBy: 'ntcRegistrationNumber',
+    sortDir: 'asc',
+    search: '',
+  });
+
+  // Pagination state
+  const [pagination, setPagination] = useState({
     currentPage: 0,
     totalPages: 0,
     totalElements: 0,
     pageSize: 10,
   });
-  
-  // Sort states
-  const [sortBy, setSortBy] = useState('ntc_registration_number');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  
-  // UI states
-  const [loading, setLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  // Statistics state
+  const [stats, setStats] = useState({
+    totalBuses: { count: 0 },
+    activeBuses: { count: 0 },
+    inactiveBuses: { count: 0 },
+    totalOperators: { count: 0 },
+    averageCapacity: { count: 0 },
+    totalCapacity: { count: 0 }
+  });
+
+  // State for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [busToDelete, setBusToDelete] = useState<BusResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Load buses data
-  const loadBuses = useCallback(async (resetPage = false) => {
-    console.log('Loading buses with filters:', filters, 'Pagination:', pagination, 'Sort:', sortBy, sortDir);
-    setLoading(true);
-    setError(null);
-
+  // Load filter options
+  const loadFilterOptions = useCallback(async () => {
     try {
-      const page = resetPage ? 0 : pagination.currentPage;
-      
-      const response = await BusManagementService.getAllBuses(
-        page,
-        pagination.pageSize,
-        sortBy,
-        sortDir,
-        filters.search || undefined,
-        filters.operatorId || undefined,
-        filters.status !== 'all' ? filters.status : undefined,
-        filters.minCapacity ? parseInt(filters.minCapacity) : undefined,
-        filters.maxCapacity ? parseInt(filters.maxCapacity) : undefined
+      const response = await BusManagementService.getBusFilterOptions();
+      setFilterOptions({
+        statuses: response.statuses || [],
+        operators: (response.operators || []).map(op => ({
+          id: op.id || '',
+          name: op.name || '',
+          type: op.type || ''
+        })).filter(op => op.id),
+        models: response.models || [],
+        capacityRanges: response.capacityRanges || []
+      });
+    } catch (err) {
+      console.error('Failed to load filter options:', err);
+    } finally {
+      setFilterOptionsLoading(false);
+    }
+  }, []);
+
+  // Load statistics
+  const loadStatistics = useCallback(async () => {
+    try {
+      const response = await BusManagementService.getBusStatistics();
+      setStats({
+        totalBuses: { count: response.totalBuses || 0 },
+        activeBuses: { count: response.activeBuses || 0 },
+        inactiveBuses: { count: response.inactiveBuses || 0 },
+        totalOperators: { count: response.averageBusesPerOperator ? Math.round((response.totalBuses || 0) / response.averageBusesPerOperator) : 0 },
+        averageCapacity: { count: response.averageCapacity || 0 },
+        totalCapacity: { count: response.totalCapacity || 0 }
+      });
+    } catch (err) {
+      console.error('Failed to load statistics:', err);
+    }
+  }, []);
+
+  // Load buses from API
+  const loadBuses = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response: PageBusResponse = await BusManagementService.getAllBuses(
+        queryParams.page,
+        queryParams.size,
+        queryParams.sortBy,
+        queryParams.sortDir,
+        queryParams.search || undefined,
+        queryParams.operatorId || undefined,
+        queryParams.status || undefined,
+        queryParams.minCapacity ? parseInt(queryParams.minCapacity) : undefined,
+        queryParams.maxCapacity ? parseInt(queryParams.maxCapacity) : undefined
       );
 
       setBuses(response.content || []);
@@ -94,199 +152,226 @@ export default function BusesPage() {
         totalElements: response.totalElements || 0,
         pageSize: response.size || 10,
       });
-
     } catch (err) {
-      console.error('Error loading buses:', err);
+      console.error('Failed to load buses:', err);
       setError(err instanceof Error ? err.message : 'Failed to load buses');
       setBuses([]);
+      setPagination({
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+        pageSize: 10,
+      });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  }, [pagination.currentPage, pagination.pageSize, sortBy, sortDir, filters]);
+  }, [queryParams]);
 
-  // Load all buses for stats (without pagination)
-  const loadAllBusesForStats = useCallback(async () => {
-    try {
-      const response = await BusManagementService.getAllBusesAsList();
-      setAllBuses(response || []);
-    } catch (err) {
-      console.error('Error loading all buses:', err);
-    }
-  }, []);
+  useEffect(() => {
+    loadFilterOptions();
+    loadStatistics();
+  }, [loadFilterOptions, loadStatistics]);
 
-  // Load data on mount and when dependencies change
   useEffect(() => {
     loadBuses();
-    loadAllBusesForStats();
-  }, [loadBuses, loadAllBusesForStats]);
+  }, [loadBuses]);
 
-  // Refresh handler
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await Promise.all([loadBuses(), loadAllBusesForStats()]);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [loadBuses, loadAllBusesForStats]);
+  // Update query params with filters (optimized to prevent unnecessary updates)
+  const updateQueryParams = useCallback((updates: Partial<QueryParams>) => {
+    setQueryParams(prev => {
+      const newParams = { ...prev, ...updates };
+      
+      // Apply current filter states to the params
+      const statusValue = statusFilter !== 'all' ? statusFilter as 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'CANCELLED' : undefined;
+      const operatorValue = operatorFilter !== 'all' ? operatorFilter : undefined;
+      const minCapacityValue = minCapacity || undefined;
+      const maxCapacityValue = maxCapacity || undefined;
+      const modelValue = modelFilter !== 'all' ? modelFilter : undefined;
 
-  // Search handler
-  const handleSearchChange = useCallback((searchTerm: string) => {
-    setFilters(prev => ({ ...prev, search: searchTerm }));
-  }, []);
+      // Only update if there are actual changes
+      const finalParams = {
+        ...newParams,
+        status: updates.status !== undefined ? updates.status : statusValue,
+        operatorId: updates.operatorId !== undefined ? updates.operatorId : operatorValue,
+        minCapacity: updates.minCapacity !== undefined ? updates.minCapacity : minCapacityValue,
+        maxCapacity: updates.maxCapacity !== undefined ? updates.maxCapacity : maxCapacityValue,
+        model: updates.model !== undefined ? updates.model : modelValue,
+      };
 
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      loadBuses(true); // Reset to first page when searching
-    }, 500);
+      // Check if params actually changed to prevent unnecessary re-renders
+      const paramsChanged = Object.keys(finalParams).some(key => {
+        const oldValue = prev[key as keyof QueryParams];
+        const newValue = finalParams[key as keyof QueryParams];
+        return oldValue !== newValue;
+      });
 
-    return () => clearTimeout(timeoutId);
-  }, [filters.search, filters.status, filters.operatorId, filters.minCapacity, filters.maxCapacity]);
-
-  // Filter handlers
-  const handleStatusChange = useCallback((status: string) => {
-    setFilters(prev => ({ ...prev, status }));
-  }, []);
-
-  const handleMinCapacityChange = useCallback((minCapacity: string) => {
-    setFilters(prev => ({ ...prev, minCapacity }));
-  }, []);
-
-  const handleMaxCapacityChange = useCallback((maxCapacity: string) => {
-    setFilters(prev => ({ ...prev, maxCapacity }));
-  }, []);
-
-  const handleOperatorChange = useCallback((operatorId: string) => {
-    setFilters(prev => ({ ...prev, operatorId }));
-  }, []);
-
-  // Sort handler
-  const handleSort = useCallback((field: string, direction: 'asc' | 'desc') => {
-    setSortBy(field);
-    setSortDir(direction);
-  }, []);
-
-  // Pagination handlers
-  const handlePageChange = useCallback((page: number) => {
-    setPagination(prev => ({ ...prev, currentPage: page }));
-  }, []);
-
-  const handlePageSizeChange = useCallback((size: number) => {
-    setPagination(prev => ({ ...prev, pageSize: size, currentPage: 0 }));
-  }, []);
-
-  // Action handlers
-  const handleView = useCallback((bus: BusResponse) => {
-    router.push(`/mot/buses/${bus.id}`);
-  }, [router]);
-
-  const handleEdit = useCallback((bus: BusResponse) => {
-    router.push(`/mot/buses/${bus.id}/edit`);
-  }, [router]);
-
-  const handleDelete = useCallback(async (bus: BusResponse) => {
-    setBusToDelete(bus);
-    setShowDeleteModal(true);
-  }, []);
-
-  const handleDeleteCancel = useCallback(() => {
-    setShowDeleteModal(false);
-    setBusToDelete(null);
-  }, []);
-
-  const handleDeleteConfirm = useCallback(async () => {
-    if (!busToDelete?.id) return;
-
-    try {
-      setIsDeleting(true);
-      await BusManagementService.deleteBus(busToDelete.id);
-      await handleRefresh();
-      setShowDeleteModal(false);
-      setBusToDelete(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete bus');
-      // Keep modal open on error
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [busToDelete, handleRefresh]);
-
-  const handleAddNew = useCallback(() => {
-    router.push('/mot/buses/add-new');
-  }, [router]);
-
-  // Export functionality
-  const handleExport = useCallback(async () => {
-    try {
-      const dataToExport = buses.map(bus => ({
-        ID: bus.id || '',
-        'NTC Registration': bus.ntcRegistrationNumber || '',
-        'Plate Number': bus.plateNumber || '',
-        'Operator ID': bus.operatorId || '',
-        'Operator Name': bus.operatorName || '',
-        Capacity: bus.capacity || 0,
-        Model: bus.model || '',
-        Status: bus.status || '',
-        'Created At': bus.createdAt ? new Date(bus.createdAt).toLocaleDateString() : '',
-        'Updated At': bus.updatedAt ? new Date(bus.updatedAt).toLocaleDateString() : '',
-      }));
-
-      if (dataToExport.length === 0) {
-        alert('No data to export');
-        return;
+      if (!paramsChanged) {
+        return prev;
       }
 
-      const headers = Object.keys(dataToExport[0]);
+      return finalParams;
+    });
+  }, [statusFilter, operatorFilter, minCapacity, maxCapacity, modelFilter]);
+
+  // Apply filters when they change (with debounce for better UX)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateQueryParams({ page: 0 }); // Reset to first page when filters change
+    }, 300); // Short debounce for filter changes
+
+    return () => clearTimeout(timer);
+  }, [statusFilter, operatorFilter, minCapacity, maxCapacity, modelFilter, updateQueryParams]);
+
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    updateQueryParams({ search: searchTerm, page: 0 });
+  };
+
+  const handleSort = (sortBy: string, sortDir: 'asc' | 'desc') => {
+    updateQueryParams({ sortBy, sortDir, page: 0 });
+  };
+
+  const handlePageChange = (page: number) => {
+    updateQueryParams({ page });
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    updateQueryParams({ size, page: 0 });
+  };
+
+  const handleClearAllFilters = useCallback(() => {
+    // Clear all filter states
+    setSearchTerm('');
+    setStatusFilter('all');
+    setOperatorFilter('all');
+    setMinCapacity('');
+    setMaxCapacity('');
+    setModelFilter('all');
+    
+    // Immediately update query params to clear all filters and trigger new API call
+    setQueryParams(prev => ({
+      ...prev,
+      search: '',
+      status: undefined,
+      operatorId: undefined,
+      minCapacity: undefined,
+      maxCapacity: undefined,
+      model: undefined,
+      page: 0,
+    }));
+  }, []);
+
+  const handleAddNewBus = () => {
+    router.push('/mot/buses/add-new');
+  };
+
+  const handleImportBuses = () => {
+    router.push('/mot/buses/import');
+  };
+
+  const handleExportAll = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Get all buses for export
+      const allBusesResponse = await BusManagementService.getAllBusesAsList();
+      const buses = allBusesResponse || [];
+
+      // Create CSV content
+      const headers = ['Registration Number', 'Plate Number', 'Operator', 'Model', 'Capacity', 'Status', 'Created Date'];
       const csvContent = [
         headers.join(','),
-        ...dataToExport.map(row => 
-          headers.map(header => {
-            const value = row[header as keyof typeof row];
-            return typeof value === 'string' && value.includes(',') 
-              ? `"${value.replace(/"/g, '""')}"` 
-              : value;
-          }).join(',')
-        )
+        ...buses.map(bus => [
+          `"${bus.ntcRegistrationNumber || ''}"`,
+          `"${bus.plateNumber || ''}"`,
+          `"${bus.operatorName || ''}"`,
+          `"${bus.model || ''}"`,
+          bus.capacity || 0,
+          `"${bus.status || ''}"`,
+          `"${bus.createdAt ? new Date(bus.createdAt).toLocaleDateString() : ''}"`,
+        ].join(','))
       ].join('\n');
 
+      // Create and trigger download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `buses-${new Date().toISOString().split('T')[0]}.csv`;
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `buses-export-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      URL.revokeObjectURL(url);
+
     } catch (error) {
       console.error('Export failed:', error);
-      alert('Failed to export data. Please try again.');
+      setError('Failed to export buses data');
+    } finally {
+      setIsLoading(false);
     }
-  }, [buses]);
+  };
 
-  // Computed values
-  const hasActiveFilters = useMemo(() => {
-    return filters.search !== '' || 
-           filters.status !== 'all' || 
-           filters.minCapacity !== '' ||
-           filters.maxCapacity !== '' ||
-           filters.operatorId !== '';
-  }, [filters]);
+  const handleView = (busId: string) => {
+    router.push(`/mot/buses/${busId}`);
+  };
 
-  const hasData = buses.length > 0;
+  const handleEdit = (busId: string) => {
+    router.push(`/mot/buses/${busId}/edit`);
+  };
 
-  // Loading state for initial load
-  if (loading && pagination.currentPage === 0 && !hasData) {
+  const handleAssignRoute = (busId: string, busRegistration: string) => {
+    router.push(`/mot/buses/${busId}/assign-route`);
+  };
+
+  const handleDelete = (busId: string, busRegistration: string) => {
+    const bus = buses.find(b => b.id === busId);
+    if (bus) {
+      setBusToDelete(bus);
+      setShowDeleteModal(true);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setBusToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!busToDelete?.id) return;
+    
+    try {
+      setIsDeleting(true);
+      await BusManagementService.deleteBus(busToDelete.id);
+      setShowDeleteModal(false);
+      setBusToDelete(null);
+      
+      // Reload data
+      await Promise.all([
+        loadBuses(),
+        loadStatistics()
+      ]);
+    } catch (error) {
+      console.error('Failed to delete bus:', error);
+      setError('Failed to delete bus');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (isLoading && buses.length === 0) {
     return (
       <Layout
         activeItem="buses"
         pageTitle="Buses Management"
-        pageDescription="Manage and monitor bus fleet"
+        pageDescription="Manage and monitor bus fleet across all operators"
         role="mot"
       >
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading buses...</p>
+          </div>
         </div>
       </Layout>
     );
@@ -300,170 +385,109 @@ export default function BusesPage() {
       role="mot"
     >
       <div className="space-y-6">
-        {/* Error Alert */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 mr-3 flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-red-800">Error Loading Data</h3>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
-                <button
-                  onClick={() => setError(null)}
-                  className="text-sm text-red-600 hover:text-red-800 underline mt-2"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
+        {/* Statistics Cards */}
+        <BusStatsCards stats={stats} />
+
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center">
+          <div className="flex-1">
+            <BusActionButtons
+              onAddBus={handleAddNewBus}
+              onImportBuses={handleImportBuses}
+              onExportAll={handleExportAll}
+              isLoading={isLoading}
+            />
           </div>
-        )}
-
-        {/* Stats Cards */}
-        <BusStatsCards buses={allBuses} />
-
-        {/* Header Actions */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing || loading}
-              className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            
-            {hasData && (
-              <button
-                onClick={handleExport}
-                className="flex items-center bg-green-100 hover:bg-green-200 text-green-700 px-3 py-2 rounded-lg transition-colors duration-200"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </button>
-            )}
-          </div>
-
-          <button
-            onClick={handleAddNew}
-            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Bus
-          </button>
         </div>
 
-        {/* Filters */}
-        <BusFilters
-          searchTerm={filters.search}
-          onSearchChange={handleSearchChange}
-          statusFilter={filters.status}
-          onStatusChange={handleStatusChange}
-          minCapacity={filters.minCapacity}
-          onMinCapacityChange={handleMinCapacityChange}
-          maxCapacity={filters.maxCapacity}
-          onMaxCapacityChange={handleMaxCapacityChange}
-          operatorId={filters.operatorId}
-          onOperatorChange={handleOperatorChange}
+        {/* Advanced Filters */}
+        <BusAdvancedFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          operatorFilter={operatorFilter}
+          setOperatorFilter={setOperatorFilter}
+          minCapacity={minCapacity}
+          setMinCapacity={setMinCapacity}
+          maxCapacity={maxCapacity}
+          setMaxCapacity={setMaxCapacity}
+          modelFilter={modelFilter}
+          setModelFilter={setModelFilter}
+          filterOptions={filterOptions}
+          loading={filterOptionsLoading}
+          totalCount={pagination.totalElements}
+          filteredCount={pagination.totalElements}
+          onClearAll={handleClearAllFilters}
+          onSearch={handleSearch}
         />
 
-        {/* Active Filters Indicator */}
-        {hasActiveFilters && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-blue-700">
-                  {buses.length} results shown
-                </span>
-                <span className="text-xs text-blue-600">
-                  Total in database: {pagination.totalElements}
-                </span>
+
+        <div className="bg-white rounded-lg shadow">
+        {/* Buses Table */}
+        <BusesTable
+          buses={buses}
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onAssignRoute={handleAssignRoute}
+          onSort={handleSort}
+          activeFilters={{
+            search: searchTerm,
+            status: statusFilter !== 'all',
+            operator: operatorFilter !== 'all',
+            capacity: minCapacity || maxCapacity,
+            model: modelFilter !== 'all'
+          }}
+          loading={isLoading}
+          currentSort={{ field: queryParams.sortBy, direction: queryParams.sortDir }}
+        />
+
+        {/* Pagination */}
+        {pagination.totalPages > 0 && (
+            <div className="border-t border-gray-200">
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+              totalElements={pagination.totalElements}
+              pageSize={pagination.pageSize}
+              onPageSizeChange={handlePageSizeChange}
+            />
+            </div>
+        )}
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
               </div>
-              <button
-                onClick={() => setFilters({ 
-                  search: '', 
-                  status: 'all', 
-                  minCapacity: '', 
-                  maxCapacity: '', 
-                  operatorId: '' 
-                })}
-                className="text-xs text-blue-600 hover:text-blue-800 underline"
-              >
-                Clear all filters
-              </button>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
+      </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-lg shadow">
-          <BusTable
-            buses={buses}
-            onView={handleView}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            loading={loading}
-            onSort={handleSort}
-            sortBy={sortBy}
-            sortDir={sortDir}
-          />
-
-          {/* Pagination */}
-          {pagination.totalElements > 0 && (
-            <div className="border-t border-gray-200">
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalElements={pagination.totalElements}
-                pageSize={pagination.pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-                loading={loading}
-                searchActive={Boolean(filters.search)}
-                filterCount={hasActiveFilters ? 1 : 0}
-              />
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!loading && !hasData && !error && (
-            <div className="text-center py-12">
-              <div className="text-gray-500 mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0a2 2 0 01-2-2v-1" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No buses found</h3>
-              <p className="text-gray-500 mb-4">
-                {hasActiveFilters 
-                  ? "Try adjusting your search or filter criteria." 
-                  : "Get started by adding your first bus."
-                }
-              </p>
-              {!hasActiveFilters && (
-                <button
-                  onClick={handleAddNew}
-                  className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add First Bus
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Delete Bus Modal */}
+      {/* Delete Modal */}
+      {showDeleteModal && busToDelete && (
         <DeleteBusModal
           isOpen={showDeleteModal}
           onClose={handleDeleteCancel}
-          onConfirm={handleDeleteConfirm}
           bus={busToDelete}
+          onConfirm={handleDeleteConfirm}
           isDeleting={isDeleting}
-          tripCount={0} // TODO: Get trip count if needed
         />
-      </div>
+      )}
     </Layout>
   );
 }

@@ -6,7 +6,9 @@ import type { PageRouteGroupResponse } from '../models/PageRouteGroupResponse';
 import type { PageRouteResponse } from '../models/PageRouteResponse';
 import type { RouteGroupRequest } from '../models/RouteGroupRequest';
 import type { RouteGroupResponse } from '../models/RouteGroupResponse';
+import type { RouteImportResponse } from '../models/RouteImportResponse';
 import type { RouteResponse } from '../models/RouteResponse';
+import type { RouteStatisticsResponse } from '../models/RouteStatisticsResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -281,6 +283,56 @@ export class RouteManagementService {
                 401: `Unauthorized`,
                 404: `Route group not found`,
             },
+        });
+    }
+    /**
+     * Import routes from CSV file
+     * Bulk import routes from a CSV file. Expected CSV format: name,description,routeGroupName,startStopName,endStopName,distanceKm,estimatedDurationMinutes,direction (header row required). Direction should be OUTBOUND or INBOUND. Route group and stops must already exist in the system. Requires authentication.
+     * @param formData
+     * @returns RouteImportResponse Import completed (check response for detailed results)
+     * @throws ApiError
+     */
+    public static importRoutes(
+        formData?: {
+            /**
+             * CSV file containing route data
+             */
+            file: Blob;
+        },
+    ): CancelablePromise<RouteImportResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/routes/import',
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `Invalid file format or content`,
+                401: `Unauthorized`,
+            },
+        });
+    }
+    /**
+     * Download CSV import template
+     * Download a CSV template file with sample data and correct format for route import.
+     * @returns string Template downloaded successfully
+     * @throws ApiError
+     */
+    public static downloadRouteImportTemplate(): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/routes/import-template',
+        });
+    }
+    /**
+     * Get route statistics
+     * Retrieve comprehensive route statistics for dashboard KPI cards including counts, distributions, distance/duration metrics, and route information.
+     * @returns RouteStatisticsResponse Statistics retrieved successfully
+     * @throws ApiError
+     */
+    public static getRouteStatistics(): CancelablePromise<RouteStatisticsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/routes/statistics',
         });
     }
     /**

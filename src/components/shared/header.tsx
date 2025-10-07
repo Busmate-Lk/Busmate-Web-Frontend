@@ -4,9 +4,9 @@ import { Bus, ChevronDown, Bell, User, LogOut } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useAuth } from "@/context/AuthContext"
 
-interface HeaderProps{
-  pageTitle?:string
-  pageDescription?:string
+interface HeaderProps {
+  pageTitle?: string
+  pageDescription?: string
 }
 
 interface Notification {
@@ -19,14 +19,14 @@ interface Notification {
   isRead: boolean
 }
 
-export function Header({pageTitle,pageDescription}:HeaderProps) {
+export function Header({ pageTitle, pageDescription }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
   const { user, logout, isLoading } = useAuth()
-  
+
   const dropdownRef = useRef<HTMLDivElement>(null)
   const notificationRef = useRef<HTMLDivElement>(null)
-  
+
   // Sample notifications - replace with actual data from your API
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -105,7 +105,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
 
   const getUserDisplayName = () => {
     if (!user) return "User"
-    
+
     // Extract first name from email or use email
     const emailName = user.email.split('@')[0]
     return emailName.charAt(0).toUpperCase() + emailName.slice(1)
@@ -113,7 +113,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
 
   const getUserInitials = () => {
     if (!user) return "U"
-    
+
     const displayName = getUserDisplayName()
     const parts = displayName.split(' ')
     if (parts.length >= 2) {
@@ -141,16 +141,16 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
 
   const handleNotificationClick = (notification: Notification) => {
     // Mark as read
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n)
     )
-    
+
     // Redirect to relevant page
     if (notification.redirectUrl) {
       // Replace with your routing logic (e.g., router.push for Next.js)
       window.location.href = notification.redirectUrl
     }
-    
+
     setIsNotificationOpen(false)
   }
 
@@ -167,7 +167,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
     try {
       // Close dropdown first
       setIsDropdownOpen(false)
-      
+
       // Use the logout function from AuthContext
       await logout()
     } catch (error) {
@@ -213,6 +213,22 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
+
+          {/* Toggle to switch between real API and mock data - for demo purposes */}
+          {pageTitle === "MOT Admin Dashboard" && (
+            <div className="flex items-center">
+              <label className="inline-flex items-center">
+                <input
+                  type="checkbox"
+                // checked={useRealApi}
+                // onChange={(e) => setUseRealApi(e.target.checked)}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <span className="ml-2 text-sm text-gray-700">Use Real API</span>
+            </label>
+          </div>
+          )}
+
           {/* Notifications */}
           <div className="relative" ref={notificationRef}>
             <button
@@ -230,13 +246,13 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                 </span>
               )}
             </button>
-            
+
             {isNotificationOpen && (
               <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                 </div>
-                
+
                 {notifications.length === 0 ? (
                   <div className="px-4 py-8 text-center">
                     <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -248,29 +264,26 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                     {notifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-l-4 transition-colors ${
-                          notification.isRead 
-                            ? 'border-transparent bg-gray-50/50' 
+                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-l-4 transition-colors ${notification.isRead
+                            ? 'border-transparent bg-gray-50/50'
                             : 'border-blue-500 bg-blue-50/30'
-                        }`}
+                          }`}
                         onClick={() => handleNotificationClick(notification)}
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-lg">{getNotificationIcon(notification.type)}</span>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <p className={`text-sm font-medium ${
-                                notification.isRead ? 'text-gray-600' : 'text-gray-900'
-                              }`}>
+                              <p className={`text-sm font-medium ${notification.isRead ? 'text-gray-600' : 'text-gray-900'
+                                }`}>
                                 {notification.title}
                               </p>
                               {!notification.isRead && (
                                 <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                               )}
                             </div>
-                            <p className={`text-xs mt-1 ${
-                              notification.isRead ? 'text-gray-400' : 'text-gray-600'
-                            }`}>
+                            <p className={`text-xs mt-1 ${notification.isRead ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
                               {notification.message}
                             </p>
                             <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
@@ -280,7 +293,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                     ))}
                   </div>
                 )}
-                
+
                 {notifications.length > 0 && (
                   <div className="px-4 py-2 border-t border-gray-100">
                     <button className="text-xs text-blue-600 hover:text-blue-800 font-medium">
@@ -294,7 +307,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
 
           {/* User Profile Menu */}
           <div className="relative" ref={dropdownRef}>
-            <button 
+            <button
               className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
               onClick={() => {
                 setIsDropdownOpen(!isDropdownOpen)
@@ -316,7 +329,7 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
               </div>
               <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-            
+
             {isDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
@@ -330,12 +343,12 @@ export function Header({pageTitle,pageDescription}:HeaderProps) {
                     </div>
                   </div>
                 </div>
-                
+
                 <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <User className="w-4 h-4" />
                   View Profile
                 </button>
-                <button 
+                <button
                   className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   onClick={handleLogout}
                 >

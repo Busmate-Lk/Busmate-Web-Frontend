@@ -2,8 +2,26 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Exception date configuration for adding or removing service on specific dates
+ */
 export type ScheduleExceptionRequest = {
+    /**
+     * The specific date for this exception (YYYY-MM-DD)
+     */
     exceptionDate: string;
-    exceptionType: string;
+    /**
+     * Type of exception
+     */
+    exceptionType: ScheduleExceptionRequest.exceptionType;
 };
+export namespace ScheduleExceptionRequest {
+    /**
+     * Type of exception
+     */
+    export enum exceptionType {
+        ADDED = 'ADDED',
+        REMOVED = 'REMOVED',
+    }
+}
 

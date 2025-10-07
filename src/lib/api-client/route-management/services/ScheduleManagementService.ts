@@ -59,9 +59,35 @@ export class ScheduleManagementService {
         });
     }
     /**
-     * Create a new schedule (basic)
-     * Creates a new schedule with basic information only. Use this for creating a schedule that will be configured later with stops, calendar, and exceptions.
-     * @param requestBody
+     * Create a basic schedule
+     * Creates a new schedule with basic information only (name, route, dates, type).
+     *
+     * **Use this endpoint when:**
+     * - You want to create a schedule first and configure stops/calendar/exceptions later
+     * - You're implementing a multi-step schedule creation workflow
+     * - You only have basic schedule information available
+     *
+     * **What this API does:**
+     * - Creates a schedule entity with basic information
+     * - Does NOT create schedule stops, calendar, or exceptions
+     * - Returns the created schedule with empty lists for stops/calendar/exceptions
+     * - Optionally generates trips if 'generateTrips' is true (requires calendar to be set later)
+     *
+     * **Required fields:** name, routeId, scheduleType, effectiveStartDate
+     * **Optional fields:** effectiveEndDate, status, description, generateTrips
+     * **Ignored fields:** scheduleStops, calendar, exceptions (these will be ignored if provided)
+     *
+     * **Schedule Types:**
+     * - REGULAR: Normal daily service
+     * - SPECIAL: Special event or temporary service
+     *
+     * **Schedule Status:**
+     * - PENDING: Schedule created but not active
+     * - ACTIVE: Schedule is operational
+     * - INACTIVE: Schedule temporarily disabled
+     * - CANCELLED: Schedule permanently cancelled
+     *
+     * @param requestBody Complete with basic schedule information
      * @returns ScheduleResponse Schedule created successfully
      * @throws ApiError
      */
@@ -74,8 +100,9 @@ export class ScheduleManagementService {
             body: requestBody,
             mediaType: 'application/json',
             errors: {
-                400: `Invalid input data`,
-                401: `Unauthorized`,
+                400: `Invalid input data - check required fields and data formats`,
+                401: `Unauthorized - valid authentication required`,
+                404: `Route not found with the provided routeId`,
                 409: `Schedule name already exists for this route`,
             },
         });
@@ -177,9 +204,35 @@ export class ScheduleManagementService {
     }
     /**
      * Create a complete schedule with all components
-     * Creates a new schedule with stops, calendar, and exceptions in one transaction. This is the recommended endpoint for creating fully configured schedules.
-     * @param requestBody
-     * @returns ScheduleResponse Complete schedule created successfully
+     * Creates a new schedule with all components (stops, calendar, exceptions) in a single transaction.
+     *
+     * **Use this endpoint when:**
+     * - You have all schedule information available at once
+     * - You want to create a fully operational schedule immediately
+     * - You prefer atomic operations (all-or-nothing approach)
+     *
+     * **What this API does:**
+     * - Creates the schedule with basic information
+     * - Creates all schedule stops with arrival/departure times
+     * - Creates the calendar (which days of week the schedule operates)
+     * - Creates any schedule exceptions (added/removed dates)
+     * - Returns the complete schedule with all components populated
+     * - Optionally generates trips if 'generateTrips' is true
+     *
+     * **Required fields:** name, routeId, scheduleType, effectiveStartDate
+     * **Optional but recommended:** scheduleStops, calendar, exceptions
+     * **Stops ordering:** Must be in correct sequence (stopOrder: 0, 1, 2, ...)
+     *
+     * **Calendar rules:**
+     * - At least one day must be true for trip generation
+     * - Days set to true indicate when the schedule operates
+     *
+     * **Exception types:**
+     * - ADDED: Service runs on this date even if calendar says no
+     * - REMOVED: Service doesn't run on this date even if calendar says yes
+     *
+     * @param requestBody Complete schedule information with all components
+     * @returns ScheduleResponse Complete schedule created successfully with all components
      * @throws ApiError
      */
     public static createScheduleFull(
@@ -191,8 +244,9 @@ export class ScheduleManagementService {
             body: requestBody,
             mediaType: 'application/json',
             errors: {
-                400: `Invalid input data`,
-                401: `Unauthorized`,
+                400: `Invalid input data - check stops order, time formats, or calendar settings`,
+                401: `Unauthorized - valid authentication required`,
+                404: `Route or stop not found with provided IDs`,
                 409: `Schedule name already exists for this route`,
             },
         });

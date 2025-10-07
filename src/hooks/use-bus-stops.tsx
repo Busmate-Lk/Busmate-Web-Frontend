@@ -54,6 +54,7 @@ interface UseBusStopsReturn {
   // Data fetching
   refetch: (params?: BusStopQueryParams) => Promise<void>;
   loadAllBusStops: () => Promise<void>;
+  loadFilteredBusStopsForMap: (params?: BusStopQueryParams) => Promise<void>;
   loadFilterOptions: () => Promise<void>;
   
   // Utility functions
@@ -213,6 +214,40 @@ const useBusStops = (): UseBusStopsReturn => {
     }
   }, []);
 
+  // Load filtered bus stops for map view with maximum page size
+  const loadFilteredBusStopsForMap = useCallback(async (params?: BusStopQueryParams) => {
+    setAllBusStopsLoading(true);
+    setError(null);
+    
+    try {
+      const searchParams = {
+        page: 0,
+        size: 100, // Maximum page size for map view
+        sortBy: params?.sortBy || 'name',
+        sortDir: params?.sortDir || 'asc',
+        search: params?.search || ''
+      };
+
+      const response = await BusStopManagementService.getAllStops(
+        searchParams.page,
+        searchParams.size,
+        searchParams.sortBy,
+        searchParams.sortDir,
+        searchParams.search
+      );
+
+      // Extract just the content array for allBusStops
+      setAllBusStops(response.content || []);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to load filtered bus stops for map';
+      setError(errorMessage);
+      console.error('Error loading filtered bus stops for map:', error);
+      setAllBusStops([]);
+    } finally {
+      setAllBusStopsLoading(false);
+    }
+  }, []);
+
   // Load filter options
   const loadFilterOptions = useCallback(async () => {
     setFilterOptionsLoading(true);
@@ -352,6 +387,7 @@ const useBusStops = (): UseBusStopsReturn => {
     // Data fetching
     refetch: loadBusStops,
     loadAllBusStops,
+    loadFilteredBusStopsForMap,
     loadFilterOptions,
     
     // Utility functions

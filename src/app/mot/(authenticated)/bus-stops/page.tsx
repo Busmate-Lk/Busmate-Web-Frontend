@@ -1,415 +1,547 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { Plus, RefreshCw, Download, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import BusStopStats from '@/components/mot/bus-stops/BusStopStats';
-import BusStopFilters from '@/components/mot/bus-stops/BusStopFilters';
-import BusStopTable from '@/components/mot/bus-stops/BusStopTable';
-import DeleteBusStopModal from '@/components/mot/bus-stops/DeleteBusStopModal';
-import Pagination from '@/components/shared/Pagination';
-import { Layout } from '@/components/shared/layout';
-import useBusStops from '@/hooks/use-bus-stops';
-import { StopResponse } from '@/lib/api-client/route-management';
+import { BusStopManagementService } from '@/lib/api-client/route-management';
+import type { StopResponse, PageStopResponse, StopRequest } from '@/lib/api-client/route-management';
 
-export default function BusStops() {
+// Components
+import { BusStopStatsCards } from '@/components/mot/bus-stops/BusStopStatsCards';
+import { BusStopAdvancedFilters } from '@/components/mot/bus-stops/BusStopAdvancedFilters';
+import { BusStopActionButtons } from '@/components/mot/bus-stops/BusStopActionButtons';
+import { BusStopsTable } from '@/components/mot/bus-stops/BusStopsTable';
+import { BusStopsMapView } from '@/components/mot/bus-stops/BusStopsMapView';
+import { ViewTabs } from '@/components/mot/bus-stops/ViewTabs';
+import { BusStopPagination } from '@/components/mot/bus-stops/BusStopPagination';
+import { DeleteConfirmationModal } from '@/components/mot/confirmation-modals';
+import { useToast } from '@/hooks/use-toast';
+import { Layout } from '@/components/shared/layout';
+
+export type ViewType = 'table' | 'map';
+
+interface QueryParams {
+  page: number;
+  size: number;
+  sortBy: string;
+  sortDir: 'asc' | 'desc';
+  search: string;
+  state?: string;
+  isAccessible?: boolean;
+}
+
+interface FilterOptions {
+  states: string[];
+  accessibilityStatuses: boolean[];
+}
+
+export default function BusStopsPage() {
   const router = useRouter();
+  const { toast } = useToast();
   
-  // Local filter states (client-side filtering)
-  const [localFilters, setLocalFilters] = useState({
-    state: 'all',
-    accessibility: 'all',
+  // View state
+  const [currentView, setCurrentView] = useState<ViewType>('table');
+  
+  // Data states
+  const [allBusStops, setAllBusStops] = useState<StopResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stateFilter, setStateFilter] = useState('all');
+  const [accessibilityFilter, setAccessibilityFilter] = useState('all');
+
+  // Filter options from API
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    states: [],
+    accessibilityStatuses: []
+  });
+  const [filterOptionsLoading, setFilterOptionsLoading] = useState(true);
+
+  const [queryParams, setQueryParams] = useState<QueryParams>({
+    page: 0,
+    size: 10,
+    sortBy: 'name',
+    sortDir: 'asc',
+    search: '',
   });
 
-  // UI states
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  
-  // Delete modal states
+  // Statistics state
+  const [stats, setStats] = useState({
+    totalStops: { count: 0 },
+    accessibleStops: { count: 0 },
+    nonAccessibleStops: { count: 0 },
+    totalStates: { count: 0 },
+    totalCities: { count: 0 }
+  });
+
+  // State for delete modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [busStopToDelete, setBusStopToDelete] = useState<StopResponse | null>(null);
+  const [stopToDelete, setStopToDelete] = useState<StopResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Hook usage - MOVED ALL HOOKS TO THE TOP
-  const {
-    busStops,
-    filterOptions,
-    pagination,
-    loading,
-    filterOptionsLoading,
-    error,
-    deleteBusStop,
-    clearError,
-    hasData,
-    getCurrentParams,
-    updateParams,
-  } = useBusStops();
-
-  // Get current query params for UI state
-  const currentParams = getCurrentParams();
-
-  // Apply local (client-side) filters to server-filtered bus stops
-  const filteredBusStops = useMemo(() => {
-    if (!busStops) return [];
-
-    return busStops.filter((stop: StopResponse) => {
-      // State filter
-      if (localFilters.state !== 'all' && stop.location?.state !== localFilters.state) {
-        return false;
-      }
-
-      // Accessibility filter
-      if (localFilters.accessibility !== 'all') {
-        if (localFilters.accessibility === 'accessible' && !stop.isAccessible) {
-          return false;
-        }
-        if (localFilters.accessibility === 'non-accessible' && stop.isAccessible) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [busStops, localFilters]);
-
-  // Computed filter status
-  const hasActiveFilters = useMemo(() => {
-    return (
-      (currentParams.search && currentParams.search.length > 0) ||
-      localFilters.state !== 'all' ||
-      localFilters.accessibility !== 'all'
-    );
-  }, [currentParams.search, localFilters]);
-
-  // Refresh handler
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    clearError();
-    
+  // Load filter options
+  const loadFilterOptions = useCallback(async () => {
     try {
-      await updateParams(getCurrentParams());
+      setFilterOptionsLoading(true);
+      const [states, accessibilityStatuses] = await Promise.all([
+        BusStopManagementService.getDistinctStates(),
+        BusStopManagementService.getDistinctAccessibilityStatuses()
+      ]);
+
+      setFilterOptions({
+        states: states || [],
+        accessibilityStatuses: accessibilityStatuses || []
+      });
+    } catch (error) {
+      console.error('Failed to load filter options:', error);
     } finally {
-      setIsRefreshing(false);
+      setFilterOptionsLoading(false);
     }
-  }, [updateParams, getCurrentParams, clearError]);
-
-  // Search handler (server-side search + reset to page 0)
-  const handleSearch = useCallback(async (searchTerm: string) => {
-    await updateParams({
-      search: searchTerm,
-      page: 0, // Reset to first page when searching
-    });
-  }, [updateParams]);
-
-  // Sort handler (server-side sort + reset to page 0)
-  const handleSort = useCallback(async (
-    sortBy: string,
-    sortDir: 'asc' | 'desc'
-  ) => {
-    await updateParams({
-      sortBy,
-      sortDir,
-      page: 0, // Reset to first page when sorting
-    });
-  }, [updateParams]);
-
-  // Local filter handlers (client-side only)
-  const handleLocalFilterChange = useCallback((filterType: string, value: string) => {
-    setLocalFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
   }, []);
 
-  // Clear all filters
-  const handleClearAllFilters = useCallback(async () => {
-    // Clear local filters
-    setLocalFilters({
-      state: 'all',
-      accessibility: 'all',
-    });
-    
-    // Clear server-side search and reset pagination
-    await handleSearch('');
-  }, [handleSearch]);
-
-  // Pagination handlers (maintain current search/sort)
-  const handlePageChange = useCallback(async (page: number) => {
-    await updateParams({ page });
-  }, [updateParams]);
-
-  const handlePageSizeChange = useCallback(async (size: number) => {
-    await updateParams({ 
-      size, 
-      page: 0 // Reset to first page when changing page size
-    });
-  }, [updateParams]);
-
-  // Delete handlers
-  const handleDeleteClick = useCallback((busStop: StopResponse) => {
-    setBusStopToDelete(busStop);
-    setShowDeleteModal(true);
-  }, []);
-
-  const handleDeleteCancel = useCallback(() => {
-    setShowDeleteModal(false);
-    setBusStopToDelete(null);
-  }, []);
-
-  const handleDeleteConfirm = useCallback(async () => {
-    if (!busStopToDelete?.id) return;
-
-    setIsDeleting(true);
+  // Load statistics
+  const loadStatistics = useCallback(async () => {
     try {
-      const success = await deleteBusStop(busStopToDelete.id);
-      if (success) {
-        setShowDeleteModal(false);
-        setBusStopToDelete(null);
-        // Optionally refresh the data
-        await handleRefresh();
+      const response = await BusStopManagementService.getStopStatistics();
+      setStats({
+        totalStops: { count: response.totalStops || 0 },
+        accessibleStops: { count: response.accessibleStops || 0 },
+        nonAccessibleStops: { count: response.nonAccessibleStops || 0 },
+        totalStates: { count: Object.keys(response.stopsByState || {}).length },
+        totalCities: { count: Object.keys(response.stopsByCity || {}).length }
+      });
+    } catch (error) {
+      console.error('Failed to load statistics:', error);
+    }
+  }, []);
+
+  // Load bus stops from API (only search is server-side, other filters are client-side)
+  const loadBusStops = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // For search, we use server-side filtering. For state/accessibility, we use client-side filtering.
+      const response: PageStopResponse = await BusStopManagementService.getAllStops(
+        0, // Always get first page
+        1000, // Get a large number to get all results
+        queryParams.sortBy,
+        queryParams.sortDir,
+        queryParams.search
+      );
+
+      setAllBusStops(response.content || []);
+    } catch (error) {
+      console.error('Failed to load bus stops:', error);
+      setError('Failed to load bus stops. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [queryParams.search, queryParams.sortBy, queryParams.sortDir]);
+
+  useEffect(() => {
+    loadFilterOptions();
+    loadStatistics();
+  }, [loadFilterOptions, loadStatistics]);
+
+  useEffect(() => {
+    loadBusStops();
+  }, [loadBusStops]);
+
+  // Update query params with filters
+  const updateQueryParams = useCallback((updates: Partial<QueryParams>) => {
+    const filteredUpdates: Partial<QueryParams> = {};
+
+    // Only include defined values
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        (filteredUpdates as any)[key] = value;
       }
-    } catch (err) {
-      console.error('Failed to delete bus stop:', err);
-      // Keep the modal open on error so user can see what happened
+    });
+
+    // Add filter-based query params
+    if (stateFilter !== 'all') {
+      filteredUpdates.state = stateFilter;
+    }
+
+    if (accessibilityFilter !== 'all') {
+      filteredUpdates.isAccessible = accessibilityFilter === 'accessible';
+    }
+
+    setQueryParams(prev => ({
+      ...prev,
+      ...filteredUpdates,
+      // Reset to first page when filters change (except when page is explicitly updated)
+      page: 'page' in filteredUpdates ? filteredUpdates.page! : 0,
+    }));
+  }, [stateFilter, accessibilityFilter]);
+
+  // Remove the automatic filter application useEffect - we'll handle it manually
+
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    // Update query params for table view
+    updateQueryParams({ search: searchTerm });
+  };
+
+  const handleSearchTermUpdate = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+  };
+
+  const handleSort = (sortBy: string, sortDir: 'asc' | 'desc') => {
+    updateQueryParams({ sortBy, sortDir });
+  };
+
+  const handlePageChange = (page: number) => {
+    updateQueryParams({ page });
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    updateQueryParams({ size });
+  };
+
+  const handleViewChange = (view: ViewType) => {
+    setCurrentView(view);
+  };
+
+  const handleStateFilterChange = (value: string) => {
+    setStateFilter(value);
+    // Update query params for table view
+    updateQueryParams({});
+  };
+
+  const handleAccessibilityFilterChange = (value: string) => {
+    setAccessibilityFilter(value);
+    // Update query params for table view
+    updateQueryParams({});
+  };
+
+  const handleClearAllFilters = useCallback(() => {
+    setSearchTerm('');
+    setStateFilter('all');
+    setAccessibilityFilter('all');
+    setQueryParams({
+      page: 0,
+      size: 10,
+      sortBy: 'name',
+      sortDir: 'asc',
+      search: '',
+    });
+  }, []);
+
+  // Bus stop action handlers
+  const handleAddBusStop = () => {
+    router.push('/mot/bus-stops/add');
+  };
+
+  const handleImportBusStops = () => {
+    router.push('/mot/bus-stops/import');
+  };
+
+  const handleExportAll = async () => {
+    try {
+      toast({
+        title: "Export Started",
+        description: "Your export will begin shortly...",
+      });
+      
+      // TODO: Implement export functionality
+      console.log('Exporting all bus stops...');
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export bus stops. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleView = (stopId: string) => {
+    router.push(`/mot/bus-stops/${stopId}`);
+  };
+
+  const handleEdit = (stopId: string) => {
+    router.push(`/mot/bus-stops/${stopId}/edit`);
+  };
+
+  const handleDeleteClick = (stopId: string, stopName: string) => {
+    const stop = allBusStops.find(s => s.id === stopId);
+    if (stop) {
+      setStopToDelete(stop);
+      setShowDeleteModal(true);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setStopToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!stopToDelete) return;
+
+    try {
+      setIsDeleting(true);
+      await BusStopManagementService.deleteStop(stopToDelete.id!);
+      
+      toast({
+        title: "Bus Stop Deleted",
+        description: `${stopToDelete.name} has been deleted successfully.`,
+      });
+
+      setShowDeleteModal(false);
+      setStopToDelete(null);
+      
+      // Reload data
+      loadBusStops();
+      loadStatistics();
+    } catch (error) {
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete bus stop. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsDeleting(false);
     }
-  }, [busStopToDelete, deleteBusStop, handleRefresh]);
+  };
 
-  // Export functionality
-  const handleExport = useCallback(async () => {
-    try {
-      const dataToExport = filteredBusStops.map(stop => ({
-        ID: stop.id || '',
-        Name: stop.name || '',
-        Description: stop.description || '',
-        Address: stop.location?.address || '',
-        City: stop.location?.city || '',
-        State: stop.location?.state || '',
-        'Zip Code': stop.location?.zipCode || '',
-        Country: stop.location?.country || '',
-        Latitude: stop.location?.latitude || '',
-        Longitude: stop.location?.longitude || '',
-        Accessible: stop.isAccessible ? 'Yes' : 'No',
-        'Created At': stop.createdAt ? new Date(stop.createdAt).toLocaleDateString() : '',
-        'Updated At': stop.updatedAt ? new Date(stop.updatedAt).toLocaleDateString() : '',
-        'Created By': stop.createdBy || '',
-        'Updated By': stop.updatedBy || '',
-      }));
+  // Get filtered bus stops for map view
+  const filteredMapBusStops = useMemo(() => {
+    if (currentView !== 'map') return [];
+    
+    let filtered = allBusStops;
 
-      if (dataToExport.length === 0) {
-        alert('No data to export');
-        return;
-      }
-
-      const headers = Object.keys(dataToExport[0]);
-      const csvContent = [
-        headers.join(','),
-        ...dataToExport.map(row => 
-          headers.map(header => {
-            const value = row[header as keyof typeof row];
-            // Escape commas and quotes in CSV
-            return typeof value === 'string' && value.includes(',') 
-              ? `"${value.replace(/"/g, '""')}"` 
-              : value;
-          }).join(',')
-        )
-      ].join('\n');
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `bus-stops-${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Failed to export data. Please try again.');
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(stop =>
+        stop.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stop.location?.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stop.location?.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stop.location?.state?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
-  }, [filteredBusStops]);
 
-  // CONDITIONAL RENDERING MOVED TO THE END AFTER ALL HOOKS
-  // Loading state for initial load
-  if (loading && pagination.currentPage === 0 && !hasData) {
+    // Apply state filter
+    if (stateFilter !== 'all') {
+      filtered = filtered.filter(stop => stop.location?.state === stateFilter);
+    }
+
+    // Apply accessibility filter
+    if (accessibilityFilter !== 'all') {
+      const isAccessible = accessibilityFilter === 'accessible';
+      filtered = filtered.filter(stop => stop.isAccessible === isAccessible);
+    }
+
+    return filtered;
+  }, [currentView, allBusStops, searchTerm, stateFilter, accessibilityFilter]);
+
+  // Get filtered and paginated bus stops for table view
+  const filteredTableData = useMemo(() => {
+    if (currentView !== 'table') return { data: [], totalElements: 0, totalPages: 0 };
+    
+    let filtered = allBusStops;
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(stop =>
+        stop.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stop.location?.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stop.location?.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stop.location?.state?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply state filter
+    if (stateFilter !== 'all') {
+      filtered = filtered.filter(stop => stop.location?.state === stateFilter);
+    }
+
+    // Apply accessibility filter
+    if (accessibilityFilter !== 'all') {
+      const isAccessible = accessibilityFilter === 'accessible';
+      filtered = filtered.filter(stop => stop.isAccessible === isAccessible);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const field = queryParams.sortBy;
+      const direction = queryParams.sortDir === 'asc' ? 1 : -1;
+      
+      let aVal = '';
+      let bVal = '';
+      
+      switch (field) {
+        case 'name':
+          aVal = a.name || '';
+          bVal = b.name || '';
+          break;
+        case 'createdAt':
+          aVal = a.createdAt || '';
+          bVal = b.createdAt || '';
+          break;
+        case 'updatedAt':
+          aVal = a.updatedAt || '';
+          bVal = b.updatedAt || '';
+          break;
+        case 'city':
+          aVal = a.location?.city || '';
+          bVal = b.location?.city || '';
+          break;
+        case 'state':
+          aVal = a.location?.state || '';
+          bVal = b.location?.state || '';
+          break;
+        default:
+          aVal = a.name || '';
+          bVal = b.name || '';
+      }
+      
+      return aVal.localeCompare(bVal) * direction;
+    });
+
+    const totalElements = filtered.length;
+    const totalPages = Math.ceil(totalElements / queryParams.size);
+    const startIndex = queryParams.page * queryParams.size;
+    const endIndex = startIndex + queryParams.size;
+    const data = filtered.slice(startIndex, endIndex);
+
+    return {
+      data,
+      totalElements,
+      totalPages
+    };
+  }, [currentView, allBusStops, searchTerm, stateFilter, accessibilityFilter, queryParams]);
+
+  // Update busStops and pagination based on current view
+  const busStops = currentView === 'table' ? filteredTableData.data : [];
+  
+  const pagination = useMemo(() => ({
+    currentPage: queryParams.page,
+    totalPages: currentView === 'table' ? filteredTableData.totalPages : 0,
+    totalElements: currentView === 'table' ? filteredTableData.totalElements : 0,
+    pageSize: queryParams.size,
+  }), [queryParams.page, queryParams.size, currentView, filteredTableData]);
+
+  const currentSort = {
+    field: queryParams.sortBy,
+    direction: queryParams.sortDir
+  };
+
+  const activeFilters = {
+    search: searchTerm,
+    state: stateFilter,
+    accessibility: accessibilityFilter
+  };
+
+  if (error) {
     return (
-      <Layout
-        activeItem="bus-stops"
-        pageTitle="Bus Stops Management"
-        pageDescription="Manage and monitor bus stop locations and facilities"
-        role="mot"
-      >
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="p-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Bus Stops</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => {
+              setError(null);
+              loadBusStops();
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
     <Layout
-      activeItem="bus-stops"
-      pageTitle="Bus Stops Management"
-      pageDescription="Manage and monitor bus stop locations and facilities"
-      role="mot"
-    >
-      <div className="space-y-6">
-        {/* Error Alert */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 mr-3 flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-red-800">Error Loading Data</h3>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
-                <button
-                  onClick={clearError}
-                  className="text-sm text-red-600 hover:text-red-800 underline mt-2"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+          activeItem="bus-stops"
+          pageTitle="Bus Stops"
+          pageDescription="Manage and monitor bus stops across your network"
+          role="mot"
+        >
+    <div className="space-y-6">
+      {/* Statistics Cards */}
+      <BusStopStatsCards stats={stats} />
 
-        {/* Stats */}
-        <BusStopStats busStops={filteredBusStops} />
-
-        {/* Header Actions */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing || loading}
-              className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            
-            {hasData && (
-              <button
-                onClick={handleExport}
-                className="flex items-center bg-green-100 hover:bg-green-200 text-green-700 px-3 py-2 rounded-lg transition-colors duration-200"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </button>
-            )}
-          </div>
-
-          <button
-            onClick={() => router.push('/mot/bus-stops/add-new')}
-            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Bus Stop
-          </button>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <BusStopFilters
-            searchTerm={currentParams.search || ''}
-            setSearchTerm={handleSearch}
-            stateFilter={localFilters.state}
-            setStateFilter={(value) => handleLocalFilterChange('state', value)}
-            accessibilityFilter={localFilters.accessibility}
-            setAccessibilityFilter={(value) => handleLocalFilterChange('accessibility', value)}
-            filterOptions={filterOptions}
-            loading={filterOptionsLoading}
-          />
-        </div>
-
-        {/* Active Filters Indicator */}
-        {hasActiveFilters && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-blue-700">
-                  {filteredBusStops.length} of {busStops?.length || 0} results shown
-                </span>
-                <span className="text-xs text-blue-600">
-                  Total in database: {pagination.totalElements}
-                </span>
-              </div>
-              <button
-                onClick={handleClearAllFilters}
-                className="text-xs text-blue-600 hover:text-blue-800 underline"
-              >
-                Clear all filters
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Main Content */}
-        <div className="bg-white rounded-lg shadow">
-          <BusStopTable 
-            busStops={filteredBusStops} 
-            loading={loading}
-            onSort={handleSort}
-            sortBy={currentParams.sortBy}
-            sortDir={currentParams.sortDir}
-            onDelete={handleDeleteClick}
-          />
-
-          {/* Pagination */}
-          {pagination.totalElements > 0 && (
-            <div className="border-t border-gray-200">
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalElements={pagination.totalElements}
-                pageSize={pagination.pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-                loading={loading}
-                searchActive={Boolean(currentParams.search)}
-                filterCount={hasActiveFilters ? 1 : 0}
-              />
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!loading && !hasData && !error && (
-            <div className="text-center py-12">
-              <div className="text-gray-500 mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No bus stops found</h3>
-              <p className="text-gray-500 mb-4">
-                {hasActiveFilters 
-                  ? "Try adjusting your search or filter criteria." 
-                  : "Get started by adding your first bus stop."
-                }
-              </p>
-              {!hasActiveFilters && (
-                <button
-                  onClick={() => router.push('/mot/bus-stops/add-new')}
-                  className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add First Bus Stop
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Delete Confirmation Modal */}
-        <DeleteBusStopModal
-          isOpen={showDeleteModal}
-          onClose={handleDeleteCancel}
-          onConfirm={handleDeleteConfirm}
-          busStop={busStopToDelete}
-          isDeleting={isDeleting}
+      {/* Action Buttons */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <BusStopActionButtons
+          onAddBusStop={handleAddBusStop}
+          onImportBusStops={handleImportBusStops}
+          onExportAll={handleExportAll}
+          isLoading={isLoading}
         />
       </div>
+
+      {/* Advanced Filters */}
+      <BusStopAdvancedFilters
+        searchTerm={searchTerm}
+        setSearchTerm={handleSearchTermUpdate}
+        stateFilter={stateFilter}
+        setStateFilter={handleStateFilterChange}
+        accessibilityFilter={accessibilityFilter}
+        setAccessibilityFilter={handleAccessibilityFilterChange}
+        filterOptions={filterOptions}
+        loading={filterOptionsLoading}
+        totalCount={stats.totalStops.count}
+        filteredCount={currentView === 'table' ? pagination.totalElements : filteredMapBusStops.length}
+        onClearAll={handleClearAllFilters}
+        onSearch={handleSearch}
+      />
+
+      {/* View Tabs */}
+      <ViewTabs
+        activeView={currentView}
+        onViewChange={handleViewChange}
+        tableCount={pagination.totalElements}
+        mapCount={filteredMapBusStops.length}
+      />
+
+      {/* Content based on current view */}
+      {currentView === 'table' ? (
+        <div className='bg-white shadow-sm rounded-lg border border-gray-200'>
+          <BusStopsTable
+            busStops={busStops}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+            onSort={handleSort}
+            activeFilters={activeFilters}
+            loading={isLoading}
+            currentSort={currentSort}
+          />
+
+          <BusStopPagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            totalElements={pagination.totalElements}
+            pageSize={pagination.pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            loading={isLoading}
+          />
+        </div>
+      ) : (
+        <BusStopsMapView
+          busStops={filteredMapBusStops}
+          loading={isLoading}
+          onDelete={(stop: StopResponse) => handleDeleteClick(stop.id!, stop.name || 'Unknown')}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Bus Stop"
+        itemName={stopToDelete?.name || 'this bus stop'}
+        isLoading={isDeleting}
+      />
+    </div>
     </Layout>
   );
 }

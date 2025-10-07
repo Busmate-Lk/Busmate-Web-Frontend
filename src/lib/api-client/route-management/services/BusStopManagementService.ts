@@ -5,8 +5,10 @@
 import type { PageStopResponse } from '../models/PageStopResponse';
 import type { RouteStopDetailResponse } from '../models/RouteStopDetailResponse';
 import type { ScheduleStopDetailResponse } from '../models/ScheduleStopDetailResponse';
+import type { StopImportResponse } from '../models/StopImportResponse';
 import type { StopRequest } from '../models/StopRequest';
 import type { StopResponse } from '../models/StopResponse';
+import type { StopStatisticsResponse } from '../models/StopStatisticsResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -103,6 +105,44 @@ export class BusStopManagementService {
         });
     }
     /**
+     * Import stops from CSV file
+     * Bulk import stops from a CSV file. Expected CSV format: name,description,latitude,longitude,address,city,state,zipCode,country,isAccessible (header row required). Latitude and longitude are required. isAccessible should be true or false. Requires authentication.
+     * @param formData
+     * @returns StopImportResponse Import completed (check response for detailed results)
+     * @throws ApiError
+     */
+    public static importStops(
+        formData?: {
+            /**
+             * CSV file containing stop data
+             */
+            file: Blob;
+        },
+    ): CancelablePromise<StopImportResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/stops/import',
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `Invalid file format or content`,
+                401: `Unauthorized`,
+            },
+        });
+    }
+    /**
+     * Download CSV import template
+     * Download a CSV template file with sample data and correct format for stop import.
+     * @returns string Template downloaded successfully
+     * @throws ApiError
+     */
+    public static downloadStopImportTemplate(): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/stops/import-template',
+        });
+    }
+    /**
      * Get stops along a route
      * Retrieve all stops in correct order for a specific route with details including distances.
      * @param routeId Route ID
@@ -144,6 +184,18 @@ export class BusStopManagementService {
                 400: `Invalid schedule ID format`,
                 404: `Schedule not found`,
             },
+        });
+    }
+    /**
+     * Get stop statistics
+     * Retrieve comprehensive stop statistics for dashboard KPI cards including counts, distributions, accessibility metrics, and geographical information.
+     * @returns StopStatisticsResponse Statistics retrieved successfully
+     * @throws ApiError
+     */
+    public static getStopStatistics(): CancelablePromise<StopStatisticsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/stops/statistics',
         });
     }
     /**
