@@ -3,8 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PaginatedResponsePassengerServicePermitResponse } from '../models/PaginatedResponsePassengerServicePermitResponse';
+import type { PassengerServicePermitFilterOptionsResponse } from '../models/PassengerServicePermitFilterOptionsResponse';
+import type { PassengerServicePermitImportResponse } from '../models/PassengerServicePermitImportResponse';
 import type { PassengerServicePermitRequest } from '../models/PassengerServicePermitRequest';
 import type { PassengerServicePermitResponse } from '../models/PassengerServicePermitResponse';
+import type { PassengerServicePermitStatisticsResponse } from '../models/PassengerServicePermitStatisticsResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -76,6 +79,56 @@ export class PermitManagementService {
         });
     }
     /**
+     * Get available filter options
+     * Retrieve all available filter options for permit management frontend including operators, route groups, statuses, permit types, and sort options.
+     * @returns PassengerServicePermitFilterOptionsResponse Filter options retrieved successfully
+     * @throws ApiError
+     */
+    public static getPermitFilterOptions(): CancelablePromise<PassengerServicePermitFilterOptionsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/permits/filter-options',
+        });
+    }
+    /**
+     * Import permits from CSV file
+     * Bulk import passenger service permits from a CSV file. The file must follow the template format with columns: operatorName, routeGroupName, permitNumber, issueDate, expiryDate, maximumBusAssigned, permitType, status. Returns detailed results including successful imports, failures, and error details.
+     * @param formData
+     * @returns PassengerServicePermitImportResponse Import completed (may include partial failures)
+     * @throws ApiError
+     */
+    public static importPermitsFromCsv(
+        formData?: {
+            /**
+             * CSV file containing permit data
+             */
+            file: Blob;
+        },
+    ): CancelablePromise<PassengerServicePermitImportResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/permits/import',
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `Invalid file format or empty file`,
+                401: `Unauthorized`,
+            },
+        });
+    }
+    /**
+     * Download CSV import template
+     * Download a CSV template file with sample data for bulk permit import. The template includes all required columns and example values.
+     * @returns string Template downloaded successfully
+     * @throws ApiError
+     */
+    public static getPermitImportTemplate(): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/permits/import-template',
+        });
+    }
+    /**
      * Get permits by route group
      * Retrieve all passenger service permits for a specific route group
      * @param routeGroupId Route group ID
@@ -91,6 +144,18 @@ export class PermitManagementService {
             path: {
                 'routeGroupId': routeGroupId,
             },
+        });
+    }
+    /**
+     * Get permit statistics
+     * Retrieve comprehensive permit statistics including total counts, status breakdowns, expiry alerts, and distribution by operators and route groups.
+     * @returns PassengerServicePermitStatisticsResponse Statistics retrieved successfully
+     * @throws ApiError
+     */
+    public static getPermitStatistics(): CancelablePromise<PassengerServicePermitStatisticsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/permits/statistics',
         });
     }
     /**

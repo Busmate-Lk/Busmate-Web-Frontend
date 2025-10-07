@@ -426,7 +426,7 @@ export default function BusStopDetailsPage({ params }: BusStopDetailsPageProps) 
       pageDescription="View detailed information about this bus stop"
       role="mot"
     >
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="mx-auto px-4 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex flex-col items-start gap-2">

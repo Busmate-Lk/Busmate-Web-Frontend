@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { X, AlertTriangle, Trash2, ArrowLeft, Route, MapPin } from 'lucide-react';
-import type { RouteGroupResponse } from '@/lib/api-client/route-management';
+import type { RouteGroupResponse, RouteResponse } from '@/lib/api-client/route-management';
 
 interface DeleteRouteConfirmationProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => Promise<void>;
-  routeGroup: RouteGroupResponse | null;
+  routeGroup?: RouteGroupResponse | null;
+  route?: RouteResponse | null;
   isDeleting?: boolean;
 }
 
@@ -17,6 +18,7 @@ export default function DeleteRouteConfirmation({
   onClose,
   onConfirm,
   routeGroup,
+  route,
   isDeleting = false,
 }: DeleteRouteConfirmationProps) {
   const [confirmText, setConfirmText] = useState('');
@@ -101,7 +103,7 @@ export default function DeleteRouteConfirmation({
                   </div>
                   <div className="ml-3">
                     <h3 className="text-lg font-medium text-gray-900">
-                      Delete Route Group
+                      {route ? 'Delete Route' : 'Delete Route Group'}
                     </h3>
                   </div>
                 </div>
@@ -126,7 +128,9 @@ export default function DeleteRouteConfirmation({
                         This action cannot be undone
                       </h4>
                       <p className="text-sm text-red-700 mt-1">
-                        This will permanently delete the route group and all its associated routes from the system.
+                        {route 
+                          ? 'This will permanently delete the route from the system.'
+                          : 'This will permanently delete the route group and all its associated routes from the system.'}
                       </p>
                     </div>
                   </div>
@@ -174,17 +178,82 @@ export default function DeleteRouteConfirmation({
                   </div>
                 )}
 
-                {/* Impact Warning - specific to routes */}
+                {/* Route Details */}
+                {route && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">
+                      Route to be deleted:
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Name:</span>
+                        <span className="ml-2 text-sm text-gray-900">{route.name || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">ID:</span>
+                        <span className="ml-2 text-sm font-mono text-gray-600">{route.id}</span>
+                      </div>
+                      {route.description && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-700">Description:</span>
+                          <span className="ml-2 text-sm text-gray-900">{route.description}</span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Route Group:</span>
+                        <span className="ml-2 text-sm text-gray-900">{route.routeGroupName || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Direction:</span>
+                        <span className="ml-2 text-sm text-gray-900">{route.direction || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Route:</span>
+                        <span className="ml-2 text-sm text-gray-900">
+                          {route.startStopName || 'Unknown'} → {route.endStopName || 'Unknown'}
+                        </span>
+                      </div>
+                      {route.distanceKm && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-700">Distance:</span>
+                          <span className="ml-2 text-sm text-gray-900">{route.distanceKm.toFixed(1)} km</span>
+                        </div>
+                      )}
+                      {route.createdAt && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-700">Created:</span>
+                          <span className="ml-2 text-sm text-gray-900">
+                            {new Date(route.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Impact Warning */}
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-amber-800 mb-2">
                     Potential Impact
                   </h4>
                   <ul className="text-sm text-amber-700 space-y-1">
-                    <li>• All {routeCount} route{routeCount !== 1 ? 's' : ''} in this group will be permanently deleted</li>
-                    <li>• Bus schedules associated with these routes will be affected</li>
-                    <li>• Passenger service permits linked to these routes may become invalid</li>
-                    <li>• Historical trip data and analytics will be permanently lost</li>
-                    <li>• Any ongoing services using these routes will be disrupted</li>
+                    {routeGroup ? (
+                      <>
+                        <li>• All {routeCount} route{routeCount !== 1 ? 's' : ''} in this group will be permanently deleted</li>
+                        <li>• Bus schedules associated with these routes will be affected</li>
+                        <li>• Passenger service permits linked to these routes may become invalid</li>
+                        <li>• Historical trip data and analytics will be permanently lost</li>
+                        <li>• Any ongoing services using these routes will be disrupted</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>• This route will be permanently deleted from the system</li>
+                        <li>• Bus schedules associated with this route will be affected</li>
+                        <li>• Passenger service permits linked to this route may become invalid</li>
+                        <li>• Historical trip data and analytics for this route will be permanently lost</li>
+                        <li>• Any ongoing services using this route will be disrupted</li>
+                      </>
+                    )}
                   </ul>
                 </div>
 
