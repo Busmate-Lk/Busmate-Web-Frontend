@@ -341,24 +341,34 @@ export default function LocationTrackingPage() {
     });
 
     // Handle trip selection
-    const handleTripSelect = (trip: ActiveTripData | null) => {
+    const handleTripSelect = useCallback((trip: ActiveTripData | null) => {
         setSelectedTrip(trip);
-    };
+    }, []);
 
     // Handle trip focus (center map on trip)
-    const handleTripFocus = (trip: ActiveTripData) => {
+    const handleTripFocus = useCallback((trip: ActiveTripData) => {
         if (trip.currentLocation?.location?.coordinates) {
             const [lng, lat] = trip.currentLocation.location.coordinates;
             setMapCenter({ lat, lng });
             setMapZoom(15);
             setSelectedTrip(trip);
         }
-    };
+    }, []);
+
+    // Handle map center changes
+    const handleMapCenterChange = useCallback((center: { lat: number; lng: number }) => {
+        setMapCenter(center);
+    }, []);
+
+    // Handle map zoom changes
+    const handleMapZoomChange = useCallback((zoom: number) => {
+        setMapZoom(zoom);
+    }, []);
 
     // Handle manual refresh
-    const handleManualRefresh = () => {
+    const handleManualRefresh = useCallback(() => {
         loadActiveTrips();
-    };
+    }, [loadActiveTrips]);
 
     // Auto refresh setup
     useEffect(() => {
@@ -387,9 +397,9 @@ export default function LocationTrackingPage() {
     }, [loadActiveTrips, loadStatistics]);
 
     // Toggle fullscreen map
-    const toggleFullscreen = () => {
+    const toggleFullscreen = useCallback(() => {
         setIsMapFullscreen(!isMapFullscreen);
-    };
+    }, [isMapFullscreen]);
 
     return (
         <Layout activeItem="location-tracking" pageTitle="Location Tracking" pageDescription="Real-time bus location monitoring and trip tracking" role="mot">
@@ -423,8 +433,8 @@ export default function LocationTrackingPage() {
                             onTripSelect={handleTripSelect}
                             mapCenter={mapCenter}
                             mapZoom={mapZoom}
-                            onMapCenterChange={setMapCenter}
-                            onMapZoomChange={setMapZoom}
+                            onMapCenterChange={handleMapCenterChange}
+                            onMapZoomChange={handleMapZoomChange}
                             isLoaded={isLoaded}
                         />
                     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
 import { MapPin, Navigation, Clock, Users, AlertCircle } from 'lucide-react';
 
@@ -83,9 +83,108 @@ export function LocationMap({
   isLoaded
 }: LocationMapProps) {
   const mapRef = useRef<google.maps.Map | null>(null);
+  const isUpdatingRef = useRef(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
+  }, []);
+
+  // Handle center changes with debouncing to prevent infinite loops
+  const handleCenterChanged = useCallback(() => {
+    if (!mapRef.current || isUpdatingRef.current) return;
+    
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    // Debounce the update
+    debounceTimeoutRef.current = setTimeout(() => {
+      if (!mapRef.current || isUpdatingRef.current) return;
+      
+      const center = mapRef.current.getCenter();
+      if (center) {
+        const newCenter = {
+          lat: center.lat(),
+          lng: center.lng()
+        };
+        
+        // Only update if the center has actually changed significantly
+        const latDiff = Math.abs(newCenter.lat - mapCenter.lat);
+        const lngDiff = Math.abs(newCenter.lng - mapCenter.lng);
+        
+        if (latDiff > 0.0001 || lngDiff > 0.0001) {
+          onMapCenterChange(newCenter);
+        }
+      }
+    }, 300); // 300ms debounce
+  }, [mapCenter, onMapCenterChange]);
+
+  // Handle zoom changes with debouncing
+  const handleZoomChanged = useCallback(() => {
+    if (!mapRef.current || isUpdatingRef.current) return;
+    
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    // Debounce the update
+    debounceTimeoutRef.current = setTimeout(() => {
+      if (!mapRef.current || isUpdatingRef.current) return;
+      
+      const zoom = mapRef.current.getZoom();
+      if (zoom && zoom !== mapZoom) {
+        onMapZoomChange(zoom);
+      }
+    }, 300); // 300ms debounce
+  }, [mapZoom, onMapZoomChange]);
+
+  // Effect to handle programmatic center changes
+  useEffect(() => {
+    if (mapRef.current) {
+      const currentCenter = mapRef.current.getCenter();
+      if (currentCenter) {
+        const currentLat = currentCenter.lat();
+        const currentLng = currentCenter.lng();
+        
+        // Only update if there's a significant difference
+        const latDiff = Math.abs(currentLat - mapCenter.lat);
+        const lngDiff = Math.abs(currentLng - mapCenter.lng);
+        
+        if (latDiff > 0.0001 || lngDiff > 0.0001) {
+          isUpdatingRef.current = true;
+          mapRef.current.setCenter(mapCenter);
+          setTimeout(() => {
+            isUpdatingRef.current = false;
+          }, 100);
+        }
+      }
+    }
+  }, [mapCenter]);
+
+  // Effect to handle programmatic zoom changes
+  useEffect(() => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      if (currentZoom && currentZoom !== mapZoom) {
+        isUpdatingRef.current = true;
+        mapRef.current.setZoom(mapZoom);
+        setTimeout(() => {
+          isUpdatingRef.current = false;
+        }, 100);
+      }
+    }
+  }, [mapZoom]);
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
   }, []);
 
   const getMarkerIcon = (trip: ActiveTripData) => {
@@ -149,25 +248,8 @@ export function LocationMap({
         zoom={mapZoom}
         onLoad={onMapLoad}
         options={mapOptions}
-        onCenterChanged={() => {
-          if (mapRef.current) {
-            const center = mapRef.current.getCenter();
-            if (center) {
-              onMapCenterChange({
-                lat: center.lat(),
-                lng: center.lng()
-              });
-            }
-          }
-        }}
-        onZoomChanged={() => {
-          if (mapRef.current) {
-            const zoom = mapRef.current.getZoom();
-            if (zoom) {
-              onMapZoomChange(zoom);
-            }
-          }
-        }}
+        onCenterChanged={handleCenterChanged}
+        onZoomChanged={handleZoomChanged}
       >
         {/* Trip Markers */}
         {activeTrips.map((trip) => {
