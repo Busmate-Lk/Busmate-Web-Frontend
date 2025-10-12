@@ -279,15 +279,15 @@ export default function FleetManagement() {
   };
 
   const handleView = (busId: string) => {
-    router.push(`/operator/buses/${busId}`);
+    router.push(`/operator/fleet-management/${busId}`);
   };
 
   const handleEdit = (busId: string) => {
-    router.push(`/operator/buses/${busId}/edit`);
+    router.push(`/operator/fleet-management/${busId}/edit`);
   };
 
   const handleAssignRoute = (busId: string, busRegistration: string) => {
-    router.push(`/operator/buses/${busId}/assign-route`);
+    router.push(`/operator/fleet-management/${busId}/assign-route`);
   };
 
   const handleScheduleMaintenance = (busId: string, busRegistration: string) => {

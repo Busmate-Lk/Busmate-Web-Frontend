@@ -23,7 +23,7 @@ import {
 import { Header } from '@/components/operator/header';
 
 // Mock operator ID - In real implementation, this would come from auth context
-const MOCK_OPERATOR_ID = "11111111-1111-1111-1111-111111111112";
+const MOCK_OPERATOR_ID = "8e886a71-445c-4e3a-8bc5-a17b5b2dad24";
 
 export default function OperatorPermitDetailsPage() {
     const router = useRouter();
