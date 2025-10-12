@@ -9,7 +9,7 @@ const actions = [
     description: "Register new vehicle",
     icon: Plus,
     color: "bg-blue-500 hover:bg-blue-600",
-    href: "/operator/fleetmanagement/add",
+    href: "/operator/fleet-management/add",
   },
   {
     title: "Assign Driver",
