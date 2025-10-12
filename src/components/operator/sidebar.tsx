@@ -21,11 +21,11 @@ export function Sidebar({ activeItem = "dashboard", isCollapsed, setIsCollapsed 
 
   const sidebarItems: SidebarItem[] = [
     { icon: BarChart3, label: "Dashboard", active: activeItem === "dashboard", href: "/operator/dashboard" },
-    { icon: Calendar, label: "Schedule Management", active: activeItem === "scheduleManagement", href: "/operator/scheduleManagement" },
+    { icon: FileText, label: "Service Permits", active: activeItem === "passenger-service-permits", href: "/operator/passenger-service-permits" },
     { icon: Bus, label: "Fleet management", active: activeItem === "fleetmanagement", href: "/operator/fleet-management" },
+    { icon: Calendar, label: "Schedule Management", active: activeItem === "scheduleManagement", href: "/operator/scheduleManagement" },
     { icon: MapPin, label: "Bus Tracking", active: activeItem === "busTracking", href: "/operator/busTracking" },
     { icon: Users, label: "Staff management", active: activeItem === "staff", href: "/operator/staffManagement" },
-    { icon: FileText, label: "Service Permits", active: activeItem === "passenger-service-permits", href: "/operator/passenger-service-permits" },
     { icon: DollarSign, label: "Revenue Management", active: activeItem === "revenue", href: "/operator/revenueManagement" },
   ]
 
