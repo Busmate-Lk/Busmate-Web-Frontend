@@ -131,12 +131,6 @@ export function Sidebar({
       href: '/mot/staff-management',
     },
     {
-      icon: Navigation,
-      label: 'Track Busses',
-      active: activeItem === 'tracking',
-      href: '/mot/track-buses',
-    },
-    {
       icon: MessageSquare,
       label: 'Broadcast Messages',
       active: activeItem === 'broadcast',
