@@ -347,7 +347,7 @@ function OperatorPassengerServicePermitsContent() {
         <OperatorPermitStatsCards stats={statistics} loading={!statistics} />
 
         {/* Export Action */}
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <button
             onClick={handleExport}
             disabled={loading || permits.length === 0}
