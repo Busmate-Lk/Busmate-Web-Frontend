@@ -27,7 +27,6 @@ export function Sidebar({ activeItem = "dashboard", isCollapsed, setIsCollapsed 
     { icon: Users, label: "Staff management", active: activeItem === "staff", href: "/operator/staffManagement" },
     { icon: FileText, label: "Service Permits", active: activeItem === "passenger-service-permits", href: "/operator/passenger-service-permits" },
     { icon: DollarSign, label: "Revenue Management", active: activeItem === "revenue", href: "/operator/revenueManagement" },
-    { icon: Route, label: "Route Permit management", active: activeItem === "routepermit", href: "/operator/routepermit" },
   ]
 
   return (
