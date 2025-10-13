@@ -7,31 +7,6 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class HealthService {
     /**
-     * Readiness probe for Kubernetes
-     * @returns any Service is ready
-     * @throws ApiError
-     */
-    public static getReady(): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/ready',
-            errors: {
-                503: `Service not ready`,
-            },
-        });
-    }
-    /**
-     * Liveness probe for Kubernetes
-     * @returns any Service is alive
-     * @throws ApiError
-     */
-    public static getLive(): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/live',
-        });
-    }
-    /**
      * Get service information and available endpoints
      * @returns any Service information
      * @throws ApiError
@@ -49,9 +24,40 @@ export class HealthService {
         });
     }
     /**
-     * Get basic health status
-     * Returns basic service health information
-     * @returns any Service is healthy
+     * Readiness probe for Kubernetes
+     * Kubernetes readiness probe to check if service is ready to receive traffic
+     * @returns any Service is ready
+     * @throws ApiError
+     */
+    public static getReady(): CancelablePromise<{
+        status?: string;
+    }> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/ready',
+            errors: {
+                503: `Service not ready`,
+            },
+        });
+    }
+    /**
+     * Liveness probe for Kubernetes
+     * Kubernetes liveness probe to check if service is alive and should not be restarted
+     * @returns any Service is alive
+     * @throws ApiError
+     */
+    public static getLive(): CancelablePromise<{
+        status?: string;
+    }> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/live',
+        });
+    }
+    /**
+     * Get basic application health status
+     * Returns basic service health information without external dependencies
+     * @returns any Application is healthy
      * @throws ApiError
      */
     public static getApiHealth(): CancelablePromise<{
@@ -68,7 +74,7 @@ export class HealthService {
             method: 'GET',
             url: '/api/health',
             errors: {
-                500: `Service is unhealthy`,
+                500: `Application is unhealthy`,
             },
         });
     }
@@ -98,28 +104,26 @@ export class HealthService {
         });
     }
     /**
-     * Get Route Service integration health
-     * Returns health status specifically for Route Service integration including circuit breaker stats and connectivity tests
-     * @returns any Route Service integration is healthy or degraded
+     * Check health of external dependencies
+     * Returns health status of all external services including Route Service
+     * @returns any All dependencies are healthy or partially degraded
      * @throws ApiError
      */
-    public static getApiHealthRouteService(): CancelablePromise<{
+    public static getApiHealthDependencies(): CancelablePromise<{
         status?: 'healthy' | 'degraded' | 'unhealthy';
         timestamp?: string;
-        service?: string;
-        connectivity?: {
-            test?: string;
-            responseTime?: string;
-            error?: string;
-        };
-        circuitBreaker?: Record<string, any>;
-        performance?: Record<string, any>;
+        dependencies?: Record<string, {
+            status?: string;
+            connectivity?: Record<string, any>;
+            circuitBreaker?: Record<string, any>;
+            performance?: Record<string, any>;
+        }>;
     }> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/health/route-service',
+            url: '/api/health/dependencies',
             errors: {
-                503: `Route Service integration is unhealthy`,
+                503: `One or more dependencies are unhealthy`,
             },
         });
     }
@@ -153,34 +157,6 @@ export class HealthService {
             },
             errors: {
                 500: `Error retrieving performance metrics`,
-            },
-        });
-    }
-    /**
-     * Generate performance report
-     * Generates a comprehensive performance report for the specified time window
-     * @param window Time window in minutes (default 60)
-     * @param format Response format (json or text)
-     * @returns any Performance report generated successfully
-     * @throws ApiError
-     */
-    public static getApiHealthReport(
-        window: number = 60,
-        format: 'json' | 'text' = 'json',
-    ): CancelablePromise<{
-        timestamp?: string;
-        timeWindow?: string;
-        report?: Record<string, any>;
-    }> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/health/report',
-            query: {
-                'window': window,
-                'format': format,
-            },
-            errors: {
-                500: `Error generating performance report`,
             },
         });
     }

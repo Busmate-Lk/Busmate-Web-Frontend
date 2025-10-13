@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { LocationUpdateResponse } from '../models/LocationUpdateResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -10,7 +11,7 @@ export class LocationService {
      * Process a single GPS location update
      * Records GPS location update for an active trip
      * @param requestBody
-     * @returns any Location update processed successfully
+     * @returns LocationUpdateResponse Location update processed successfully
      * @throws ApiError
      */
     public static postApiLocationUpdate(
@@ -58,15 +59,16 @@ export class LocationService {
              */
             altitude?: number;
         },
-    ): CancelablePromise<any> {
+    ): CancelablePromise<LocationUpdateResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/location/update',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
-                400: `Validation error`,
-                404: `Trip not found`,
+                400: `Bad Request - Invalid input parameters`,
+                404: `Not Found - Resource not found`,
+                500: `Internal Server Error`,
             },
         });
     }
