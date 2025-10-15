@@ -11,11 +11,11 @@ export default function OperatorLayout({ children }: { children: React.ReactNode
   // Map the current pathname to the corresponding active item
   const activeItem = (() => {
     if (pathname.startsWith("/operator/dashboard")) return "dashboard";
-    if (pathname.startsWith("/operator/scheduleManagement")) return "scheduleManagement";
-    if (pathname.startsWith("/operator/fleetmanagement")) return "fleetmanagement";
+    if (pathname.startsWith("/operator/fleet-management")) return "fleetmanagement";
+    if (pathname.startsWith("/operator/trips")) return "trips";
     if (pathname.startsWith("/operator/busTracking")) return "busTracking";
     if (pathname.startsWith("/operator/staffManagement")) return "staff";
-    if (pathname.startsWith("/operator/routepermit")) return "routepermit";
+    if (pathname.startsWith("/operator/passenger-service-permits")) return "passenger-service-permits";
     if (pathname.startsWith("/operator/revenueManagement")) return "revenue";
     if (pathname.startsWith("/operator/busSeatView")) return "busTracking";
     if (pathname.startsWith("/operator/busLocation")) return "busTracking";

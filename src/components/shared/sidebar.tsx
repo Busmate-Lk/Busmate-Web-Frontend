@@ -113,6 +113,12 @@ export function Sidebar({
       href: '/mot/passenger-service-permits',
     },
     {
+      icon: Navigation,
+      label: 'Location Tracking',
+      active: activeItem === 'location-tracking',
+      href: '/mot/location-tracking',
+    },
+    {
       icon: DollarSign,
       label: 'Fare Management',
       active: activeItem === 'bus-fare',
@@ -123,12 +129,6 @@ export function Sidebar({
       label: 'Staff Management',
       active: activeItem === 'staff',
       href: '/mot/staff-management',
-    },
-    {
-      icon: Navigation,
-      label: 'Track Busses',
-      active: activeItem === 'tracking',
-      href: '/mot/track-buses',
     },
     {
       icon: MessageSquare,
