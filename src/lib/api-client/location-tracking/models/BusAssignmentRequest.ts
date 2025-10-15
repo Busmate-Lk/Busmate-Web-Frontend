@@ -2,14 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ResumeTrackingRequest = {
+/**
+ * Bus assignment request
+ */
+export type BusAssignmentRequest = {
     /**
-     * Unique identifier for the trip
+     * Bus identifier to assign
      */
-    tripId: string;
+    busId: string;
     /**
-     * Additional notes about resuming the trip
+     * Assignment reason
      */
-    notes?: string;
+    reason?: string;
 };
 

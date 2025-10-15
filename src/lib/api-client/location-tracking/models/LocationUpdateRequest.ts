@@ -3,22 +3,28 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GeoJSONPoint } from './GeoJSONPoint';
-export type LocationUpdate = {
+/**
+ * Location update request
+ */
+export type LocationUpdateRequest = {
     /**
-     * Unique identifier for the trip
+     * Trip identifier
      */
     tripId: string;
     /**
-     * GPS device identifier
+     * Device identifier
      */
     deviceId: string;
     /**
      * Bus identifier
      */
     busId: string;
+    /**
+     * GPS location
+     */
     location: GeoJSONPoint;
     /**
-     * Location update timestamp (optional, defaults to current time)
+     * Timestamp of location update
      */
     timestamp?: string;
     /**
@@ -30,7 +36,7 @@ export type LocationUpdate = {
      */
     accuracy?: number;
     /**
-     * Direction in degrees
+     * Heading in degrees (0-360)
      */
     heading?: number;
     /**

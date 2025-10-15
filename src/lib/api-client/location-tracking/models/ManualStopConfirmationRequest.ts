@@ -3,9 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GeoJSONPoint } from './GeoJSONPoint';
-export type ManualConfirmationRequest = {
+/**
+ * Manual stop confirmation request
+ */
+export type ManualStopConfirmationRequest = {
     /**
-     * Unique identifier for the trip
+     * Trip identifier
      */
     tripId: string;
     /**
@@ -13,34 +16,33 @@ export type ManualConfirmationRequest = {
      */
     stopId: string;
     /**
-     * Type of stop event
+     * Event type
      */
-    eventType: ManualConfirmationRequest.eventType;
+    eventType: ManualStopConfirmationRequest.eventType;
+    /**
+     * Location of event
+     */
     location?: GeoJSONPoint;
     /**
-     * Who is confirming this event
+     * Person confirming
      */
     confirmedBy: string;
     /**
-     * Number of passengers affected
+     * Passenger count
      */
     passengerCount?: number;
     /**
-     * Additional notes about the event
+     * Additional notes
      */
     notes?: string;
 };
-export namespace ManualConfirmationRequest {
+export namespace ManualStopConfirmationRequest {
     /**
-     * Type of stop event
+     * Event type
      */
     export enum eventType {
         ARRIVAL = 'arrival',
         DEPARTURE = 'departure',
-        BOARDING = 'boarding',
-        ALIGHTING = 'alighting',
-        DELAY = 'delay',
-        SKIP = 'skip',
     }
 }
 

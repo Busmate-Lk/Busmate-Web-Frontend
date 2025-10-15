@@ -3,24 +3,30 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GeoJSONPoint } from './GeoJSONPoint';
-export type StopTrackingRequest = {
+/**
+ * Stop trip tracking request
+ */
+export type StopTripTrackingRequest = {
     /**
-     * Unique identifier for the trip
+     * Trip identifier
      */
     tripId: string;
+    /**
+     * Ending location
+     */
     endLocation?: GeoJSONPoint;
     /**
-     * Reason for stopping the trip
+     * Reason for stopping
      */
-    reason?: StopTrackingRequest.reason;
+    reason?: StopTripTrackingRequest.reason;
     /**
-     * Additional notes about stopping the trip
+     * Additional notes
      */
     notes?: string;
 };
-export namespace StopTrackingRequest {
+export namespace StopTripTrackingRequest {
     /**
-     * Reason for stopping the trip
+     * Reason for stopping
      */
     export enum reason {
         COMPLETED = 'completed',

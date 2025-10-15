@@ -2,181 +2,107 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ApplicationHealthResponse } from '../models/ApplicationHealthResponse';
+import type { CircuitBreakerResetResponse } from '../models/CircuitBreakerResetResponse';
+import type { DependenciesHealthResponse } from '../models/DependenciesHealthResponse';
+import type { DetailedHealthResponse } from '../models/DetailedHealthResponse';
+import type { HealthStatusResponse } from '../models/HealthStatusResponse';
+import type { PerformanceMetricsResponse } from '../models/PerformanceMetricsResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class HealthService {
     /**
-     * Get service information and available endpoints
-     * @returns any Service information
+     * Kubernetes readiness probe
+     * Checks if the service is ready to receive traffic
+     * @returns HealthStatusResponse Ok
      * @throws ApiError
      */
-    public static get(): CancelablePromise<{
-        service?: string;
-        version?: string;
-        status?: string;
-        timestamp?: string;
-        endpoints?: Record<string, any>;
-    }> {
+    public static getReadinessProbe(): CancelablePromise<HealthStatusResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/',
+            url: '/health/ready',
         });
     }
     /**
-     * Readiness probe for Kubernetes
-     * Kubernetes readiness probe to check if service is ready to receive traffic
-     * @returns any Service is ready
+     * Kubernetes liveness probe
+     * Checks if the service is alive
+     * @returns HealthStatusResponse Ok
      * @throws ApiError
      */
-    public static getReady(): CancelablePromise<{
-        status?: string;
-    }> {
+    public static getLivenessProbe(): CancelablePromise<HealthStatusResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/ready',
-            errors: {
-                503: `Service not ready`,
-            },
+            url: '/health/live',
         });
     }
     /**
-     * Liveness probe for Kubernetes
-     * Kubernetes liveness probe to check if service is alive and should not be restarted
-     * @returns any Service is alive
+     * Basic application health check
+     * Returns basic health information about the service
+     * @returns ApplicationHealthResponse Ok
      * @throws ApiError
      */
-    public static getLive(): CancelablePromise<{
-        status?: string;
-    }> {
+    public static getApplicationHealth(): CancelablePromise<ApplicationHealthResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/live',
+            url: '/health',
         });
     }
     /**
-     * Get basic application health status
-     * Returns basic service health information without external dependencies
-     * @returns any Application is healthy
+     * Detailed health check with dependencies
+     * Returns comprehensive health information including circuit breakers and dependencies
+     * @returns DetailedHealthResponse Ok
      * @throws ApiError
      */
-    public static getApiHealth(): CancelablePromise<{
-        status?: string;
-        timestamp?: string;
-        service?: string;
-        /**
-         * Uptime in seconds
-         */
-        uptime?: number;
-        version?: string;
-    }> {
+    public static getDetailedHealth(): CancelablePromise<DetailedHealthResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/health',
-            errors: {
-                500: `Application is unhealthy`,
-            },
+            url: '/health/detailed',
         });
     }
     /**
-     * Get detailed health status
-     * Returns comprehensive health information including dependencies, circuit breakers, and performance metrics
-     * @returns any Detailed health information
+     * Dependencies health check
+     * Returns health status of external dependencies
+     * @returns DependenciesHealthResponse Ok
      * @throws ApiError
      */
-    public static getApiHealthDetailed(): CancelablePromise<{
-        status?: 'healthy' | 'degraded' | 'unhealthy';
-        timestamp?: string;
-        service?: string;
-        uptime?: number;
-        version?: string;
-        issues?: Array<string>;
-        dependencies?: Record<string, any>;
-        circuitBreakers?: Record<string, any>;
-        performance?: Record<string, any>;
-    }> {
+    public static getDependenciesHealth(): CancelablePromise<DependenciesHealthResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/health/detailed',
-            errors: {
-                503: `Service is unhealthy`,
-            },
+            url: '/health/dependencies',
         });
     }
     /**
-     * Check health of external dependencies
-     * Returns health status of all external services including Route Service
-     * @returns any All dependencies are healthy or partially degraded
+     * Performance metrics retrieval
+     * Returns performance statistics and alerts
+     * @param window
+     * @param operation
+     * @returns PerformanceMetricsResponse Ok
      * @throws ApiError
      */
-    public static getApiHealthDependencies(): CancelablePromise<{
-        status?: 'healthy' | 'degraded' | 'unhealthy';
-        timestamp?: string;
-        dependencies?: Record<string, {
-            status?: string;
-            connectivity?: Record<string, any>;
-            circuitBreaker?: Record<string, any>;
-            performance?: Record<string, any>;
-        }>;
-    }> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/health/dependencies',
-            errors: {
-                503: `One or more dependencies are unhealthy`,
-            },
-        });
-    }
-    /**
-     * Get performance metrics
-     * Returns detailed performance metrics and alerts for the service
-     * @param window Time window in minutes (default 60)
-     * @param operation Specific operation to get metrics for
-     * @returns any Performance metrics retrieved successfully
-     * @throws ApiError
-     */
-    public static getApiHealthMetrics(
-        window: number = 60,
+    public static getPerformanceMetrics(
+        window?: number,
         operation?: string,
-    ): CancelablePromise<{
-        timestamp?: string;
-        timeWindow?: string;
-        operation?: string;
-        stats?: Record<string, any>;
-        alerts?: {
-            recent?: any[];
-            critical?: any[];
-        };
-    }> {
+    ): CancelablePromise<PerformanceMetricsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/health/metrics',
+            url: '/health/performance',
             query: {
                 'window': window,
                 'operation': operation,
             },
-            errors: {
-                500: `Error retrieving performance metrics`,
-            },
         });
     }
     /**
-     * Reset all circuit breakers
-     * Administrative endpoint to reset all circuit breakers to closed state
-     * @returns any Circuit breakers reset successfully
+     * Reset circuit breakers
+     * Admin operation to reset all circuit breakers
+     * @returns CircuitBreakerResetResponse Ok
      * @throws ApiError
      */
-    public static postApiHealthCircuitBreakersReset(): CancelablePromise<{
-        status?: string;
-        message?: string;
-        timestamp?: string;
-    }> {
+    public static resetCircuitBreakers(): CancelablePromise<CircuitBreakerResetResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/health/circuit-breakers/reset',
-            errors: {
-                500: `Error resetting circuit breakers`,
-            },
+            url: '/health/circuit-breakers/reset',
         });
     }
 }

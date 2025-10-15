@@ -3,34 +3,40 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GeoJSONPoint } from './GeoJSONPoint';
+/**
+ * Stop arrival request
+ */
 export type StopArrivalRequest = {
     /**
-     * Unique identifier for the trip
+     * Trip identifier
      */
     tripId: string;
     /**
      * Stop identifier
      */
     stopId: string;
+    /**
+     * Location of arrival
+     */
     location?: GeoJSONPoint;
     /**
-     * Arrival timestamp (optional, defaults to current time)
+     * Arrival timestamp
      */
     timestamp?: string;
     /**
-     * Whether this is a manual confirmation
+     * Manual confirmation flag
      */
     isManual?: boolean;
     /**
-     * Who confirmed the arrival (required if isManual is true)
+     * Person who confirmed
      */
     confirmedBy?: string;
     /**
-     * Number of passengers boarding
+     * Passenger count
      */
     passengerCount?: number;
     /**
-     * Additional notes about the arrival
+     * Additional notes
      */
     notes?: string;
 };

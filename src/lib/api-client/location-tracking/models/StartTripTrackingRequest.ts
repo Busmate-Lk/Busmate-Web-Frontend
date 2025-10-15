@@ -3,13 +3,16 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GeoJSONPoint } from './GeoJSONPoint';
-export type StartTrackingRequest = {
+/**
+ * Start trip tracking request
+ */
+export type StartTripTrackingRequest = {
     /**
-     * Unique identifier for the trip
+     * Trip identifier
      */
     tripId: string;
     /**
-     * GPS device identifier
+     * Device identifier
      */
     deviceId: string;
     /**
@@ -25,13 +28,16 @@ export type StartTrackingRequest = {
      */
     routeId: string;
     /**
-     * Driver identifier (optional)
+     * Driver identifier
      */
     driverId?: string;
     /**
-     * Conductor identifier (optional)
+     * Conductor identifier
      */
     conductorId?: string;
+    /**
+     * Starting location
+     */
     startLocation?: GeoJSONPoint;
 };
 

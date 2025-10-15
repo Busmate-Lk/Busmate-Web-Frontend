@@ -2,229 +2,124 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { LocationUpdateResponse } from '../models/LocationUpdateResponse';
+import type { ApiResponse_any_ } from '../models/ApiResponse_any_';
+import type { ApiResponse_any_Array_ } from '../models/ApiResponse_any_Array_';
+import type { ApiResponse_LocationUpdateResponse_ } from '../models/ApiResponse_LocationUpdateResponse_';
+import type { ApiResponse_LocationUpdateResponse_Array_ } from '../models/ApiResponse_LocationUpdateResponse_Array_';
+import type { BatchLocationUpdateRequest } from '../models/BatchLocationUpdateRequest';
+import type { LocationUpdateRequest } from '../models/LocationUpdateRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class LocationService {
     /**
-     * Process a single GPS location update
-     * Records GPS location update for an active trip
+     * Update location for an active trip
+     * Records GPS location data from a device during an active trip
      * @param requestBody
-     * @returns LocationUpdateResponse Location update processed successfully
+     * @returns ApiResponse_LocationUpdateResponse_ Location updated successfully
      * @throws ApiError
      */
-    public static postApiLocationUpdate(
-        requestBody: {
-            /**
-             * Unique identifier for the trip
-             */
-            tripId: string;
-            /**
-             * GPS device identifier
-             */
-            deviceId: string;
-            /**
-             * Bus identifier
-             */
-            busId: string;
-            /**
-             * GeoJSON Point coordinates
-             */
-            location: {
-                type: 'Point';
-                /**
-                 * [longitude, latitude]
-                 */
-                coordinates: Array<number>;
-            };
-            /**
-             * Location update timestamp (optional, defaults to current time)
-             */
-            timestamp?: string;
-            /**
-             * Speed in km/h (optional)
-             */
-            speed?: number;
-            /**
-             * GPS accuracy in meters (optional)
-             */
-            accuracy?: number;
-            /**
-             * Direction in degrees (optional)
-             */
-            heading?: number;
-            /**
-             * Altitude in meters (optional)
-             */
-            altitude?: number;
-        },
-    ): CancelablePromise<LocationUpdateResponse> {
+    public static updateLocation(
+        requestBody: LocationUpdateRequest,
+    ): CancelablePromise<ApiResponse_LocationUpdateResponse_> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/location/update',
+            url: '/location/update',
             body: requestBody,
             mediaType: 'application/json',
-            errors: {
-                400: `Bad Request - Invalid input parameters`,
-                404: `Not Found - Resource not found`,
-                500: `Internal Server Error`,
-            },
         });
     }
     /**
-     * Process multiple GPS location updates in batch
-     * Processes multiple GPS location updates efficiently
+     * Batch update multiple locations
+     * Processes multiple GPS location updates in a single request
      * @param requestBody
-     * @returns any Batch update processed successfully
+     * @returns ApiResponse_LocationUpdateResponse_Array_ Batch location updates processed
      * @throws ApiError
      */
-    public static postApiLocationBatchUpdate(
-        requestBody: {
-            /**
-             * Array of location updates (1-100 updates)
-             */
-            updates: Array<{
-                /**
-                 * Unique identifier for the trip
-                 */
-                tripId: string;
-                /**
-                 * GPS device identifier
-                 */
-                deviceId: string;
-                /**
-                 * Bus identifier
-                 */
-                busId: string;
-                /**
-                 * GeoJSON Point coordinates
-                 */
-                location: {
-                    type: 'Point';
-                    /**
-                     * [longitude, latitude]
-                     */
-                    coordinates: Array<number>;
-                };
-                /**
-                 * Location update timestamp (optional)
-                 */
-                timestamp?: string;
-                /**
-                 * Speed in km/h (optional)
-                 */
-                speed?: number;
-                /**
-                 * GPS accuracy in meters (optional)
-                 */
-                accuracy?: number;
-                /**
-                 * Direction in degrees (optional)
-                 */
-                heading?: number;
-                /**
-                 * Altitude in meters (optional)
-                 */
-                altitude?: number;
-            }>;
-        },
-    ): CancelablePromise<any> {
+    public static batchUpdateLocation(
+        requestBody: BatchLocationUpdateRequest,
+    ): CancelablePromise<ApiResponse_LocationUpdateResponse_Array_> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/location/batch-update',
+            url: '/location/batch-update',
             body: requestBody,
             mediaType: 'application/json',
-            errors: {
-                400: `Validation error`,
-            },
         });
     }
     /**
-     * Validate GPS coordinates without storing them
-     * Validates GPS coordinates, speed, and accuracy without saving to database
-     * @param location GeoJSON Point coordinates
-     * @param speed Speed in km/h (0-120)
-     * @param accuracy GPS accuracy in meters (0-100)
-     * @returns any GPS coordinates validated successfully
+     * Validate GPS coordinates
+     * Validates GPS coordinates and returns location information
+     * @param latitude
+     * @param longitude
+     * @param speed
+     * @param accuracy
+     * @returns ApiResponse_any_ GPS coordinates validated
      * @throws ApiError
      */
-    public static getApiLocationValidate(
-        location: Record<string, any>,
+    public static validateGpsCoordinates(
+        latitude: number,
+        longitude: number,
         speed?: number,
         accuracy?: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<ApiResponse_any_> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/location/validate',
+            url: '/location/validate',
             query: {
-                'location': location,
+                'latitude': latitude,
+                'longitude': longitude,
                 'speed': speed,
                 'accuracy': accuracy,
             },
-            errors: {
-                400: `Invalid GPS coordinates or validation error`,
-                500: `Internal server error`,
-            },
         });
     }
     /**
-     * Get the latest location update for a specific trip
-     * Retrieves the most recent GPS location update for an active trip
-     * @param tripId Unique identifier for the trip
-     * @returns any Latest location retrieved successfully
+     * Get latest location for a trip
+     * Retrieves the most recent location update for a specific trip
+     * @param tripId
+     * @returns ApiResponse_any_ Latest location retrieved
      * @throws ApiError
      */
-    public static getApiLocationTripLatest(
+    public static getLatestLocation(
         tripId: string,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<ApiResponse_any_> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/location/trip/{tripId}/latest',
+            url: '/location/trip/{tripId}/latest',
             path: {
                 'tripId': tripId,
             },
-            errors: {
-                400: `Invalid tripId parameter`,
-                404: `No location data found for this trip`,
-                500: `Internal server error`,
-            },
         });
     }
     /**
-     * Get location history for a specific trip
-     * Retrieves paginated location history with optional time filtering
-     * @param tripId Unique identifier for the trip
-     * @param limit Number of records to return (max 1000)
-     * @param offset Number of records to skip
-     * @param startTime Start time for filtering (ISO date string)
-     * @param endTime End time for filtering (ISO date string)
-     * @returns any Location history retrieved successfully
+     * Get location history for a trip
+     * Retrieves historical location data for a specific trip with pagination
+     * @param tripId
+     * @param startTime
+     * @param endTime
+     * @param limit
+     * @param offset
+     * @returns ApiResponse_any_Array_ Location history retrieved
      * @throws ApiError
      */
-    public static getApiLocationTripHistory(
+    public static getLocationHistory(
         tripId: string,
-        limit: number = 100,
-        offset?: number,
         startTime?: string,
         endTime?: string,
-    ): CancelablePromise<any> {
+        limit: number = 100,
+        offset?: number,
+    ): CancelablePromise<ApiResponse_any_Array_> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/location/trip/{tripId}/history',
+            url: '/location/trip/{tripId}/history',
             path: {
                 'tripId': tripId,
             },
             query: {
-                'limit': limit,
-                'offset': offset,
                 'startTime': startTime,
                 'endTime': endTime,
-            },
-            errors: {
-                400: `Invalid parameters`,
-                404: `Trip not found`,
-                500: `Internal server error`,
+                'limit': limit,
+                'offset': offset,
             },
         });
     }

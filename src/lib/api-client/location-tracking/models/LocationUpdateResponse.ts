@@ -2,22 +2,42 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Location update response
+ */
 export type LocationUpdateResponse = {
-    success?: boolean;
-    message?: string;
-    data?: {
-        locationId?: string;
-        tripId?: string;
-        timestamp?: string;
-        validationStatus?: string;
-    };
-    metadata?: {
-        processingTime?: number;
-        validationResults?: {
-            isValid?: boolean;
-            accuracy?: string;
-            issues?: Array<string>;
-        };
+    /**
+     * Update identifier
+     */
+    updateId: string;
+    /**
+     * Trip identifier
+     */
+    tripId: string;
+    /**
+     * Processing timestamp
+     */
+    processedAt: string;
+    /**
+     * Validation status
+     */
+    isValid: boolean;
+    /**
+     * Processing details
+     */
+    processingDetails?: {
+        /**
+         * Any validation warnings
+         */
+        warnings?: Array<string>;
+        /**
+         * Speed calculated from movement
+         */
+        calculatedSpeed?: number;
+        /**
+         * Distance from previous location
+         */
+        distanceFromPrevious?: number;
     };
 };
 
