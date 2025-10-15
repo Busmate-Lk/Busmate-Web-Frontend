@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 
 // Import API services
-import { QueriesService } from '@/lib/api-client/location-tracking';
-import { TripManagementService } from '@/lib/api-client/route-management';
+import { QueryService, TripService, DeviceService, OpenAPI } from '@/lib/api-client/location-tracking';
+import { TripManagementService, RouteManagementService } from '@/lib/api-client/route-management';
 import { TripResponse } from '@/lib/api-client/route-management';
 
 // Import layout
@@ -182,93 +182,116 @@ export default function LocationTrackingPage() {
             setError(null);
 
             let activeTripsResponse;
+            let tripsWithLocation: ActiveTripData[] = [];
             
             // Try location tracking API first
             try {
-                console.log('Trying location tracking API...');
-                activeTripsResponse = await QueriesService.getApiQueriesTripsActive();
+                console.log('Fetching active trips from location tracking API...');
+                activeTripsResponse = await QueryService.getActiveTrips();
                 console.log('Location tracking API response:', activeTripsResponse);
+                
+                if (activeTripsResponse?.data?.trips && Array.isArray(activeTripsResponse.data.trips)) {
+                    // Transform location tracking API response to our format
+                    tripsWithLocation = activeTripsResponse.data.trips.map((trip: any) => {
+                        return {
+                            id: trip.id || `trip-${Date.now()}-${Math.random()}`,
+                            busId: trip.busId,
+                            routeId: trip.routeId,
+                            status: trip.status || 'active',
+                            deviceStatus: trip.deviceStatus || 'online',
+                            currentLocation: trip.currentLocation ? {
+                                tripId: trip.id,
+                                busId: trip.busId,
+                                location: trip.currentLocation,
+                                speed: trip.latestLocationData?.speed || Math.random() * 60,
+                                heading: trip.latestLocationData?.heading || Math.random() * 360,
+                                timestamp: trip.latestLocationData?.timestamp || new Date().toISOString(),
+                                accuracy: trip.latestLocationData?.accuracy || Math.random() * 10
+                            } : {
+                                tripId: trip.id,
+                                busId: trip.busId,
+                                location: {
+                                    type: 'Point',
+                                    coordinates: [79.8612 + (Math.random() - 0.5) * 0.1, 6.9271 + (Math.random() - 0.5) * 0.1]
+                                },
+                                speed: Math.random() * 60,
+                                heading: Math.random() * 360,
+                                timestamp: new Date().toISOString(),
+                                accuracy: Math.random() * 10
+                            },
+                            progress: Math.floor(Math.random() * 100), // Will be updated with real data later
+                            nextStop: trip.nextStop || 'Unknown Stop',
+                            estimatedArrival: trip.eta || new Date(Date.now() + Math.random() * 60 * 60 * 1000).toISOString(),
+                            bus: trip.bus || {
+                                registrationNumber: trip.busRegistrationNumber || `WP ${trip.busId}`,
+                                capacity: trip.busCapacity || 50
+                            },
+                            route: trip.route || {
+                                name: trip.routeName || `Route ${trip.routeId}`
+                            }
+                        };
+                    });
+                    
+                    console.log(`Mapped ${tripsWithLocation.length} trips from location tracking API`);
+                } else {
+                    console.log('No active trips found in location tracking API response. Data structure:', activeTripsResponse?.data);
+                }
             } catch (locationError) {
-                console.log('Location tracking API failed, trying route management API...');
+                console.log('Location tracking API failed:', locationError);
+                
                 // Fallback to route management API
                 try {
-                    activeTripsResponse = await TripManagementService.getAllTrips(0, 100, 'tripDate', 'desc', '', 'active');
-                    console.log('Route management API response:', activeTripsResponse);
+                    console.log('Trying route management API fallback...');
+                    const routeApiResponse = await TripManagementService.getTripsByStatus('active');
+                    console.log('Route management API response:', routeApiResponse);
+                    
+                    if (Array.isArray(routeApiResponse)) {
+                        tripsWithLocation = routeApiResponse.map((trip: any) => ({
+                            id: trip.id,
+                            busId: trip.busId,
+                            routeId: trip.routeId,
+                            status: trip.status || 'active',
+                            deviceStatus: 'unknown', // Route API doesn't have device status
+                            currentLocation: {
+                                tripId: trip.id,
+                                busId: trip.busId,
+                                location: {
+                                    type: 'Point',
+                                    coordinates: [79.8612 + (Math.random() - 0.5) * 0.1, 6.9271 + (Math.random() - 0.5) * 0.1]
+                                },
+                                speed: Math.random() * 60,
+                                heading: Math.random() * 360,
+                                timestamp: new Date().toISOString(),
+                                accuracy: Math.random() * 10
+                            },
+                            progress: Math.floor(Math.random() * 100),
+                            nextStop: 'Unknown Stop',
+                            estimatedArrival: new Date(Date.now() + Math.random() * 60 * 60 * 1000).toISOString(),
+                            bus: trip.bus || {
+                                registrationNumber: trip.busRegistrationNumber || `WP ${trip.busId}`,
+                                capacity: trip.busCapacity || 50
+                            },
+                            route: trip.route || {
+                                name: trip.routeName || `Route ${trip.routeId}`
+                            }
+                        }));
+                    }
                 } catch (routeError) {
-                    console.log('Both APIs failed, using demo data');
-                    // Use demo data as final fallback
-                    setActiveTrips(demoTrips);
-                    setLastUpdate(new Date());
-                    updateStatistics(demoTrips);
-                    setIsLoading(false);
-                    return;
+                    console.log('Route management API also failed:', routeError);
                 }
             }
 
-            // Process the response - handle different response structures
-            let tripsData: any[] = [];
-            
-            if (activeTripsResponse) {
-                // Check if response has data property (location API)
-                if (activeTripsResponse.data && Array.isArray(activeTripsResponse.data)) {
-                    tripsData = activeTripsResponse.data;
-                }
-                // Check if response has content property (route API)
-                else if (activeTripsResponse.content && Array.isArray(activeTripsResponse.content)) {
-                    tripsData = activeTripsResponse.content;
-                }
-                // Check if response is directly an array
-                else if (Array.isArray(activeTripsResponse)) {
-                    tripsData = activeTripsResponse;
-                }
-                // If response structure is unexpected, use demo data
-                else {
-                    console.log('Unexpected response structure, using demo data');
-                    setActiveTrips(demoTrips);
-                    setLastUpdate(new Date());
-                    updateStatistics(demoTrips);
-                    setIsLoading(false);
-                    return;
-                }
-            }
-
-            // If no trips found, use demo data
-            if (!tripsData || tripsData.length === 0) {
-                console.log('No trips found, using demo data');
+            // If we have trips data, use it; otherwise fall back to demo data
+            if (tripsWithLocation.length > 0) {
+                setActiveTrips(tripsWithLocation);
+                setLastUpdate(new Date());
+                updateStatistics(tripsWithLocation);
+            } else {
+                console.log('No trips found from APIs, using demo data');
                 setActiveTrips(demoTrips);
                 setLastUpdate(new Date());
                 updateStatistics(demoTrips);
-                setIsLoading(false);
-                return;
             }
-
-            // Map the response to our format
-            const mappedTrips: ActiveTripData[] = tripsData.map((trip: any) => ({
-                ...trip,
-                deviceStatus: trip.deviceStatus || (Math.random() > 0.2 ? 'online' : 'offline'),
-                progress: trip.progress || Math.floor(Math.random() * 100),
-                nextStop: trip.nextStop || 'Unknown Stop',
-                estimatedArrival: trip.estimatedArrival || new Date(Date.now() + Math.random() * 60 * 60 * 1000).toISOString(),
-                currentLocation: trip.currentLocation || {
-                    tripId: trip.id,
-                    busId: trip.busId,
-                    location: {
-                        type: 'Point',
-                        coordinates: [
-                            79.8612 + (Math.random() - 0.5) * 0.1,
-                            6.9271 + (Math.random() - 0.5) * 0.1
-                        ]
-                    },
-                    speed: Math.random() * 60,
-                    heading: Math.random() * 360,
-                    timestamp: new Date().toISOString(),
-                    accuracy: Math.random() * 10
-                }
-            }));
-
-            setActiveTrips(mappedTrips);
-            setLastUpdate(new Date());
-            updateStatistics(mappedTrips);
 
         } catch (error) {
             console.error('Error loading active trips:', error);
@@ -284,7 +307,32 @@ export default function LocationTrackingPage() {
 
     // Load statistics
     const loadStatistics = useCallback(async () => {
-        // This will be updated by updateStatistics function
+        try {
+            console.log('Loading device statistics from API...');
+            const deviceStatsResponse = await DeviceService.getDeviceStatistics();
+            console.log('Device statistics response:', deviceStatsResponse);
+            
+            if (deviceStatsResponse?.data) {
+                const apiStats = deviceStatsResponse.data;
+                
+                // Update stats with API data, mapping to our interface
+                setStats(prevStats => ({
+                    totalActiveTrips: apiStats.totalDevices || prevStats.totalActiveTrips,
+                    onlineDevices: apiStats.activeDevices || 0,
+                    offlineDevices: apiStats.inactiveDevices || 0,
+                    averageSpeed: prevStats.averageSpeed, // Keep calculated from trips
+                    tripsOnTime: prevStats.tripsOnTime, // Keep calculated from trips
+                    tripsDelayed: prevStats.tripsDelayed // Keep calculated from trips
+                }));
+                
+                console.log('Statistics updated from API');
+            } else {
+                console.log('No device statistics data received, keeping current stats');
+            }
+        } catch (error) {
+            console.log('Failed to load device statistics:', error);
+            // Keep current statistics or use defaults
+        }
     }, []);
 
     // Update statistics based on current trips
@@ -368,13 +416,15 @@ export default function LocationTrackingPage() {
     // Handle manual refresh
     const handleManualRefresh = useCallback(() => {
         loadActiveTrips();
-    }, [loadActiveTrips]);
+        loadStatistics();
+    }, [loadActiveTrips, loadStatistics]);
 
     // Auto refresh setup
     useEffect(() => {
         if (autoRefresh) {
             refreshIntervalRef.current = setInterval(() => {
                 loadActiveTrips();
+                loadStatistics();
             }, refreshInterval * 1000);
         } else {
             if (refreshIntervalRef.current) {
@@ -388,13 +438,39 @@ export default function LocationTrackingPage() {
                 clearInterval(refreshIntervalRef.current);
             }
         };
-    }, [autoRefresh, refreshInterval, loadActiveTrips]);
+    }, [autoRefresh, refreshInterval, loadActiveTrips, loadStatistics]);
+
+    // Load filter options
+    const loadFilterOptions = useCallback(async () => {
+        try {
+            console.log('Loading filter options...');
+            const routesResponse = await RouteManagementService.getAllRoutes(0, 100, 'name', 'asc');
+            console.log('Routes response:', routesResponse);
+            
+            if (routesResponse?.content && Array.isArray(routesResponse.content)) {
+                const routeOptions = routesResponse.content.map((route: any) => ({
+                    id: route.id,
+                    name: route.name || `Route ${route.id}`
+                }));
+                
+                setFilterOptions(prev => ({
+                    ...prev,
+                    routes: routeOptions
+                }));
+                
+                console.log('Filter options loaded:', routeOptions);
+            }
+        } catch (error) {
+            console.log('Failed to load filter options:', error);
+        }
+    }, []);
 
     // Load initial data
     useEffect(() => {
         loadActiveTrips();
         loadStatistics();
-    }, [loadActiveTrips, loadStatistics]);
+        loadFilterOptions();
+    }, [loadActiveTrips, loadStatistics, loadFilterOptions]);
 
     // Toggle fullscreen map
     const toggleFullscreen = useCallback(() => {
