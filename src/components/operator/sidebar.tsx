@@ -1,6 +1,6 @@
 "use client"
 
-import { Bus, Users, BarChart3, Calendar, MapPin, Route, DollarSign, ChevronLeft, ChevronRight } from "lucide-react"
+import { Bus, Users, BarChart3, Calendar, MapPin, Route, DollarSign, ChevronLeft, ChevronRight, FileText, Navigation } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -21,12 +21,12 @@ export function Sidebar({ activeItem = "dashboard", isCollapsed, setIsCollapsed 
 
   const sidebarItems: SidebarItem[] = [
     { icon: BarChart3, label: "Dashboard", active: activeItem === "dashboard", href: "/operator/dashboard" },
-    { icon: Calendar, label: "Schedule Management", active: activeItem === "scheduleManagement", href: "/operator/scheduleManagement" },
-    { icon: Bus, label: "Fleet management", active: activeItem === "fleetmanagement", href: "/operator/fleetmanagement" },
+    { icon: FileText, label: "Service Permits", active: activeItem === "passenger-service-permits", href: "/operator/passenger-service-permits" },
+    { icon: Bus, label: "Fleet management", active: activeItem === "fleetmanagement", href: "/operator/fleet-management" },
+    { icon: Navigation, label: "Trip Management", active: activeItem === "trips", href: "/operator/trips" },
     { icon: MapPin, label: "Bus Tracking", active: activeItem === "busTracking", href: "/operator/busTracking" },
     { icon: Users, label: "Staff management", active: activeItem === "staff", href: "/operator/staffManagement" },
     { icon: DollarSign, label: "Revenue Management", active: activeItem === "revenue", href: "/operator/revenueManagement" },
-    { icon: Route, label: "Route Permit management", active: activeItem === "routepermit", href: "/operator/routepermit" },
   ]
 
   return (
