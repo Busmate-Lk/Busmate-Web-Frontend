@@ -22,17 +22,17 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
 
     useEffect(() => {
         let mounted = true
-        ;(async () => {
-            try {
-                setLoading(true)
-                const data = await getNotificationDetails(notificationId)
-                if (mounted) setNotification(data)
-            } catch (e: any) {
-                if (mounted) setError(e?.message || 'Failed to load notification')
-            } finally {
-                if (mounted) setLoading(false)
-            }
-        })()
+            ; (async () => {
+                try {
+                    setLoading(true)
+                    const data = await getNotificationDetails(notificationId)
+                    if (mounted) setNotification(data)
+                } catch (e: any) {
+                    if (mounted) setError(e?.message || 'Failed to load notification')
+                } finally {
+                    if (mounted) setLoading(false)
+                }
+            })()
         return () => { mounted = false }
     }, [notificationId])
 
@@ -116,9 +116,9 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                                             {notification.messageType.charAt(0).toUpperCase() + notification.messageType.slice(1)}
                                         </Badge>
                                         {notification.targetAudience && (
-                                          <Badge variant="outline" className="shadow-sm">
-                                            {notification.targetAudience}
-                                          </Badge>
+                                            <Badge variant="outline" className="shadow-sm">
+                                                {notification.targetAudience}
+                                            </Badge>
                                         )}
                                         <Badge variant="outline" className="shadow-sm">
                                             {notification.subject}
@@ -148,14 +148,14 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                                     <Calendar className="h-5 w-5 text-gray-500" />
                                     <div>
                                         <p className="text-sm font-semibold text-gray-900">Date & Time</p>
-                                    <p className="text-sm text-gray-600">{sentTime}</p>
+                                        <p className="text-sm text-gray-600">{sentTime}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm">
                                     <Clock className="h-5 w-5 text-gray-500" />
                                     <div>
                                         <p className="text-sm font-semibold text-gray-900">Received</p>
-                                    <p className="text-sm text-gray-600">{sentTime}</p>
+                                        <p className="text-sm text-gray-600">{sentTime}</p>
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +164,7 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
                                     <User className="h-5 w-5 text-gray-500" />
                                     <div>
                                         <p className="text-sm font-semibold text-gray-900">Sender</p>
-                                    <p className="text-sm text-gray-600">{notification.adminId}</p>
+                                        <p className="text-sm text-gray-600">{notification.adminId}</p>
                                     </div>
                                 </div>
                             </div>

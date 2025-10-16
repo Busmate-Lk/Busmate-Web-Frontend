@@ -37,17 +37,17 @@ export function NotificationPanel() {
 
   useEffect(() => {
     let mounted = true
-    ;(async () => {
-      try {
-        setLoading(true)
-        const data = await listNotifications(50)
-        if (mounted) setItems(data)
-      } catch (e: any) {
-        if (mounted) setError(e?.message || 'Failed to load notifications')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
+      ; (async () => {
+        try {
+          setLoading(true)
+          const data = await listNotifications(50)
+          if (mounted) setItems(data)
+        } catch (e: any) {
+          if (mounted) setError(e?.message || 'Failed to load notifications')
+        } finally {
+          if (mounted) setLoading(false)
+        }
+      })()
     return () => { mounted = false }
   }, [])
 
