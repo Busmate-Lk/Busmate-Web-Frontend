@@ -10,8 +10,14 @@ import BroadcastFilters from "@/components/mot/BroadcastFilters"
 import MessagesTable from "@/components/mot/MessagesTable"
 /*import QuickTemplates from "@/components/mot/QuickTemplates"*/
 import {
-  DeleteConfirmationModal,
+    DeleteConfirmationModal,
 } from '@/components/mot/confirmation-modals'
+import {
+    sendNotification,
+    mapTargetGroupsToAudience,
+    mapPriorityToMessageType,
+    mapCategoryToMessageType
+} from '@/lib/services/notificationService'
 
 // Data directly in main file
 const initialBroadcastMessages: BroadcastMessage[] = [
@@ -133,7 +139,7 @@ const initialBroadcastMessages: BroadcastMessage[] = [
 
 export default function Broadcast() {
     const router = useRouter()
-    
+
     // State management for messages and modals
     const [broadcastMessages, setBroadcastMessages] = useState<BroadcastMessage[]>(initialBroadcastMessages)
     const [messageToDelete, setMessageToDelete] = useState<BroadcastMessage | null>(null)
@@ -157,19 +163,19 @@ export default function Broadcast() {
                 message.id.toLowerCase().includes(searchTerm.toLowerCase())
 
             // Priority filter
-            const matchesPriority = !priorityFilter || priorityFilter === '' || 
+            const matchesPriority = !priorityFilter || priorityFilter === '' ||
                 message.priority === priorityFilter
 
             // Category filter
-            const matchesCategory = !categoryFilter || categoryFilter === '' || 
+            const matchesCategory = !categoryFilter || categoryFilter === '' ||
                 message.category === categoryFilter
 
             // Status filter
-            const matchesStatus = !statusFilter || statusFilter === '' || 
+            const matchesStatus = !statusFilter || statusFilter === '' ||
                 message.status === statusFilter
 
             // Target group filter
-            const matchesTargetGroup = !targetGroupFilter || targetGroupFilter === '' || 
+            const matchesTargetGroup = !targetGroupFilter || targetGroupFilter === '' ||
                 message.targetGroups.includes(targetGroupFilter)
 
             return matchesSearch && matchesPriority && matchesCategory && matchesStatus && matchesTargetGroup
@@ -179,12 +185,77 @@ export default function Broadcast() {
     const sentMessages = filteredMessages.filter((message) => message.status === "Sent")
     const pendingMessages = filteredMessages.filter((message) => message.status === "Pending")
 
-    const handleSendMessage = (messageData: any) => {
-        console.log("Sending message:", messageData)
+    const handleSendMessage = async (messageData: any) => {
+        try {
+            console.log("Sending message:", messageData)
+
+            // Map UI data to API format
+            const targetAudience = mapTargetGroupsToAudience(messageData.selectedGroups)
+
+            // Use category to determine message type if it's more specific, otherwise use priority
+            let messageType = mapCategoryToMessageType(messageData.category)
+            if (messageData.category === 'General') {
+                messageType = mapPriorityToMessageType(messageData.priority)
+            }
+
+            // Send notification via the service
+            const response = await sendNotification({
+                title: messageData.messageTitle,
+                subject: messageData.messageTitle, // Using title as subject
+                body: messageData.messageBody,
+                messageType: messageType,
+                targetAudience: targetAudience,
+            })
+
+            console.log("Notification sent successfully:", response)
+
+            // Create a new message record with the response data
+            const newMessage: BroadcastMessage = {
+                id: response.notificationId,
+                title: messageData.messageTitle,
+                body: messageData.messageBody,
+                targetGroups: messageData.selectedGroups,
+                priority: messageData.priority,
+                category: messageData.category,
+                scheduledTime: messageData.isScheduled ? messageData.scheduledTime : undefined,
+                status: messageData.isScheduled ? "Pending" : "Sent",
+                createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                sentAt: messageData.isScheduled ? undefined : new Date().toISOString().replace('T', ' ').substring(0, 16),
+            }
+
+            // Add to the messages list
+            setBroadcastMessages(prev => [newMessage, ...prev])
+
+            // Show success message
+            alert(`Message sent successfully!\n\nTotal Sent: ${response.stats.totalSent}\nSuccessful: ${response.stats.successful}\nFailed: ${response.stats.failed}\n\nWeb: ${response.stats.web.successful} successful, ${response.stats.web.failed} failed\nMobile: ${response.stats.mobile.successful} successful, ${response.stats.mobile.failed} failed`)
+
+        } catch (error: any) {
+            console.error("Error sending message:", error)
+            alert(`Failed to send message: ${error.message || 'Unknown error occurred'}`)
+            throw error // Re-throw to let the form handle it
+        }
     }
 
     const handleSaveDraft = (messageData: any) => {
         console.log("Saving draft:", messageData)
+
+        // Create a draft message record
+        const draftMessage: BroadcastMessage = {
+            id: `BM${String(broadcastMessages.length + 1).padStart(3, '0')}`,
+            title: messageData.messageTitle,
+            body: messageData.messageBody,
+            targetGroups: messageData.selectedGroups,
+            priority: messageData.priority,
+            category: messageData.category,
+            scheduledTime: messageData.isScheduled ? messageData.scheduledTime : undefined,
+            status: "Pending",
+            createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        }
+
+        // Add to the messages list
+        setBroadcastMessages(prev => [draftMessage, ...prev])
+
+        alert("Draft saved successfully!")
     }
 
     // Edit handler function
@@ -213,20 +284,20 @@ export default function Broadcast() {
         if (!messageToDelete) return
 
         setIsDeleting(true)
-        
+
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1500))
-            
+
             // Remove message from state
-            setBroadcastMessages(prev => 
+            setBroadcastMessages(prev =>
                 prev.filter(msg => msg.id !== messageToDelete.id)
             )
-            
+
             // Close modal and reset state
             setShowDeleteModal(false)
             setMessageToDelete(null)
-            
+
             console.log("Message deleted successfully:", messageToDelete.id)
         } catch (error) {
             console.error("Error deleting message:", error)
@@ -277,20 +348,20 @@ export default function Broadcast() {
 
                 {/* Filters Section */}
                 <div className="mt-6">
-                    
-                        <BroadcastFilters
-                            searchTerm={searchTerm}
-                            setSearchTerm={setSearchTerm}
-                            priorityFilter={priorityFilter}
-                            setPriorityFilter={setPriorityFilter}
-                            categoryFilter={categoryFilter}
-                            setCategoryFilter={setCategoryFilter}
-                            statusFilter={statusFilter}
-                            setStatusFilter={setStatusFilter}
-                            targetGroupFilter={targetGroupFilter}
-                            setTargetGroupFilter={setTargetGroupFilter}
-                        />
-                    
+
+                    <BroadcastFilters
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        priorityFilter={priorityFilter}
+                        setPriorityFilter={setPriorityFilter}
+                        categoryFilter={categoryFilter}
+                        setCategoryFilter={setCategoryFilter}
+                        statusFilter={statusFilter}
+                        setStatusFilter={setStatusFilter}
+                        targetGroupFilter={targetGroupFilter}
+                        setTargetGroupFilter={setTargetGroupFilter}
+                    />
+
                 </div>
 
                 <div className="mt-6">
@@ -303,7 +374,7 @@ export default function Broadcast() {
                     />
                 </div>
 
-               {/* <div className="mt-6">
+                {/* <div className="mt-6">
                     <QuickTemplates />
                 </div> */}
             </div>
@@ -316,8 +387,8 @@ export default function Broadcast() {
                 isLoading={isDeleting}
                 title="Delete Broadcast Message"
                 itemName={
-                    messageToDelete 
-                        ? `"${messageToDelete.title}"` 
+                    messageToDelete
+                        ? `"${messageToDelete.title}"`
                         : "this message"
                 }
             />
