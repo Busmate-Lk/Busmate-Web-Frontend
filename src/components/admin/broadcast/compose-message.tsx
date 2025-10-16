@@ -18,17 +18,17 @@ export function ComposeMessage() {
   const router = useRouter()
   const [messageType, setMessageType] = useState<"info" | "warning" | "critical" | "maintenance">("info")
   const [scheduling, setScheduling] = useState("now")
-  const [allUsers, setAllUsers] = useState(true)
+  const [allUsers, setAllUsers] = useState(false)
   const [subject, setSubject] = useState("")
   const [messageContent, setMessageContent] = useState("")
   const [isSending, setIsSending] = useState(false)
-  
+
   // Target audience checkboxes
   const [targetPassengers, setTargetPassengers] = useState(false)
   const [targetConductors, setTargetConductors] = useState(false)
   const [targetFleetOps, setTargetFleetOps] = useState(false)
   const [targetMotOfficials, setTargetMotOfficials] = useState(false)
-  
+
   // Location filters
   const [province, setProvince] = useState<string>("")
   const [city, setCity] = useState<string>("")
@@ -182,10 +182,10 @@ export function ComposeMessage() {
               {/* Subject */}
               <div>
                 <Label htmlFor="subject">Subject</Label>
-                <Input 
-                  id="subject" 
-                  placeholder="Enter message subject..." 
-                  className="mt-2" 
+                <Input
+                  id="subject"
+                  placeholder="Enter message subject..."
+                  className="mt-2"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                 />
@@ -197,44 +197,66 @@ export function ComposeMessage() {
                 <div className="grid grid-cols-2 gap-6 mt-3">
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="all-users" checked={allUsers} onCheckedChange={checked => setAllUsers(checked === true)} />
+                      <Checkbox
+                        id="all-users"
+                        checked={allUsers}
+                        onCheckedChange={(checked) => {
+                          const v = checked === true;
+                          setAllUsers(v);
+                          if (v) {
+                            // Clear specific selections when All Users is selected
+                            setTargetPassengers(false);
+                            setTargetConductors(false);
+                            setTargetFleetOps(false);
+                            setTargetMotOfficials(false);
+                          }
+                        }}
+                      />
                       <Label htmlFor="all-users">All Users</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="passengers" 
-                        checked={targetPassengers} 
-                        onCheckedChange={checked => setTargetPassengers(checked === true)}
-                        disabled={allUsers}
+                      <Checkbox
+                        id="passengers"
+                        checked={targetPassengers}
+                        onCheckedChange={checked => {
+                          setAllUsers(false);
+                          setTargetPassengers(checked === true);
+                        }}
                       />
                       <Label htmlFor="passengers">Passengers</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="conductors" 
+                      <Checkbox
+                        id="conductors"
                         checked={targetConductors}
-                        onCheckedChange={checked => setTargetConductors(checked === true)}
-                        disabled={allUsers}
+                        onCheckedChange={checked => {
+                          setAllUsers(false);
+                          setTargetConductors(checked === true);
+                        }}
                       />
                       <Label htmlFor="conductors">Conductors</Label>
                     </div>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="fleet-operators" 
+                      <Checkbox
+                        id="fleet-operators"
                         checked={targetFleetOps}
-                        onCheckedChange={checked => setTargetFleetOps(checked === true)}
-                        disabled={allUsers}
+                        onCheckedChange={checked => {
+                          setAllUsers(false);
+                          setTargetFleetOps(checked === true);
+                        }}
                       />
                       <Label htmlFor="fleet-operators">Fleet Operators</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="mot-officials" 
+                      <Checkbox
+                        id="mot-officials"
                         checked={targetMotOfficials}
-                        onCheckedChange={checked => setTargetMotOfficials(checked === true)}
-                        disabled={allUsers}
+                        onCheckedChange={checked => {
+                          setAllUsers(false);
+                          setTargetMotOfficials(checked === true);
+                        }}
                       />
                       <Label htmlFor="mot-officials">MoT Officials</Label>
                     </div>
@@ -368,7 +390,7 @@ export function ComposeMessage() {
                 </Button>
                 <div className="flex space-x-3">
                   <Button variant="outline" disabled={isSending}>Preview</Button>
-                  <Button 
+                  <Button
                     className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md disabled:bg-blue-400 disabled:cursor-not-allowed"
                     onClick={handleSendMessage}
                     disabled={isSending}
@@ -413,18 +435,16 @@ export function ComposeMessage() {
 
                 <div className="bg-white rounded-lg p-3">
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className={`w-2 h-2 rounded-full ${
-                      messageType === "info" ? "bg-blue-500" :
+                    <span className={`w-2 h-2 rounded-full ${messageType === "info" ? "bg-blue-500" :
                       messageType === "warning" ? "bg-yellow-500" :
-                      messageType === "critical" ? "bg-red-500" :
-                      "bg-purple-500"
-                    }`}></span>
-                    <span className={`text-xs font-medium uppercase ${
-                      messageType === "info" ? "text-blue-600" :
+                        messageType === "critical" ? "bg-red-500" :
+                          "bg-purple-500"
+                      }`}></span>
+                    <span className={`text-xs font-medium uppercase ${messageType === "info" ? "text-blue-600" :
                       messageType === "warning" ? "text-yellow-600" :
-                      messageType === "critical" ? "text-red-600" :
-                      "text-purple-600"
-                    }`}>{messageType}</span>
+                        messageType === "critical" ? "text-red-600" :
+                          "text-purple-600"
+                      }`}>{messageType}</span>
                   </div>
                   <h4 className="font-medium text-sm mb-1">
                     {subject || "Message Subject"}
