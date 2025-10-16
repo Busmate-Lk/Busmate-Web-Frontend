@@ -47,11 +47,13 @@ export interface NotificationDetails {
 
 export interface NotificationListItem {
     notificationId: string;
+    adminId?: string;
     title: string;
     body: string;
     createdAt: string;
     messageType?: string;
     targetAudience?: string;
+    senderRole?: string;
 }
 
 /**
@@ -136,12 +138,34 @@ export async function listNotifications(limit: number = 50): Promise<Notificatio
     // Map backend fields to frontend shape
     return items.map((n: any) => ({
         notificationId: n.notificationId,
+        adminId: n.adminId,
         title: n.title,
         body: n.body ?? n.content ?? '',
         createdAt: n.createdAt ?? n.dateCreated ?? n.sentAt ?? '',
         messageType: n.messageType,
         targetAudience: n.targetAudience,
+        senderRole: n.senderRole,
     }));
+}
+
+/** Delete a notification by id */
+export async function deleteNotification(notificationId: string): Promise<void> {
+    const authToken = getCookie('access_token');
+    if (!authToken) {
+        throw new Error('Authentication token not found. Please log in again.');
+    }
+
+    const response = await fetch(`${NOTIFICATION_API_BASE}/api/notifications/delete/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${authToken}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to delete notification' }));
+        throw new Error(errorData.message || `Failed to delete notification: ${response.statusText}`);
+    }
 }
 
 /**

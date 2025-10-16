@@ -31,9 +31,9 @@ export function ComposeMessage() {
   const [targetMotOfficials, setTargetMotOfficials] = useState(false)
 
   // Location filters
-  const [province, setProvince] = useState<string>("")
-  const [city, setCity] = useState<string>("")
-  const [route, setRoute] = useState<string>("")
+  const [province, setProvince] = useState<string>("all")
+  const [city, setCity] = useState<string>("all")
+  const [route, setRoute] = useState<string>("all")
 
   // Sri Lanka provinces and cities mapping
   const sriLankaProvinces = [
@@ -87,9 +87,10 @@ export function ComposeMessage() {
       }
 
       // Add optional location filters if set
-      if (province && province !== 'all') request.province = province
-      if (city && city !== 'all') request.city = city
-      if (route && route !== 'all') request.route = route
+      // Always include location filters: when 'all' is chosen, send the string 'all'
+      request.province = province || 'all'
+      request.city = city || 'all'
+      request.route = route || 'all'
 
       const response = await sendNotification(request)
 
@@ -112,9 +113,9 @@ export function ComposeMessage() {
       setTargetConductors(false)
       setTargetFleetOps(false)
       setTargetMotOfficials(false)
-      setProvince("")
-      setCity("")
-      setRoute("")
+      setProvince('all')
+      setCity('all')
+      setRoute('all')
 
       // Navigate back after short delay
       setTimeout(() => {

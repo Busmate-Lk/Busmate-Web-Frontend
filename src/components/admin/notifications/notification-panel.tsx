@@ -96,13 +96,41 @@ export function NotificationPanel() {
   }
 
   const filtered = useMemo(() => {
-    return items.filter(n => {
-      const matchesSearch = !searchTerm || n.title.toLowerCase().includes(searchTerm.toLowerCase()) || n.body.toLowerCase().includes(searchTerm.toLowerCase())
-      const type = (n.messageType || 'info').toLowerCase()
-      const matchesType = filterType === 'all' || type === filterType
-      return matchesSearch && matchesType
-    })
-  }, [items, searchTerm, filterType])
+    const isMot = pathname?.startsWith("/mot")
+
+    // Helper to map messageType to a coarse priority for filtering UI
+    const priorityFromType = (t: string) => {
+      const type = (t || 'info').toLowerCase()
+      if (type === 'critical') return 'critical'
+      if (type === 'warning' || type === 'maintenance') return 'medium'
+      return 'low'
+    }
+
+    return items
+      // Apply MoT-specific visibility rules
+      .filter(n => {
+        if (!isMot) return true
+        const senderOk = (n.senderRole || '').toLowerCase() === 'admin'
+        const ta = (n.targetAudience || '').toLowerCase()
+        // Only messages specifically targeted to MoT audiences
+        const targetOk = ta === 'mot' || ta === 'mot_officers'
+        return senderOk && targetOk
+      })
+      // Apply search and type/priority filters
+      .filter(n => {
+        const matchesSearch = !searchTerm
+          || n.title.toLowerCase().includes(searchTerm.toLowerCase())
+          || n.body.toLowerCase().includes(searchTerm.toLowerCase())
+
+        const type = (n.messageType || 'info').toLowerCase()
+        const matchesType = filterType === 'all' || type === filterType
+
+        const priority = priorityFromType(type)
+        const matchesPriority = filterPriority === 'all' || filterPriority === priority
+
+        return matchesSearch && matchesType && matchesPriority
+      })
+  }, [items, pathname, searchTerm, filterType, filterPriority])
 
   return (
     <div>
