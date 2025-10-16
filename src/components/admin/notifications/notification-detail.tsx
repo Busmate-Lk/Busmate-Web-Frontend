@@ -78,7 +78,8 @@ export function NotificationDetail({ notificationId }: NotificationDetailProps) 
         }
     }
 
-    const sentTime = useMemo(() => notification?.createdAt || '', [notification])
+    // Derive sent time without using a hook to avoid hook order changes across renders
+    const sentTime = notification?.createdAt || ''
 
     return (
         <div className="max-w-4xl mx-auto">

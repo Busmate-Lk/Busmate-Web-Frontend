@@ -10,6 +10,7 @@ import { ArrowLeft, Search, Filter, Bell, AlertTriangle, Info, CheckCircle, Cloc
 import { usePathname, useRouter } from "next/navigation"
 import { listNotifications, type NotificationListItem } from "@/lib/services/notificationService"
 import Link from "next/link"
+import { useAuth } from "@/context/AuthContext"
 
 function toRelativeTime(dateStr?: string) {
   if (!dateStr) return ''
@@ -28,6 +29,7 @@ function toRelativeTime(dateStr?: string) {
 export function NotificationPanel() {
   const router = useRouter()
   const pathname = usePathname()
+  const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("all")
   const [filterPriority, setFilterPriority] = useState("all")
@@ -97,6 +99,7 @@ export function NotificationPanel() {
 
   const filtered = useMemo(() => {
     const isMot = pathname?.startsWith("/mot")
+    const isAdmin = pathname?.startsWith("/admin")
 
     // Helper to map messageType to a coarse priority for filtering UI
     const priorityFromType = (t: string) => {
@@ -109,12 +112,21 @@ export function NotificationPanel() {
     return items
       // Apply MoT-specific visibility rules
       .filter(n => {
-        if (!isMot) return true
-        const senderOk = (n.senderRole || '').toLowerCase() === 'admin'
-        const ta = (n.targetAudience || '').toLowerCase()
-        // Only messages specifically targeted to MoT audiences
-        const targetOk = ta === 'mot' || ta === 'mot_officers'
-        return senderOk && targetOk
+        if (isMot) {
+          const senderOk = (n.senderRole || '').toLowerCase() === 'admin'
+          const ta = (n.targetAudience || '').toLowerCase()
+          // Only admin-sent intended to MoT or All (no generic 'mot' alias)
+          const targetOk = ta === 'mot_officers' || ta === 'all'
+          return senderOk && targetOk
+        }
+        if (isAdmin) {
+          // In Admin received, do not show messages sent by admins (any admin),
+          // and also hide messages sent by the current user id if available
+          const isAdminSender = (n.senderRole || '').toLowerCase() === 'admin'
+          const isMine = n.adminId && user?.id ? n.adminId === user.id : false
+          return !isAdminSender && !isMine
+        }
+        return true
       })
       // Apply search and type/priority filters
       .filter(n => {
@@ -130,7 +142,7 @@ export function NotificationPanel() {
 
         return matchesSearch && matchesType && matchesPriority
       })
-  }, [items, pathname, searchTerm, filterType, filterPriority])
+  }, [items, pathname, user?.id, searchTerm, filterType, filterPriority])
 
   return (
     <div>
