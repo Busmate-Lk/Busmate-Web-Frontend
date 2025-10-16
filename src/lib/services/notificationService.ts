@@ -50,6 +50,8 @@ export interface NotificationListItem {
     title: string;
     body: string;
     createdAt: string;
+    messageType?: string;
+    targetAudience?: string;
 }
 
 /**
@@ -130,7 +132,16 @@ export async function listNotifications(limit: number = 50): Promise<Notificatio
     }
 
     const data = await response.json();
-    return data.notifications;
+    const items = Array.isArray(data.notifications) ? data.notifications : [];
+    // Map backend fields to frontend shape
+    return items.map((n: any) => ({
+        notificationId: n.notificationId,
+        title: n.title,
+        body: n.body ?? n.content ?? '',
+        createdAt: n.createdAt ?? n.dateCreated ?? n.sentAt ?? '',
+        messageType: n.messageType,
+        targetAudience: n.targetAudience,
+    }));
 }
 
 /**

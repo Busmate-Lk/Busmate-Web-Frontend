@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Button } from "@/components/admin/ui/button"
 import { Input } from "@/components/admin/ui/input"
 import { Label } from "@/components/admin/ui/label"
@@ -10,12 +10,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/admin/ui/radio-group"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/admin/ui/select"
 import { Bold, Italic, Underline, Link, List, Calendar, Clock, Send, Save, ArrowLeft, Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { sendNotification } from "@/lib/services/notificationService"
 import type { SendNotificationRequest } from "@/lib/services/notificationService"
 
 export function ComposeMessage() {
   const router = useRouter()
+  const pathname = usePathname()
   const [messageType, setMessageType] = useState<"info" | "warning" | "critical" | "maintenance">("info")
   const [scheduling, setScheduling] = useState("now")
   const [allUsers, setAllUsers] = useState(false)
@@ -33,6 +34,26 @@ export function ComposeMessage() {
   const [province, setProvince] = useState<string>("")
   const [city, setCity] = useState<string>("")
   const [route, setRoute] = useState<string>("")
+
+  // Sri Lanka provinces and cities mapping
+  const sriLankaProvinces = [
+    'Western', 'Central', 'Southern', 'Northern', 'Eastern', 'North Western', 'North Central', 'Uva', 'Sabaragamuwa'
+  ] as const
+  const sriLankaCitiesByProvince: Record<string, string[]> = {
+    'Western': ['Colombo', 'Gampaha', 'Kalutara', 'Moratuwa', 'Dehiwala', 'Maharagama'],
+    'Central': ['Kandy', 'Matale', 'Nuwara Eliya', 'Gampola', 'Hatton'],
+    'Southern': ['Galle', 'Matara', 'Hambantota', 'Ambalangoda'],
+    'Northern': ['Jaffna', 'Kilinochchi', 'Mannar', 'Vavuniya', 'Mullaitivu'],
+    'Eastern': ['Trincomalee', 'Batticaloa', 'Ampara', 'Kalmunai'],
+    'North Western': ['Kurunegala', 'Puttalam', 'Chilaw'],
+    'North Central': ['Anuradhapura', 'Polonnaruwa'],
+    'Uva': ['Badulla', 'Monaragala', 'Bandarawela'],
+    'Sabaragamuwa': ['Ratnapura', 'Kegalle']
+  }
+  const cityOptions = useMemo(() => {
+    if (!province || province === 'all') return []
+    return sriLankaCitiesByProvince[province] || []
+  }, [province])
 
   // Determine target audience based on selections
   const getTargetAudience = (): SendNotificationRequest['targetAudience'] => {
@@ -97,7 +118,8 @@ export function ComposeMessage() {
 
       // Navigate back after short delay
       setTimeout(() => {
-        router.push("/admin/notifications/sent")
+        const base = pathname?.startsWith('/mot') ? '/mot' : '/admin'
+        router.push(`${base}/notifications/sent`)
       }, 2000)
 
     } catch (error: any) {
@@ -115,7 +137,7 @@ export function ComposeMessage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-4">
-          <Button className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md" variant="ghost" size="sm" onClick={() => router.push("/admin/notifications/sent")}>
+          <Button className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 shadow-md" variant="ghost" size="sm" onClick={() => router.push(`${pathname?.startsWith('/mot') ? '/mot' : '/admin'}/notifications/sent`)}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Messages
           </Button>
@@ -274,42 +296,39 @@ export function ComposeMessage() {
                 <div className="grid grid-cols-3 gap-4 mt-3">
                   <div>
                     <Label htmlFor="province">Province</Label>
-                    <Select value={province} onValueChange={setProvince}>
-                      <SelectTrigger>
+                    <Select value={province} onValueChange={(v) => { setProvince(v); setCity('') }}>
+                      <SelectTrigger className="bg-white">
                         <SelectValue placeholder="All Provinces" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-50 bg-white text-gray-900">
                         <SelectItem value="all">All Provinces</SelectItem>
-                        <SelectItem value="Western">Western</SelectItem>
-                        <SelectItem value="Central">Central</SelectItem>
-                        <SelectItem value="Southern">Southern</SelectItem>
-                        <SelectItem value="Northern">Northern</SelectItem>
-                        <SelectItem value="Eastern">Eastern</SelectItem>
+                        {sriLankaProvinces.map(p => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <Label htmlFor="city">City</Label>
-                    <Select value={city} onValueChange={setCity}>
-                      <SelectTrigger>
+                    <Select value={city} onValueChange={setCity} disabled={!province || province === 'all'}>
+                      <SelectTrigger className="bg-white disabled:opacity-70">
                         <SelectValue placeholder="All Cities" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-50 bg-white text-gray-900">
                         <SelectItem value="all">All Cities</SelectItem>
-                        <SelectItem value="Colombo">Colombo</SelectItem>
-                        <SelectItem value="Kandy">Kandy</SelectItem>
-                        <SelectItem value="Galle">Galle</SelectItem>
-                        <SelectItem value="Jaffna">Jaffna</SelectItem>
+                        {cityOptions.map(c => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <Label htmlFor="route">Route</Label>
                     <Select value={route} onValueChange={setRoute}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white">
                         <SelectValue placeholder="All Routes" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-50 bg-white text-gray-900">
                         <SelectItem value="all">All Routes</SelectItem>
                         <SelectItem value="001">Route 001</SelectItem>
                         <SelectItem value="138">Route 138</SelectItem>

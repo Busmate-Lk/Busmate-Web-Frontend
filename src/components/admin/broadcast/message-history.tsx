@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/admin/ui/checkbox"
 import { Badge } from "@/components/admin/ui/badge"
 import { Calendar, Search, Eye, Edit, Trash2, Send, Filter } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 const messages = [
   {
@@ -63,15 +63,18 @@ const messages = [
 
 export function MessageHistory() {
   const router = useRouter()
+  const pathname = usePathname()
   const [searchTerm, setSearchTerm] = useState("")
   const [showFilters, setShowFilters] = useState(false)
 
   const handleSendMessage = () => {
-    router.push("/admin/broadcast/compose")
+    const base = pathname?.startsWith('/mot') ? '/mot' : '/admin'
+    router.push(`${base}/notifications/compose`)
   }
 
   const handleMessageClick = (messageId: number) => {
-    router.push(`/admin/broadcast/message/${messageId}`)
+    const base = pathname?.startsWith('/mot') ? '/mot' : '/admin'
+    router.push(`${base}/notifications/detail/${messageId}`)
   }
 
   return (
