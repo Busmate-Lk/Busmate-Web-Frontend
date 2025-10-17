@@ -2,10 +2,10 @@
 
 import { Layout } from '@/components/shared/layout';
 // import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
-import { ScheduleStatsCards } from '@/components/timeKeeper/schedule-stats-cards';
-import { RealTimeClock } from '@/components/timeKeeper/real-time-clock';
-import { CalendarNavigator } from '@/components/timeKeeper/calendar-navigator';
-import { LateBusAlerts } from '@/components/timeKeeper/late-bus-alerts';
+import { ScheduleStatsCards } from '@/components/timeKeeper/schedule/schedule-stats-cards';
+import { RealTimeClock } from '@/components/timeKeeper/dashboard/real-time-clock';
+import { CalendarNavigator } from '@/components/timeKeeper/dashboard/calendar-navigator';
+import { LateBusAlerts } from '@/components/timeKeeper/dashboard/late-bus-alerts';
 import { Calendar, Clock, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function TimeKeeperDashboard() {

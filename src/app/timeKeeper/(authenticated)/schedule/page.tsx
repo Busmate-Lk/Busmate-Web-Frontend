@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import ScheduleManagementClient from './ScheduleManagementClient';
+import ScheduleManagementClient from '@/app/timeKeeper/(authenticated)/schedule/ScheduleManagementClient';
 import { Layout } from '@/components/shared/layout';
 
 export default function Page() {

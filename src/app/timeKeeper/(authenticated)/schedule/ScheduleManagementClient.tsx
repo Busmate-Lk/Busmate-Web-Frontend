@@ -1,9 +1,9 @@
 'use client';
 
 // import { TimeKeeperLayout } from "@/components/timeKeeper/layout";
-import { ScheduleStatsCards } from '@/components/timeKeeper/schedule-stats-cards';
-import { ScheduleSearchFilters } from '@/components/timeKeeper/schedule-search-filters';
-import { ScheduleTable } from '@/components/timeKeeper/schedule-table';
+import { ScheduleStatsCards } from '@/components/timeKeeper/schedule/schedule-stats-cards';
+import { ScheduleSearchFilters } from '@/components/timeKeeper/schedule/schedule-search-filters';
+import { ScheduleTable } from '@/components/timeKeeper/schedule/schedule-table';
 import { usePagination } from '@/components/mot/pagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -820,192 +820,190 @@ export default function ScheduleManagementClient() {
   };
 
   return (
-      <div className="space-y-6">
-        {/* Date Selector */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                Select Date
-              </h3>
-              <p className="text-sm text-gray-600">
-                View bus schedules for a specific day
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
+    <div className="space-y-6">
+      {/* Date Selector */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Select Date</h3>
+            <p className="text-sm text-gray-600">
+              View bus schedules for a specific day
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <label
+              htmlFor="schedule-date"
+              className="text-sm font-medium text-gray-700"
+            >
+              Date:
+            </label>
+            <input
+              type="date"
+              id="schedule-date"
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-500">
+              (
+              {new Date(selectedDate).toLocaleDateString('en-US', {
+                weekday: 'long',
+              })}
+              )
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <ScheduleStatsCards stats={scheduleStats} />
+
+      {/* Search and Filters */}
+      <ScheduleSearchFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        operatorFilter={operatorFilter}
+        setOperatorFilter={setOperatorFilter}
+        routeFilter={routeFilter}
+        setRouteFilter={setRouteFilter}
+        onAddNew={handleAddNew}
+        onExportAll={handleExportAll}
+        isTimeKeeper={true}
+      />
+
+      {/* Schedule Table */}
+      <ScheduleTable
+        schedules={paginatedSchedules.map((schedule) => ({
+          ...schedule,
+          days: schedule.days.join(', '),
+        }))}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={(id: string, name: string) => handleAssignBus(id, name)}
+        onAssignBus={handleAssignBus}
+        onAddNotes={handleAddNotes}
+        isTimeKeeper={true}
+      />
+
+      {/* Assign Bus Modal */}
+      {assignBusModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Assign Bus
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Assign a bus to route: "{assignBusModal.routeName}"
+            </p>
+            <div className="mb-4">
               <label
-                htmlFor="schedule-date"
-                className="text-sm font-medium text-gray-700"
+                htmlFor="bus-number"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Date:
+                Bus Number
               </label>
               <input
-                type="date"
-                id="schedule-date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                id="bus-number"
+                placeholder="Enter bus number (e.g., NB-1234)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-500">
-                (
-                {new Date(selectedDate).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                })}
-                )
-              </span>
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() =>
+                  setAssignBusModal({
+                    isOpen: false,
+                    scheduleId: '',
+                    routeName: '',
+                  })
+                }
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const busNumber = (
+                    document.getElementById('bus-number') as HTMLInputElement
+                  )?.value;
+                  if (busNumber.trim()) {
+                    confirmAssignBus(busNumber);
+                  }
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+              >
+                Assign Bus
+              </button>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Stats Cards */}
-        <ScheduleStatsCards stats={scheduleStats} />
-
-        {/* Search and Filters */}
-        <ScheduleSearchFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          operatorFilter={operatorFilter}
-          setOperatorFilter={setOperatorFilter}
-          routeFilter={routeFilter}
-          setRouteFilter={setRouteFilter}
-          onAddNew={handleAddNew}
-          onExportAll={handleExportAll}
-          isTimeKeeper={true}
-        />
-
-        {/* Schedule Table */}
-        <ScheduleTable
-          schedules={paginatedSchedules.map((schedule) => ({
-            ...schedule,
-            days: schedule.days.join(', '),
-          }))}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={(id: string, name: string) => handleAssignBus(id, name)}
-          onAssignBus={handleAssignBus}
-          onAddNotes={handleAddNotes}
-          isTimeKeeper={true}
-        />
-
-        {/* Assign Bus Modal */}
-        {assignBusModal.isOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Assign Bus
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Assign a bus to route: "{assignBusModal.routeName}"
-              </p>
-              <div className="mb-4">
-                <label
-                  htmlFor="bus-number"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Bus Number
-                </label>
-                <input
-                  type="text"
-                  id="bus-number"
-                  placeholder="Enter bus number (e.g., NB-1234)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() =>
-                    setAssignBusModal({
-                      isOpen: false,
-                      scheduleId: '',
-                      routeName: '',
-                    })
-                  }
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    const busNumber = (
-                      document.getElementById('bus-number') as HTMLInputElement
-                    )?.value;
-                    if (busNumber.trim()) {
-                      confirmAssignBus(busNumber);
-                    }
-                  }}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-                >
-                  Assign Bus
-                </button>
-              </div>
+      {/* Add Notes Modal */}
+      {notesModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Add/Edit Notes
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Add notes for route: "{notesModal.routeName}"
+            </p>
+            <div className="mb-4">
+              <label
+                htmlFor="schedule-notes"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Notes
+              </label>
+              <textarea
+                id="schedule-notes"
+                rows={4}
+                defaultValue={notesModal.currentNotes}
+                placeholder="Enter any notes or special instructions..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() =>
+                  setNotesModal({
+                    isOpen: false,
+                    scheduleId: '',
+                    routeName: '',
+                    currentNotes: '',
+                  })
+                }
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const notes = (
+                    document.getElementById(
+                      'schedule-notes'
+                    ) as HTMLTextAreaElement
+                  )?.value;
+                  confirmSaveNotes(notes);
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
+              >
+                Save Notes
+              </button>
             </div>
           </div>
-        )}
-
-        {/* Add Notes Modal */}
-        {notesModal.isOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Add/Edit Notes
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Add notes for route: "{notesModal.routeName}"
-              </p>
-              <div className="mb-4">
-                <label
-                  htmlFor="schedule-notes"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Notes
-                </label>
-                <textarea
-                  id="schedule-notes"
-                  rows={4}
-                  defaultValue={notesModal.currentNotes}
-                  placeholder="Enter any notes or special instructions..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() =>
-                    setNotesModal({
-                      isOpen: false,
-                      scheduleId: '',
-                      routeName: '',
-                      currentNotes: '',
-                    })
-                  }
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    const notes = (
-                      document.getElementById(
-                        'schedule-notes'
-                      ) as HTMLTextAreaElement
-                    )?.value;
-                    confirmSaveNotes(notes);
-                  }}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
-                >
-                  Save Notes
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,14 +1,14 @@
 "use client";
 
 import { Layout } from "@/components/shared/layout";
-import { ScheduleDetailsHeader } from "@/components/timeKeeper/schedule-details-header";
-import { ScheduleBasicInfo } from "@/components/timeKeeper/schedule-basic-info";
-import { RouteInformationCard } from "@/components/timeKeeper/route-information-card";
-import { ScheduleInformationCard } from "@/components/timeKeeper/schedule-information-card";
-import { OtherBusesTable } from "@/components/timeKeeper/other-buses-table";
-import { DaysOfOperationCard } from "@/components/timeKeeper/days-of-operation-card";
-import { IntermediateStopsCard } from "@/components/timeKeeper/intermediate-stops-card";
-import { ScheduleDetailsActions } from "@/components/timeKeeper/schedule-details-actions";
+import { ScheduleDetailsHeader } from "@/components/timeKeeper/schedule-details/schedule-details-header";
+import { ScheduleBasicInfo } from "@/components/timeKeeper/schedule-details/schedule-basic-info";
+import { RouteInformationCard } from "@/components/timeKeeper/schedule-details/route-information-card";
+import { ScheduleInformationCard } from "@/components/timeKeeper/schedule-details/schedule-information-card";
+import { OtherBusesTable } from "@/components/timeKeeper/schedule-details/other-buses-table";
+import { DaysOfOperationCard } from "@/components/timeKeeper/schedule-details/days-of-operation-card";
+import { IntermediateStopsCard } from "@/components/timeKeeper/schedule-details/intermediate-stops-card";
+import { ScheduleDetailsActions } from "@/components/timeKeeper/schedule-details/schedule-details-actions";
 import { useRouter, useParams } from "next/navigation";
 
 export default function ScheduleDetails() {
