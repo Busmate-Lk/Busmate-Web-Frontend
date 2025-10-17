@@ -256,6 +256,14 @@ export function TripAssignmentWorkspace() {
     });
   };
 
+  // Handle clear all selections
+  const handleClearSelection = () => {
+    setWorkspace(prev => ({
+      ...prev,
+      selectedTrips: []
+    }));
+  };
+
   // Handle date range change
   const handleDateRangeChange = (startDate: Date, endDate: Date) => {
     setWorkspace(prev => ({
@@ -310,6 +318,7 @@ export function TripAssignmentWorkspace() {
             onTripSelect={handleTripSelect}
             activeSection={activeSection}
             onRefreshTrips={() => workspace.selectedRoute && loadTrips(workspace.selectedRoute)}
+            onClearSelection={handleClearSelection}
           />
         </div>
       </div>
