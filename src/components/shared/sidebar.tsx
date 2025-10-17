@@ -159,9 +159,9 @@ export function Sidebar({
     },
     {
       icon: Calendar,
-      label: 'Schedule Assignment',
-      active: activeItem === 'schedule',
-      href: '/timeKeeper/schedule',
+      label: 'Trip Managemanet',
+      active: activeItem === 'trip',
+      href: '/timeKeeper/trip',
     },
     {
       icon: Bus,
@@ -169,30 +169,6 @@ export function Sidebar({
       active: activeItem === 'trip-assignment',
       href: '/timeKeeper/trip-assignment',
     },
-    // {
-    //   icon: Clock,
-    //   label: 'Time Tracking',
-    //   active: activeItem === 'tracking',
-    //   href: '/timeKeeper/time-tracking',
-    // },
-    // {
-    //   icon: FileText,
-    //   label: 'Reports',
-    //   active: activeItem === 'reports',
-    //   href: '/timeKeeper/reports',
-    // },
-    // {
-    //   icon: BarChart3,
-    //   label: 'Analytics',
-    //   active: activeItem === 'analytics',
-    //   href: '/timeKeeper/analytics',
-    // },
-    // {
-    //   icon: Settings,
-    //   label: 'Settings',
-    //   active: activeItem === 'settings',
-    //   href: '/timeKeeper/settings',
-    // },
   ];
 
   let sidebarItems = null;
