@@ -1,6 +1,6 @@
 "use client"
 
-import { Bus, Users, BarChart3, Calendar, MapPin, Route, DollarSign, ChevronLeft, ChevronRight, FileText, Navigation } from "lucide-react"
+import { Bus, Users, BarChart3, Calendar, MapPin, Route, DollarSign, ChevronLeft, ChevronRight, FileText, Navigation, Bell } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -21,6 +21,7 @@ export function Sidebar({ activeItem = "dashboard", isCollapsed, setIsCollapsed 
 
   const sidebarItems: SidebarItem[] = [
     { icon: BarChart3, label: "Dashboard", active: activeItem === "dashboard", href: "/operator/dashboard" },
+    { icon: Bell, label: "Notifications", active: activeItem === "notifications", href: "/operator/notifications/received" },
     { icon: FileText, label: "Service Permits", active: activeItem === "passenger-service-permits", href: "/operator/passenger-service-permits" },
     { icon: Bus, label: "Fleet management", active: activeItem === "fleetmanagement", href: "/operator/fleet-management" },
     { icon: Navigation, label: "Trip Management", active: activeItem === "trips", href: "/operator/trips" },
@@ -73,11 +74,10 @@ export function Sidebar({ activeItem = "dashboard", isCollapsed, setIsCollapsed 
             <Link
               key={index}
               href={item.href}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-3'} rounded-lg text-sm font-medium transition-all duration-200 group ${
-                item.active
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-3'} rounded-lg text-sm font-medium transition-all duration-200 group ${item.active
                   ? "bg-white text-blue-600 shadow-sm"
                   : "text-blue-100 hover:bg-blue-500 hover:text-white"
-              }`}
+                }`}
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon className={`w-5 h-5 flex-shrink-0 ${item.active ? 'text-blue-600' : ''}`} />

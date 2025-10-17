@@ -208,10 +208,10 @@ export function MessageHistory() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4" />
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={handleSendMessage} className="shadow-sm">
+              {/* <Button variant="outline" size="sm" onClick={handleSendMessage} className="shadow-sm">
                 <Send className="h-4 w-4 mr-2" />
                 Compose
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
