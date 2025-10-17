@@ -3,21 +3,26 @@ import TripManagementClient from '@/app/timeKeeper/(authenticated)/trip/TripMana
 import { Layout } from '@/components/shared/layout';
 
 export default function Page() {
+  // TODO: Replace with actual assigned bus stop from user profile
+  const assignedBusStop = 'Matara Bus Station'; // This should come from user.assignedBusStop
+
   return (
     <Layout
       activeItem="trip"
-      pageTitle="Trip Management"
+      pageTitle={`Trip Management - ${assignedBusStop}`}
       pageDescription="Monitor and manage trips passing through your assigned bus station"
       role="timeKeeper"
     >
-      <Suspense fallback={
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading trip management...</p>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading trip management...</p>
+            </div>
           </div>
-        </div>
-      }>
+        }
+      >
         <TripManagementClient />
       </Suspense>
     </Layout>
