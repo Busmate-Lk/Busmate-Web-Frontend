@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Calendar, 
   Clock, 
@@ -42,6 +43,7 @@ export function TripsWorkspace({
   onRefreshTrips,
   onClearSelection,
 }: TripsWorkspaceProps) {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<'all-list' | 'daily' | 'weekly'>('all-list');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [assignmentFilter, setAssignmentFilter] = useState<'all' | 'assigned' | 'unassigned'>('all');
@@ -171,11 +173,7 @@ export function TripsWorkspace({
 
   // Handle view trip details
   const handleViewTripDetails = (tripId: string) => {
-    const trip = workspace.trips.find(t => t.id === tripId);
-    if (trip) {
-      setSelectedTripForDetails(trip);
-      setIsDetailsModalOpen(true);
-    }
+    router.push(`/mot/trips/${tripId}`);
   };
 
   const filteredTrips = getFilteredTrips();
