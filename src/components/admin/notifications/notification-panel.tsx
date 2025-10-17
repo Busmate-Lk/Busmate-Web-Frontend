@@ -32,7 +32,7 @@ export function NotificationPanel() {
   const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("all")
-  const [filterPriority, setFilterPriority] = useState("all")
+  const [filterAudience, setFilterAudience] = useState("all")
   const [items, setItems] = useState<NotificationListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -101,14 +101,6 @@ export function NotificationPanel() {
     const isMot = pathname?.startsWith("/mot")
     const isAdmin = pathname?.startsWith("/admin")
 
-    // Helper to map messageType to a coarse priority for filtering UI
-    const priorityFromType = (t: string) => {
-      const type = (t || 'info').toLowerCase()
-      if (type === 'critical') return 'critical'
-      if (type === 'warning' || type === 'maintenance') return 'medium'
-      return 'low'
-    }
-
     return items
       // Apply MoT-specific visibility rules
       .filter(n => {
@@ -128,7 +120,7 @@ export function NotificationPanel() {
         }
         return true
       })
-      // Apply search and type/priority filters
+      // Apply search and filters
       .filter(n => {
         const matchesSearch = !searchTerm
           || n.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -137,19 +129,19 @@ export function NotificationPanel() {
         const type = (n.messageType || 'info').toLowerCase()
         const matchesType = filterType === 'all' || type === filterType
 
-        const priority = priorityFromType(type)
-        const matchesPriority = filterPriority === 'all' || filterPriority === priority
+        const audience = (n.targetAudience || 'all').toLowerCase()
+        const matchesAudience = filterAudience === 'all' || audience === filterAudience
 
-        return matchesSearch && matchesType && matchesPriority
+        return matchesSearch && matchesType && matchesAudience
       })
-  }, [items, pathname, user?.id, searchTerm, filterType, filterPriority])
+  }, [items, pathname, user?.id, searchTerm, filterType, filterAudience])
 
   return (
     <div>
       {/* Filters */}
       <Card className="mb-6 shadow-lg">
         <CardContent className="p-6 bg-gradient-to-r from-gray-50 to-white rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Input
                 placeholder="Search notifications..."
@@ -166,31 +158,27 @@ export function NotificationPanel() {
                 </SelectTrigger>
                 <SelectContent className="shadow-lg">
                   <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="error">Errors</SelectItem>
-                  <SelectItem value="warning">Warnings</SelectItem>
                   <SelectItem value="info">Information</SelectItem>
-                  <SelectItem value="success">Success</SelectItem>
+                  <SelectItem value="warning">Warning</SelectItem>
+                  <SelectItem value="critical">Critical</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Select value={filterPriority} onValueChange={setFilterPriority}>
+              <Select value={filterAudience} onValueChange={setFilterAudience}>
                 <SelectTrigger className="shadow-sm">
-                  <SelectValue placeholder="Filter by priority" />
+                  <SelectValue placeholder="Filter by audience" />
                 </SelectTrigger>
                 <SelectContent className="shadow-lg">
-                  <SelectItem value="all">All Priorities</SelectItem>
-                  <SelectItem value="critical">Critical</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="all">All Audiences</SelectItem>
+                  <SelectItem value="passengers">Passengers</SelectItem>
+                  <SelectItem value="conductors">Conductors</SelectItem>
+                  <SelectItem value="mot_officers">MoT Officers</SelectItem>
+                  <SelectItem value="fleet_operators">Fleet Operators</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button className="bg-blue-500/90 text-white hover:bg-blue-600 shadow-md">
-              <Filter className="h-4 w-4 mr-2" />
-              Apply Filters
-            </Button>
           </div>
         </CardContent>
       </Card>

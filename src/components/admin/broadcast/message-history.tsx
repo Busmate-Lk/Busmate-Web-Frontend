@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/admin/ui/table"
 import { Checkbox } from "@/components/admin/ui/checkbox"
 import { Badge } from "@/components/admin/ui/badge"
-import { Calendar, Search, Eye, Edit, Trash2, Send, Filter } from "lucide-react"
+import { Calendar, Search, Trash2, Send, Filter } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { listNotifications, deleteNotification as apiDeleteNotification, type NotificationListItem } from "@/lib/services/notificationService"
 import { useAuth } from "@/context/AuthContext"
@@ -25,6 +25,11 @@ export function MessageHistory() {
   const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState("")
   const [showFilters, setShowFilters] = useState(false)
+  const [filterType, setFilterType] = useState("all")
+  const [filterAudience, setFilterAudience] = useState("all")
+  const [filterProvince, setFilterProvince] = useState("all")
+  const [filterCity, setFilterCity] = useState("all")
+  const [filterRoute, setFilterRoute] = useState("all")
   const [items, setItems] = useState<NotificationListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -52,17 +57,27 @@ export function MessageHistory() {
 
   const handleMessageClick = (messageId: string | number) => {
     const base = pathname?.startsWith('/mot') ? '/mot' : '/admin'
-    router.push(`${base}/notifications/detail/${messageId}`)
+    router.push(`${base}/notifications/sent/${messageId}`)
   }
 
   const filtered = useMemo(() => {
     const mine = items.filter(m => !user?.id || !m.adminId ? true : m.adminId === user.id)
     return mine.filter(m => {
       const s = searchTerm.trim().toLowerCase()
-      if (!s) return true
-      return m.title.toLowerCase().includes(s) || m.body.toLowerCase().includes(s)
+      const matchesSearch = !s || m.title.toLowerCase().includes(s) || m.body.toLowerCase().includes(s)
+
+      const type = (m.messageType || 'info').toLowerCase()
+      const matchesType = filterType === 'all' || type === filterType
+
+      const audience = (m.targetAudience || 'all').toLowerCase()
+      const matchesAudience = filterAudience === 'all' || audience === filterAudience
+
+      // Note: Location filters (province, city, route) would need to be added to NotificationListItem type
+      // For now, we'll keep them in the UI but they won't filter unless backend provides these fields
+
+      return matchesSearch && matchesType && matchesAudience
     })
-  }, [items, searchTerm, user?.id])
+  }, [items, searchTerm, user?.id, filterType, filterAudience])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this notification?')) return
@@ -101,10 +116,10 @@ export function MessageHistory() {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 pt-4 border-t border-gray-100">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Message Type</label>
-              <Select>
+              <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="shadow-sm">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
@@ -118,28 +133,70 @@ export function MessageHistory() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-              <Select>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Target Audience</label>
+              <Select value={filterAudience} onValueChange={setFilterAudience}>
                 <SelectTrigger className="shadow-sm">
-                  <SelectValue placeholder="All Status" />
+                  <SelectValue placeholder="All Audiences" />
                 </SelectTrigger>
                 <SelectContent className="shadow-lg">
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="all">All Audiences</SelectItem>
+                  <SelectItem value="passengers">Passengers</SelectItem>
+                  <SelectItem value="conductors">Conductors</SelectItem>
+                  <SelectItem value="mot_officers">MoT Officers</SelectItem>
+                  <SelectItem value="fleet_operators">Fleet Operators</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Date Range</label>
-              <div className="relative">
-                <Input placeholder="Select date range" className="shadow-sm" />
-                <Calendar className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Province</label>
+              <Select value={filterProvince} onValueChange={setFilterProvince}>
+                <SelectTrigger className="shadow-sm">
+                  <SelectValue placeholder="All Provinces" />
+                </SelectTrigger>
+                <SelectContent className="shadow-lg">
+                  <SelectItem value="all">All Provinces</SelectItem>
+                  <SelectItem value="Western">Western</SelectItem>
+                  <SelectItem value="Central">Central</SelectItem>
+                  <SelectItem value="Southern">Southern</SelectItem>
+                  <SelectItem value="Northern">Northern</SelectItem>
+                  <SelectItem value="Eastern">Eastern</SelectItem>
+                  <SelectItem value="North Western">North Western</SelectItem>
+                  <SelectItem value="North Central">North Central</SelectItem>
+                  <SelectItem value="Uva">Uva</SelectItem>
+                  <SelectItem value="Sabaragamuwa">Sabaragamuwa</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex items-end">
-              <Button className="bg-blue-500/90 text-white hover:bg-blue-600 w-full shadow-md">Apply Filters</Button>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
+              <Select value={filterCity} onValueChange={setFilterCity}>
+                <SelectTrigger className="shadow-sm">
+                  <SelectValue placeholder="All Cities" />
+                </SelectTrigger>
+                <SelectContent className="shadow-lg">
+                  <SelectItem value="all">All Cities</SelectItem>
+                  <SelectItem value="Colombo">Colombo</SelectItem>
+                  <SelectItem value="Gampaha">Gampaha</SelectItem>
+                  <SelectItem value="Kalutara">Kalutara</SelectItem>
+                  <SelectItem value="Kandy">Kandy</SelectItem>
+                  <SelectItem value="Galle">Galle</SelectItem>
+                  <SelectItem value="Matara">Matara</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Route</label>
+              <Select value={filterRoute} onValueChange={setFilterRoute}>
+                <SelectTrigger className="shadow-sm">
+                  <SelectValue placeholder="All Routes" />
+                </SelectTrigger>
+                <SelectContent className="shadow-lg">
+                  <SelectItem value="all">All Routes</SelectItem>
+                  <SelectItem value="001">Route 001</SelectItem>
+                  <SelectItem value="138">Route 138</SelectItem>
+                  <SelectItem value="177">Route 177</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         )}
@@ -203,9 +260,6 @@ export function MessageHistory() {
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleMessageClick(m.notificationId)}>
-                      <Eye className="h-4 w-4 text-blue-600" />
-                    </Button>
                     <Button variant="ghost" size="sm" onClick={() => handleDelete(m.notificationId)}>
                       <Trash2 className="h-4 w-4 text-red-600" />
                     </Button>

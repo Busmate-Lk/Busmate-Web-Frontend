@@ -11,7 +11,7 @@ export default function NotificationDetailPage({ params }: { params: { id: strin
 
     return (
         <div className="p-6">
-            <NavigationBreadcrumb items={breadcrumbItems} />
+            {/* <NavigationBreadcrumb items={breadcrumbItems} /> */}
             <NotificationDetail notificationId={params.id} />
         </div>
     )
