@@ -1,19 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  ChevronUp, 
-  ChevronDown, 
+import {
+  ChevronUp,
+  ChevronDown,
   Calendar,
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+  CheckCircle,
+  XCircle,
+  Clock,
   AlertCircle,
   MapPin,
   Users,
   Eye,
   FileText,
-  MoreVertical
+  MoreVertical,
+  BusFront,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { TripResponse } from '@/lib/api-client/route-management';
 
@@ -21,20 +23,26 @@ interface TimeKeeperTripsTableProps {
   trips: TripResponse[];
   onView: (tripId: string) => void;
   onAddNotes: (tripId: string) => void;
+  onRemoveBus?: (tripId: string) => void;
   onSort: (sortBy: string, sortDir: 'asc' | 'desc') => void;
   activeFilters: Record<string, any>;
   loading: boolean;
   currentSort: { field: string; direction: 'asc' | 'desc' };
+  assignedBusStopId?: string;
+  canManageBus?: (trip: TripResponse) => boolean;
 }
 
 export function TimeKeeperTripsTable({
   trips,
   onView,
   onAddNotes,
+  onRemoveBus,
   onSort,
   activeFilters,
   loading,
   currentSort,
+  assignedBusStopId,
+  canManageBus,
 }: TimeKeeperTripsTableProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -42,13 +50,18 @@ export function TimeKeeperTripsTable({
     if (currentSort.field !== field) {
       return <ChevronUp className="w-4 h-4 text-gray-300" />;
     }
-    return currentSort.direction === 'asc' 
-      ? <ChevronUp className="w-4 h-4 text-blue-600" />
-      : <ChevronDown className="w-4 h-4 text-blue-600" />;
+    return currentSort.direction === 'asc' ? (
+      <ChevronUp className="w-4 h-4 text-blue-600" />
+    ) : (
+      <ChevronDown className="w-4 h-4 text-blue-600" />
+    );
   };
 
   const handleSort = (field: string) => {
-    const newDirection = currentSort.field === field && currentSort.direction === 'asc' ? 'desc' : 'asc';
+    const newDirection =
+      currentSort.field === field && currentSort.direction === 'asc'
+        ? 'desc'
+        : 'asc';
     onSort(field, newDirection);
   };
 
@@ -68,7 +81,9 @@ export function TimeKeeperTripsTable({
   const formatTime = (timeString?: string) => {
     if (!timeString) return 'N/A';
     try {
-      const timePart = timeString.includes('T') ? timeString.split('T')[1] : timeString;
+      const timePart = timeString.includes('T')
+        ? timeString.split('T')[1]
+        : timeString;
       const [hours, minutes] = timePart.split(':');
       return `${hours}:${minutes}`;
     } catch {
@@ -101,9 +116,11 @@ export function TimeKeeperTripsTable({
 
   const getStatusLabel = (status?: string) => {
     if (!status) return 'Unknown';
-    return status.replace('_', ' ').split(' ').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    ).join(' ');
+    return status
+      .replace('_', ' ')
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   const getStatusColor = (status?: string) => {
@@ -145,11 +162,13 @@ export function TimeKeeperTripsTable({
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="p-8 text-center">
           <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No trips found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No trips found
+          </h3>
           <p className="text-gray-500 mb-4">
             {Object.keys(activeFilters).length > 0
-              ? "No trips match your current filters. Try adjusting your search criteria."
-              : "No trips are scheduled for your assigned station."}
+              ? 'No trips match your current filters. Try adjusting your search criteria.'
+              : 'No trips are scheduled for your assigned station.'}
           </p>
         </div>
       </div>
@@ -162,7 +181,7 @@ export function TimeKeeperTripsTable({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('tripDate')}
               >
@@ -177,7 +196,7 @@ export function TimeKeeperTripsTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Operator
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('scheduledDepartureTime')}
               >
@@ -186,7 +205,7 @@ export function TimeKeeperTripsTable({
                   {getSortIcon('scheduledDepartureTime')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('scheduledArrivalTime')}
               >
@@ -198,7 +217,7 @@ export function TimeKeeperTripsTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Bus / PSP
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('status')}
               >
@@ -222,8 +241,12 @@ export function TimeKeeperTripsTable({
                   {formatDate(trip.tripDate)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{trip.routeName || 'N/A'}</div>
-                  <div className="text-sm text-gray-500">{trip.routeGroupName || ''}</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {trip.routeName || 'N/A'}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {trip.routeGroupName || ''}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {trip.operatorName || 'N/A'}
@@ -231,13 +254,17 @@ export function TimeKeeperTripsTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <div>{formatTime(trip.scheduledDepartureTime)}</div>
                   {trip.actualDepartureTime && (
-                    <div className="text-xs text-gray-500">Act: {formatTime(trip.actualDepartureTime)}</div>
+                    <div className="text-xs text-gray-500">
+                      Act: {formatTime(trip.actualDepartureTime)}
+                    </div>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <div>{formatTime(trip.scheduledArrivalTime)}</div>
                   {trip.actualArrivalTime && (
-                    <div className="text-xs text-gray-500">Act: {formatTime(trip.actualArrivalTime)}</div>
+                    <div className="text-xs text-gray-500">
+                      Act: {formatTime(trip.actualArrivalTime)}
+                    </div>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -253,7 +280,11 @@ export function TimeKeeperTripsTable({
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(trip.status)}`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                      trip.status
+                    )}`}
+                  >
                     {getStatusIcon(trip.status)}
                     <span className="ml-1">{getStatusLabel(trip.status)}</span>
                   </span>
@@ -277,6 +308,18 @@ export function TimeKeeperTripsTable({
                     >
                       <FileText className="w-4 h-4" />
                     </button>
+                    {onRemoveBus &&
+                      canManageBus &&
+                      canManageBus(trip) &&
+                      trip.busPlateNumber && (
+                        <button
+                          onClick={() => onRemoveBus(trip.id!)}
+                          className="text-orange-600 hover:text-orange-900"
+                          title="Remove/Reassign bus"
+                        >
+                          <ArrowRightLeft className="w-4 h-4" />
+                        </button>
+                      )}
                   </div>
                 </td>
               </tr>
