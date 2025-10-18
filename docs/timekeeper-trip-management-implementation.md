@@ -2,52 +2,67 @@
 
 ## Overview
 
-The TimeKeeper's trip management page has been converted from static mock data to real API integration, showing only trips that pass through their assigned bus station.
+The TimeKeeper's trip management page enables timekeepers to view and manage trips passing through their assigned bus stop. TimeKeepers have read-only access to schedules but can remove/reassign buses for trips that start at their assigned location.
 
-## What Changed
+## Latest Implementation (v2.0)
 
-### 1. **New Component: `TripManagementClient.tsx`**
+### Key Features
 
-- **Location**: `src/app/timeKeeper/(authenticated)/trip/TripManagementClient.tsx`
-- **Purpose**: Replaces the old `ScheduleManagementClient.tsx` with API-integrated version
-- **Key Features**:
-  - Fetches trips from backend API via `TripManagementService`
-  - Filters trips by assigned bus stop (currently "Matara Bus Station")
-  - Shows comprehensive statistics and filtering options
-  - Limited actions compared to MOT (view-only with notes capability)
+1. **View Trips at Assigned Bus Stop**: All trips passing through the timekeeper's assigned stop
+2. **Read-Only Schedule Access**: Can view but not edit schedules
+3. **Bus Management**: Can remove/reassign buses ONLY for trips starting at their assigned stop
+4. **Advanced Filtering**: Filter by status, route, operator, schedule, bus, PSP, dates
+5. **Trip Notes**: Can add notes to any trip
+6. **Statistics Dashboard**: View metrics for trips at their stop
 
-### 2. **New Component: `TimeKeeperTripsTable.tsx`**
+## File Structure
 
-- **Location**: `src/components/timeKeeper/trips/TimeKeeperTripsTable.tsx`
-- **Purpose**: Custom table component for TimeKeepers with limited actions
-- **Actions Available**:
-  - ✅ View trip details
-  - ✅ Add/Edit notes
-  - ❌ No edit, delete, start, complete, cancel, or assign PSP
+```
+src/
+├── app/
+│   └── timeKeeper/
+│       └── (authenticated)/
+│           └── trip/
+│               └── page.tsx                    # Main trip management page (UPDATED)
+├── components/
+│   └── timeKeeper/
+│       └── trips/
+│           ├── TimeKeeperTripsTable.tsx       # Trips table (UPDATED - added bus mgmt)
+│           ├── TripStatsCards.tsx             # Statistics cards
+│           ├── TripAdvancedFilters.tsx        # Filter component
+│           └── BusReassignmentModal.tsx       # Bus reassignment modal (NEW)
+```
 
-### 3. **Updated Page: `page.tsx`**
+## Components
 
-- **Location**: `src/app/timeKeeper/(authenticated)/trip/page.tsx`
-- **Changes**:
-  - Now imports `TripManagementClient` instead of `ScheduleManagementClient`
-  - Updated page title and description
+### 1. Main Page Component (`page.tsx`)
 
-## Current Functionality
+**Location**: `src/app/timeKeeper/(authenticated)/trip/page.tsx`
 
-### ✅ What Works Now
+**New Features**:
 
-1. **API Integration**: Fetches real trip data from backend
-2. **Filtering**:
-   - Status filter
-   - Route filter (pre-filtered to routes with "Matara")
-   - Operator filter
-   - Bus filter
-   - PSP filter
-   - Date range filter
-   - Assignment filters (hasPsp, hasBus, hasDriver, hasConductor)
-3. **Search**: Search across trip details
-4. **Sorting**: Sort by date, departure time, arrival time, status
-5. **Pagination**: Navigate through pages of results
+- Bus reassignment modal integration
+- Permission check for bus management (`tripStartsAtAssignedStop`)
+- Assigned bus stop information banner
+- Handler for bus removal/reassignment
+
+**Key State**:
+
+```typescript
+- assignedBusStopId: string           // Timekeeper's assigned stop
+- assignedBusStopName: string         // Display name
+- showBusReassignmentModal: boolean   // Modal visibility
+- tripForBusReassignment: TripResponse | null
+```
+
+**New Functions**:
+
+```typescript
+handleRemoveBus(tripId); // Initiates bus reassignment
+handleBusReassignment(tripId, newBusId, reason); // Processes change
+tripStartsAtAssignedStop(trip); // Permission check
+```
+
 6. **Statistics**: Shows trip statistics dashboard
 7. **Notes**: TimeKeepers can add/edit notes on trips
 
