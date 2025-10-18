@@ -16,6 +16,7 @@ import {
   MoreVertical,
   BusFront,
   ArrowRightLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { TripResponse } from '@/lib/api-client/route-management';
 
@@ -45,6 +46,19 @@ export function TimeKeeperTripsTable({
   canManageBus,
 }: TimeKeeperTripsTableProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  const toggleRowExpansion = (tripId: string) => {
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(tripId)) {
+        newSet.delete(tripId);
+      } else {
+        newSet.add(tripId);
+      }
+      return newSet;
+    });
+  };
 
   const getSortIcon = (field: string) => {
     if (currentSort.field !== field) {
@@ -181,6 +195,9 @@ export function TimeKeeperTripsTable({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                {/* Expand column */}
+              </th>
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('tripDate')}
@@ -192,9 +209,6 @@ export function TimeKeeperTripsTable({
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Route
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Operator
               </th>
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -226,104 +240,223 @@ export function TimeKeeperTripsTable({
                   {getSortIcon('status')}
                 </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Notes
-              </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {trips.map((trip) => (
-              <tr key={trip.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(trip.tripDate)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {trip.routeName || 'N/A'}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {trip.routeGroupName || ''}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {trip.operatorName || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div>{formatTime(trip.scheduledDepartureTime)}</div>
-                  {trip.actualDepartureTime && (
-                    <div className="text-xs text-gray-500">
-                      Act: {formatTime(trip.actualDepartureTime)}
-                    </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div>{formatTime(trip.scheduledArrivalTime)}</div>
-                  {trip.actualArrivalTime && (
-                    <div className="text-xs text-gray-500">
-                      Act: {formatTime(trip.actualArrivalTime)}
-                    </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <div className="space-y-1">
-                    <div className="flex items-center text-gray-900">
-                      <span className="font-medium mr-1">Bus:</span>
-                      {trip.busPlateNumber || 'Not assigned'}
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <span className="font-medium mr-1">PSP:</span>
-                      {trip.passengerServicePermitNumber || 'Not assigned'}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                      trip.status
-                    )}`}
-                  >
-                    {getStatusIcon(trip.status)}
-                    <span className="ml-1">{getStatusLabel(trip.status)}</span>
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                  {trip.notes || '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end space-x-2">
-                    <button
-                      onClick={() => onView(trip.id!)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title="View details"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => onAddNotes(trip.id!)}
-                      className="text-green-600 hover:text-green-900"
-                      title="Add/Edit notes"
-                    >
-                      <FileText className="w-4 h-4" />
-                    </button>
-                    {onRemoveBus &&
-                      canManageBus &&
-                      canManageBus(trip) &&
-                      trip.busPlateNumber && (
-                        <button
-                          onClick={() => onRemoveBus(trip.id!)}
-                          className="text-orange-600 hover:text-orange-900"
-                          title="Remove/Reassign bus"
-                        >
-                          <ArrowRightLeft className="w-4 h-4" />
-                        </button>
+            {trips.map((trip) => {
+              const isExpanded = expandedRows.has(trip.id!);
+              return (
+                <React.Fragment key={trip.id}>
+                  {/* Main Row */}
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => toggleRowExpansion(trip.id!)}
+                        className="text-gray-400 hover:text-gray-600 transition-transform duration-200"
+                        title={
+                          isExpanded ? 'Collapse details' : 'Expand details'
+                        }
+                      >
+                        <ChevronRight
+                          className={`w-5 h-5 transition-transform duration-200 ${
+                            isExpanded ? 'rotate-90' : ''
+                          }`}
+                        />
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatDate(trip.tripDate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {trip.routeName || 'N/A'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {trip.routeGroupName || ''}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div>{formatTime(trip.scheduledDepartureTime)}</div>
+                      {trip.actualDepartureTime && (
+                        <div className="text-xs text-gray-500">
+                          Act: {formatTime(trip.actualDepartureTime)}
+                        </div>
                       )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div>{formatTime(trip.scheduledArrivalTime)}</div>
+                      {trip.actualArrivalTime && (
+                        <div className="text-xs text-gray-500">
+                          Act: {formatTime(trip.actualArrivalTime)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="space-y-1">
+                        <div className="flex items-center text-gray-900">
+                          <span className="font-medium mr-1">Bus:</span>
+                          {trip.busPlateNumber || 'Not assigned'}
+                        </div>
+                        <div className="flex items-center text-gray-600">
+                          <span className="font-medium mr-1">PSP:</span>
+                          {trip.passengerServicePermitNumber || 'Not assigned'}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                          trip.status
+                        )}`}
+                      >
+                        {getStatusIcon(trip.status)}
+                        <span className="ml-1">
+                          {getStatusLabel(trip.status)}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button
+                          onClick={() => onView(trip.id!)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="View details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => onAddNotes(trip.id!)}
+                          className="text-green-600 hover:text-green-900"
+                          title="Add/Edit notes"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
+                        {onRemoveBus &&
+                          canManageBus &&
+                          canManageBus(trip) &&
+                          trip.busPlateNumber && (
+                            <button
+                              onClick={() => onRemoveBus(trip.id!)}
+                              className="text-orange-600 hover:text-orange-900"
+                              title="Remove/Reassign bus"
+                            >
+                              <ArrowRightLeft className="w-4 h-4" />
+                            </button>
+                          )}
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* Expanded Details Row */}
+                  {isExpanded && (
+                    <tr className="bg-gray-50">
+                      <td colSpan={8} className="px-6 py-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {/* Operator Information */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Operator
+                            </h4>
+                            <p className="text-sm text-gray-900">
+                              {trip.operatorName || 'N/A'}
+                            </p>
+                          </div>
+
+                          {/* Schedule Information */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Schedule
+                            </h4>
+                            <p className="text-sm text-gray-900">
+                              {trip.scheduleName || 'N/A'}
+                            </p>
+                          </div>
+
+                          {/* Bus Model Information */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Bus Model
+                            </h4>
+                            <p className="text-sm text-gray-900">
+                              {trip.busModel || 'N/A'}
+                            </p>
+                          </div>
+
+                          {/* Driver ID */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Driver ID
+                            </h4>
+                            <p className="text-sm text-gray-900">
+                              {trip.driverId || 'Not assigned'}
+                            </p>
+                          </div>
+
+                          {/* Conductor ID */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Conductor ID
+                            </h4>
+                            <p className="text-sm text-gray-900">
+                              {trip.conductorId || 'Not assigned'}
+                            </p>
+                          </div>
+
+                          {/* Notes */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Notes
+                            </h4>
+                            <p className="text-sm text-gray-900">
+                              {trip.notes || 'No notes available'}
+                            </p>
+                          </div>
+
+                          {/* Created/Updated Info */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2 lg:col-span-3">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                                  Created
+                                </h4>
+                                <p className="text-sm text-gray-900">
+                                  {trip.createdAt
+                                    ? formatDate(trip.createdAt)
+                                    : 'N/A'}
+                                </p>
+                                {trip.createdBy && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    By: {trip.createdBy}
+                                  </p>
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                                  Last Updated
+                                </h4>
+                                <p className="text-sm text-gray-900">
+                                  {trip.updatedAt
+                                    ? formatDate(trip.updatedAt)
+                                    : 'N/A'}
+                                </p>
+                                {trip.updatedBy && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    By: {trip.updatedBy}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
