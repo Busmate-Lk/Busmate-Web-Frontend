@@ -1,11 +1,11 @@
-import { TripAssignment } from '@/components/timeKeeper/trip-assignment';
+import { TimeKeeperTripAssignment } from '@/components/timeKeeper/trip-assignment-workspace';
 import { Metadata } from 'next';
 import { Layout } from '@/components/shared/layout';
 
 export const metadata: Metadata = {
   title: 'Trip Assignment | BusMate',
   description:
-    'Manage trip assignments and handle bus unavailability situations',
+    'Manage trip assignments for trips starting from your assigned bus stop',
 };
 
 export default function TimeKeeperTripAssignmentPage() {
@@ -13,11 +13,11 @@ export default function TimeKeeperTripAssignmentPage() {
     <Layout
       activeItem="trip-assignment"
       pageTitle="Trip Assignment Management"
-      pageDescription="Remove permits from unavailable buses and assign alternative buses to scheduled trips"
+      pageDescription="Manage and reassign buses for trips starting from your assigned bus stop"
       role="timeKeeper"
       padding={0}
     >
-      <TripAssignment />
+      <TimeKeeperTripAssignment />
     </Layout>
   );
 }
